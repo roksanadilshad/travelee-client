@@ -21,6 +21,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body
         className={`flex flex-col ${geistSans.variable} ${geistMono.variable} antialiased`}
+       suppressHydrationWarning={true}
       >
         <main className="flex-1">{children}</main>
       </body>

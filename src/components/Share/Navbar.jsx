@@ -19,7 +19,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo */}
+         
         <Logo></Logo>
 
         {/* Desktop Nav */}
