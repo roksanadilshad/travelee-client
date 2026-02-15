@@ -13,7 +13,7 @@ export default function PublicLayout({
     <div className="flex flex-col min-h-screen">
       <Navbar />
 
-      <DestinationCard></DestinationCard>
+      
       <main className="flex-1">{children}</main>
       <Footer />
     </div>
