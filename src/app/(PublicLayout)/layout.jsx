@@ -1,3 +1,4 @@
+import DestinationCard from "@/components/cards/DestinationCard";
 import Footer from "@/components/Share/Footer";
 import Navbar from "@/components/Share/Navbar";
 
@@ -11,6 +12,8 @@ export default function PublicLayout({
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
+
+      <DestinationCard></DestinationCard>
       <main className="flex-1">{children}</main>
       <Footer />
     </div>
