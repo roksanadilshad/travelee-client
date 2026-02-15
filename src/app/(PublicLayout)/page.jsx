@@ -1,5 +1,5 @@
-import Banner from "@/component/Banner";
 import DestinationCard from "@/components/cards/DestinationCard";
+import Banner from "@/components/Home/Banner";
 
 
 export default function Home() {
