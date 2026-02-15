@@ -4,7 +4,7 @@ export default function Home() {
   return (
    <div>
     <h1>
-      hello world
+      This is travele plateform
     </h1>
    </div>
   );
