@@ -12,7 +12,6 @@ import Logo from "./Logo";
 const navLinks = [
   { name: "Home", href: "/" },
   { name: "Destinations", href: "/destinations" },
-  { name: "Dashboard", href: "/dashboard/my-profile" },
   { name: "Bookings", href: "/bookings" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
