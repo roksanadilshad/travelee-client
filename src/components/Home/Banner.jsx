@@ -2,6 +2,7 @@ import React from 'react';
 import { FaSearch } from "react-icons/fa";
 import { TiWorld } from "react-icons/ti";
 import { FaPlane } from "react-icons/fa6";
+import Search from '../Share/Search';
 
 const Banner = () => {
     return (
@@ -27,28 +28,7 @@ const Banner = () => {
                     </p>
 
                     {/* 🔥 Search Box */}
-                    <div className="mt-6 bg-white rounded-2xl shadow-lg p-3">
-                        <div className="flex flex-col md:flex-row md:items-center gap-3">
-
-                            {/* Input */}
-                            <div className="flex items-center bg-gray-100 md:bg-transparent rounded-full px-4 py-2 flex-1">
-                                <FaSearch className="text-gray-500 mr-2" />
-                                <input
-                                    type="text"
-                                    placeholder="Where do you want to go?"
-                                    className="flex-1 bg-transparent outline-none text-gray-700"
-                                />
-                            </div>
-
-                            {/* Button */}
-                            <button
-                                className="w-full md:w-auto bg-orange-500 hover:bg-orange-600 
-                text-white font-semibold px-6 py-2.5 rounded-full transition duration-300"
-                            >
-                                Plan Your Adventure
-                            </button>
-                        </div>
-                    </div>
+                   <Search/>
 
                     {/* Stats */}
                     <div className="mt-6 flex items-center gap-8 text-sm text-gray-600">
