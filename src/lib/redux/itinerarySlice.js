@@ -1,29 +1,35 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {
-  currentTrip: {
-    destination: '',
-    days: []
-  },
-  savedTrips: []
-};
-
 const itinerarySlice = createSlice({
   name: 'itinerary',
-  initialState,
+  initialState: {
+    currentTrip: {
+      destination: '',
+      startDate: '',
+      days: [] // Structure: [{ id, activities: [{ time, task, cost }] }]
+    }
+  },
   reducers: {
-    setDestination: (state, action) => {
-      state.currentTrip.destination = action.payload;
+    setTripDetails: (state, action) => {
+      state.currentTrip = { ...state.currentTrip, ...action.payload };
     },
     addDay: (state) => {
-      state.currentTrip.days.push({ id: Date.now(), activities: [] });
+      state.currentTrip.days.push({ 
+        id: Date.now(), 
+        activities: [] 
+      });
     },
-    updateActivity: (state, action) => {
-      const { dayIndex, activityIndex, data } = action.payload;
-      state.currentTrip.days[dayIndex].activities[activityIndex] = data;
+    addActivity: (state, action) => {
+      const { dayIndex, activity } = action.payload;
+      // activity = { time: '10:00', task: 'Visit Museum', cost: 50 }
+      state.currentTrip.days[dayIndex].activities.push(activity);
+    },
+    removeActivity: (state, action) => {
+      const { dayIndex, activityIndex } = action.payload;
+      state.currentTrip.days[dayIndex].activities.splice(activityIndex, 1);
     }
   }
 });
 
-export const { setDestination, addDay, updateActivity } = itinerarySlice.actions;
+export const { setTripDetails, addDay, addActivity, removeActivity } = itinerarySlice.actions;
 export default itinerarySlice.reducer;

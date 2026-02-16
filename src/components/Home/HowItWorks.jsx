@@ -10,6 +10,7 @@ import {
   Heart, 
   Shield 
 } from "lucide-react";
+import Link from "next/link";
 
 const steps = [
   {
@@ -19,6 +20,7 @@ const steps = [
     gradient: "from-blue-500 to-cyan-400",
     icon: Search,
     pattern: "dots",
+    link: "/destinations",
   },
   {
     title: "Build Smart Itinerary",
@@ -27,6 +29,7 @@ const steps = [
     gradient: "from-orange-500 to-amber-400",
     icon: Calendar,
     pattern: "grid",
+    link: "/itinerary",
   },
   {
     title: "Check Budget & Weather",
@@ -35,6 +38,7 @@ const steps = [
     gradient: "from-cyan-400 to-teal-300",
     icon: CloudSun,
     pattern: "waves",
+    link: "/weather"
   },
   {
     title: "Collaborate with Friends",
@@ -43,6 +47,7 @@ const steps = [
     gradient: "from-purple-500 to-pink-400",
     icon: Users,
     pattern: "circles",
+    link:"collaborate"
   },
   {
     title: "Save, Review & Share",
@@ -51,6 +56,7 @@ const steps = [
     gradient: "from-rose-500 to-orange-400",
     icon: Heart,
     pattern: "diagonal",
+    link: "save"
   },
   {
     title: "Admin Moderation",
@@ -59,6 +65,7 @@ const steps = [
     gradient: "from-indigo-500 to-blue-400",
     icon: Shield,
     pattern: "dots",
+    link: "/admin/dashboard",
   },
 ];
 
@@ -156,6 +163,10 @@ export default function HowItWorks() {
               }}
               transition={{ duration: 0.5, ease: "easeOut" }}
             >
+              <Link href={step.link} className="block h-full"
+              
+              >
+
               <Card className="group relative overflow-hidden h-full border-2 border-transparent hover:border-gray-200 transition-all duration-500 hover:shadow-2xl rounded-2xl bg-white">
                 {/* Pattern overlay */}
                 <PatternOverlay pattern={step.pattern} />
@@ -214,6 +225,7 @@ export default function HowItWorks() {
                   <div className={`absolute bottom-0 left-3/4 w-2 h-2 rounded-full bg-gradient-to-r ${step.gradient} opacity-0 group-hover:opacity-60 group-hover:animate-float animation-delay-400`} />
                 </div>
               </Card>
+              </Link>
             </motion.div>
           );
         })}
