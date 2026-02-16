@@ -1,4 +1,4 @@
-import DestinationCard from "@/components/cards/DestinationCard";
+import DestinationCard from "@/components/Share/cards/DestinationCard";
 import Footer from "@/components/Share/Footer";
 import Navbar from "@/components/Share/Navbar";
 
