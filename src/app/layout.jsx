@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import StoreProvider from "@/lib/redux/StoreProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,7 +24,9 @@ export default function RootLayout({ children }) {
         className={`flex flex-col ${geistSans.variable} ${geistMono.variable} antialiased`}
       suppressHydrationWarning={true}
       >
+        <StoreProvider>
         <main className="flex-1">{children}</main>
+        </StoreProvider>
       </body>
     </html>
   );
