@@ -148,7 +148,7 @@ export default function ProfessionalItinerary() {
             </div>
           ) : (
             <div className="text-center py-20 bg-white rounded-3xl border border-gray-200">
-                <p className="text-gray-400 mb-4">You haven't added any days to your trip.</p>
+                <p className="text-gray-400 mb-4">You have not added any days to your trip.</p>
                 <button onClick={() => dispatch(addDay())} className="text-blue-600 font-bold hover:underline underline-offset-4">Click here to start Day 1</button>
             </div>
           )}
