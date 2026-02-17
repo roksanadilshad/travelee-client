@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Logo from "./Logo";
 
+
+//( Role ) => don't delete any routes
 const navLinks = [
   { name: "Home", href: "/" },
   { name: "Destinations", href: "/destinations" },
@@ -68,7 +70,7 @@ export default function Navbar() {
             asChild
             className="bg-gradient-to-r from-accent to-orange-600 hover:from-accent/90 hover:to-orange-600/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
           >
-            <Link href="/signup">Sign Up</Link>
+            <Link href="/register">Sign Up</Link>
           </Button>
         </div>
 
@@ -118,14 +120,14 @@ export default function Navbar() {
                     onClick={() => setIsOpen(false)}
                     className="px-4 py-2 text-center text-sm font-medium bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors duration-200"
                   >
-                    Login
+                    Sign In
                   </Link>
                   <Button
                     asChild
                     className="w-full bg-gradient-to-r from-accent to-orange-600 hover:from-accent/90 hover:to-orange-600/90 text-white font-semibold"
                     onClick={() => setIsOpen(false)}
                   >
-                    <Link href="/signup">Sign Up</Link>
+                    <Link href="/register">Sign Up</Link>
                   </Button>
                 </div>
               </div>
