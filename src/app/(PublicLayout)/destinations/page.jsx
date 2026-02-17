@@ -1,4 +1,5 @@
 import DestinationCard from "@/components/Share/cards/DestinationCard";
+import FilterAndSearch from "@/components/Share/FilterAndSearch";
 
 export default async function DestinationsPage({ searchParams }) {
   // searchParams is a built-in Next.js feature to get URL queries
@@ -22,9 +23,7 @@ export default async function DestinationsPage({ searchParams }) {
         <main className="grid grid-cols-1 md:grid-cols-12  gap-3 p-3">
           {/* search & Filter---->> */}
           <aside className="col-span-1 md:col-span-3 lg:col-span-2 bg-amber-100">
-            <h1 className="font-semibold text-2xl p-3 mt-10 ">
-              This is Filter & Search Section
-            </h1>
+            <FilterAndSearch></FilterAndSearch>
           </aside>
           {/* Card Container---->>> */}
           <div className="container mx-auto col-span-1 md:col-span-9 lg:col-span-10">
