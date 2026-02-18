@@ -11,7 +11,6 @@ import {
   Map,
   PieChart,
   Settings2,
-  SquareTerminal,
 } from "lucide-react"
 
 import {
@@ -22,141 +21,68 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { NavMain } from "./NavMain"
-import { NavProjects } from "./NavProjects"
 import { NavUser } from "./NavUser"
 import { TeamSwitcher } from "./TeamSwitcher"
+import { MdDashboard } from "react-icons/md"
+import { useAuth } from "@/hooks/useAuth"
 
-// This is sample data.
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "/dashboard/history",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-};
+
 
 export function AppSidebar({ ...props }) {
+
+
+  const { user } = useAuth();
+  if (!user) return null;
+
+console.log(user);
+
+
+  // This is sample data.
+  const data = {
+    user: {
+      name: user?.name,
+      email: user?.email,
+      avatar: user?.image
+        ? user?.image
+        : "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+    },
+    navMain: [
+      {
+        title: "Dashboard",
+        url: "/dashboard",
+        icon: MdDashboard,
+        isActive: true,
+        items: [
+          {
+            title: "My profile",
+            url: "/dashboard/my-profile",
+          },
+          {
+            title: "My Trips",
+            url: "/dashboard/my-trips",
+          },
+          {
+            title: "Wishlist",
+            url: "/dashboard/wishlist",
+          },
+        ],
+      },
+
+      {
+        title: "Settings",
+        url: "/dashboard/settings",
+        icon: Settings2,
+        items: [
+          {
+            title: "General",
+            url: "/dashboard/settings/general",
+          },
+        ],
+      },
+    ],
+  };
+
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -164,12 +90,12 @@ export function AppSidebar({ ...props }) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+       
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
