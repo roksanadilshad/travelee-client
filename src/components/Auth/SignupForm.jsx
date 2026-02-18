@@ -1,25 +1,102 @@
-"use client"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-  import { useState } from "react";
-  import { Eye, EyeOff } from "lucide-react";
+"use client";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useForm } from "react-hook-form";
+import { signIn } from "next-auth/react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useSearchParams } from "next/navigation";
 
-export function SignupForm({
-  className,
-  ...props
-}) {
-  const [showPassword, setShowPassword] = useState('');
+export function SignupForm({ className, ...props }) {
+  const [showPassword, setShowPassword] = useState("");
+  // const [loading, setLoading] = useState(false);
+  const params = useSearchParams();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  // compatible password validation
+  const passwordValidation = {
+    required: "Password is required",
+    minLength: { value: 6, message: "Password must be at least 6 characters!" },
+    validate: {
+      hasUpper: (v) =>
+        /[A-Z]/.test(v ?? "") || "Must include at least 1 uppercase letter!",
+      hasLow: (v) =>
+        /[a-z]/.test(v ?? "") || "Must include at least 1 lowercase letter!",
+      hasNum: (v) => /\d/.test(v ?? "") || "Must include at least 1 number!",
+    },
+  };
+
+  const handleUserRegister = async (data) => {
+    // setLoading(true);
+
+    // console.log(data);
+
+    try {
+      const userData = {
+        fullName: data.fullName,
+        email: data.email,
+        password: data.password,
+        provider: "Credential",
+        image: null,
+      };
+
+      await axios
+        .post("http://localhost:500/user", userData)
+        .then(() => {
+          toast.success("Registration Successful!");
+          // setLoading(false);
+        })
+        .catch((err) => toast.error(err));
+
+      // User direct login
+      await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: true,
+        callbackUrl: params.get("callbackUrl") || "/",
+      });
+     
+    } catch (err) {
+      // setLoading(false);
+      toast.error(err);
+    }
+  };
+
+    const handleGoogleSignUp = async () => {
+      const result = await signIn("google", {
+        redirect: false,
+        callbackUrl: params.get("callbackUrl") || "/",
+      });
+
+      if (result?.ok) {
+        toast.success("Login successful");
+      }
+      if (result?.error) {
+        toast.error("Something went wrong!");
+      }
+    };
 
   return (
-    <form className={cn("flex flex-col gap-6", className)} {...props}>
+    <form
+      onSubmit={handleSubmit(handleUserRegister)}
+      className={cn("flex flex-col gap-6", className)}
+      {...props}
+    >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Create your account</h1>
@@ -29,7 +106,17 @@ export function SignupForm({
         </div>
         <Field>
           <FieldLabel htmlFor="name">Full Name</FieldLabel>
-          <Input id="name" type="text" placeholder="Ratul hasan" required />
+          <Input
+            {...register("fullName", { required: true })}
+            id="name"
+            type="text"
+            placeholder="Ratul hasan"
+          />
+          {errors.fullName && (
+            <p className="text-red-500 text-sm font-medium">
+              Full name is required
+            </p>
+          )}
         </Field>
         {/* <Field>
           <FieldLabel htmlFor="name">User Name</FieldLabel>
@@ -37,17 +124,27 @@ export function SignupForm({
         </Field> */}
         <Field>
           <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input id="email" type="email" placeholder="m@example.com" required />
+          <Input
+            {...register("email", { required: true })}
+            id="email"
+            type="email"
+            placeholder="m@example.com"
+          />
+          {errors.email && (
+            <p className="text-red-500 text-sm font-medium">
+              Email is required
+            </p>
+          )}
         </Field>
         <Field>
-          <FieldLabel htmlFor="password">Password</FieldLabel>
+          <FieldLabel htmlFor="password">Create Password</FieldLabel>
 
           <div className="relative">
             <Input
               placeholder="********"
+              {...register("password", passwordValidation)}
               id="password"
               type={showPassword ? "text" : "password"}
-              required
               className="pr-10"
             />
 
@@ -59,10 +156,15 @@ export function SignupForm({
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-
-          <FieldDescription>
-            Must be at least 8 characters long.
-          </FieldDescription>
+          {errors.password ? (
+            <p className="text-red-500 text-sm font-medium">
+              {errors.password.message}
+            </p>
+          ) : (
+            <FieldDescription>
+              Must be at least 6 characters long.
+            </FieldDescription>
+          )}
         </Field>
 
         {/* <Field>
@@ -71,7 +173,7 @@ export function SignupForm({
           <FieldDescription>Please confirm your password.</FieldDescription>
         </Field> */}
         <Field>
-          <Button className="cursor-pointer" type="submit">
+          <Button type="submit" className="cursor-pointer">
             Create Account
           </Button>
         </Field>
@@ -80,6 +182,7 @@ export function SignupForm({
           <Button
             className="cursor-pointer hover:bg-muted-foreground flex items-center gap-2"
             variant="outline"
+            onClick={handleGoogleSignUp}
             type="button"
           >
             <svg
