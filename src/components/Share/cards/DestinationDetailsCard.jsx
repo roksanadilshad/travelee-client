@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { Clock3, MapPin, Globe, Tag, ThermometerSun, Star } from "lucide-react";
 
 const DestinationDetailsCard = ({ destination }) => {
+  console.log(destination);
+  
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
       {/* Cover Image */}
