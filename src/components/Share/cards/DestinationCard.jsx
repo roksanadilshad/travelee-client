@@ -8,6 +8,8 @@ import { Clock3, MapPin, Globe, Tag, ThermometerSun, Star } from "lucide-react";
 import { BiDollar } from "react-icons/bi";
 
 const DestinationCard = ({ destination }) => {
+  //console.log(destination);
+  
   return (
     <motion.div
       className="bg-white rounded-xl shadow-md hover:shadow-xl overflow-hidden transform hover:-translate-y-1 transition-all duration-300"

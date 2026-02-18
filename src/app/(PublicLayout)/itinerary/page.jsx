@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { addDay, addActivity, setTripDetails } from '@/lib/redux/itinerarySlice';
 import { FaPlus, FaCalendarAlt, FaClock, FaMapMarkerAlt, FaTrash, FaCheckCircle } from 'react-icons/fa';
 import ActivityModal from '@/components/Itinerary/ActivityModal';
+import Swal from 'sweetalert2';
 
 export default function ProfessionalItinerary() {
   const dispatch = useDispatch();
@@ -25,13 +26,17 @@ export default function ProfessionalItinerary() {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(trip), // Sending the Redux state
+      body: JSON.stringify(trip), 
     });
 
     const result = await response.json();
 
     if (response.ok) {
-      alert("🚀 Trip saved successfully to your cloud account!");
+Swal.fire({
+  title: "Trip plan save successfully",
+  icon: "success",
+  draggable: true
+});
       console.log("Saved ID:", result.insertedId);
     } else {
       alert("Failed to save: " + result.message);
@@ -44,7 +49,7 @@ export default function ProfessionalItinerary() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
-      {/* 1. TOP NAV / HEADER */}
+      {/* { HEADER } */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-30 px-8 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-4">
@@ -119,7 +124,7 @@ export default function ProfessionalItinerary() {
 
                 {trip.days[selectedDayIdx].activities.length === 0 ? (
                     <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
-                        <p className="text-gray-400 italic">No activities yet. Click "Add Activity" to start.</p>
+                        <p className="text-gray-400 italic">No activities yet. Click <span className='text-gray-700'>Add Activity</span> to start.</p>
                     </div>
                 ) : (
                     trip.days[selectedDayIdx].activities.map((act, i) => (
