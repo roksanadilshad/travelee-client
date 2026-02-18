@@ -18,21 +18,21 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
-
-//( Role ) => don't delete any routes
-const navLinks = [
-  { name: "Home", href: "/" },
-  { name: "Destinations", href: "/destinations" },
-...(user?.email
+  
+  //( Role ) => don't delete any routes
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "Destinations", href: "/destinations" },
+    ...(user?.email
+      ? [{ name: "Dashboard", href: "/dashboard/my-profile" }]
+      : []),
+    ...(user?.email
       ? [{ name: "Itinerary", href: "/itinerary" }]
       : []),
-  { name: "Bookings", href: "/bookings" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
-];
-  console.log(user);
-  
-
+    { name: "Bookings", href: "/bookings" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+  ];
 
   const isActive = (href) => {
     if (href === "/") {
@@ -40,7 +40,6 @@ const navLinks = [
     }
     return pathname.startsWith(href);
   };
-
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur-md shadow-sm">

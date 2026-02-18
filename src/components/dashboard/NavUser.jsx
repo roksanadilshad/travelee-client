@@ -29,11 +29,23 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useAuth } from "@/hooks/useAuth"
+import { useRouter } from "next/navigation"
+import { Button } from "../ui/button"
 
 export function NavUser({
   user,
 }) {
   const { isMobile } = useSidebar()
+
+  const { logout } = useAuth();
+  const router = useRouter();
+
+    const handleSubmit = () => {
+      logout();
+      toast.success("LogOut successfull.");
+      router.replace("/");
+    };
 
   return (
     <SidebarMenu>
@@ -73,13 +85,7 @@ export function NavUser({
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
@@ -90,19 +96,20 @@ export function NavUser({
                 <CreditCard />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell />
-                Notifications
-              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
+            <DropdownMenuItem className="hover:bg-white">
+              <Button
+                className="w-full hover:bg-transparent bg-red-600 cursor-pointer"
+                onClick={handleSubmit}
+              >
+                <LogOut className="text-white" />
+                Log out
+              </Button>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

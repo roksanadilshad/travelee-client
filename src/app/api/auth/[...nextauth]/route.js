@@ -60,6 +60,7 @@ export const authOptions = {
             id: user._id.toString(),
             name: user.fullName,
             email: user.email,
+            image: user.image || null,
           };
         } catch (err) {
           console.error("Login Error:", err);
