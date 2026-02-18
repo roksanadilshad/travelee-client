@@ -4,6 +4,7 @@ import Navbar from "@/components/Share/Navbar";
 
 
 import React from "react";
+import { ToastContainer } from "react-toastify";
 
 
 export default function PublicLayout({
@@ -12,10 +13,11 @@ export default function PublicLayout({
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-
-      
       <main className="flex-1">{children}</main>
       <Footer />
+
+      {/* Toastify  */}
+      <ToastContainer />
     </div>
   );
 }
