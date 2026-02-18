@@ -13,19 +13,22 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "react-toastify";
 
 
-//( Role ) => don't delete any routes
-const navLinks = [
-  { name: "Home", href: "/" },
-  { name: "Destinations", href: "/destinations" },
-  { name: "Bookings", href: "/bookings" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
-];
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
+//( Role ) => don't delete any routes
+const navLinks = [
+  { name: "Home", href: "/" },
+  { name: "Destinations", href: "/destinations" },
+  ...(user?.email
+      ? [{ name: "Itinerary", href: "/itinerary" }]
+      : []),
+  { name: "Bookings", href: "/bookings" },
+  { name: "About", href: "/about" },
+  { name: "Contact", href: "/contact" },
+];
 
   console.log(user);
   
