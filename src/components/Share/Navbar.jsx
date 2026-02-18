@@ -18,30 +18,6 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
-//( Role ) => don't delete any routes
-const navLinks = [
-  { name: "Home", href: "/" },
-  { name: "Destinations", href: "/destinations" },
-  ...(user?.email
-      ? [{ name: "Itinerary", href: "/itinerary" }]
-      : []),
-  { name: "Bookings", href: "/bookings" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
-];
-
-//( Role ) => don't delete any routes
-const navLinks = [
-  { name: "Home", href: "/" },
-  { name: "Destinations", href: "/destinations" },
-...(user?.email
-      ? [{ name: "Itinerary", href: "/itinerary" }]
-      : []),
-  { name: "Bookings", href: "/bookings" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
-];
-  console.log(user);
   
   //( Role ) => don't delete any routes
   const navLinks = [
@@ -49,6 +25,9 @@ const navLinks = [
     { name: "Destinations", href: "/destinations" },
     ...(user?.email
       ? [{ name: "Dashboard", href: "/dashboard/my-profile" }]
+      : []),
+    ...(user?.email
+      ? [{ name: "Itinerary", href: "/itinerary" }]
       : []),
     { name: "Bookings", href: "/bookings" },
     { name: "About", href: "/about" },
