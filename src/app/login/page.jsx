@@ -1,6 +1,5 @@
 import { LoginForm } from "@/components/Auth/LogInForm";
 import Logo from "@/components/Share/Logo";
-import { GalleryVerticalEnd } from "lucide-react";
 import Link from "next/link";
 import { IoPlayBackOutline } from "react-icons/io5";
 
@@ -8,7 +7,7 @@ import { IoPlayBackOutline } from "react-icons/io5";
 
 export default function LoginPage() {
   return (
-    <div className="grid min-h-svh lg:grid-cols-2">
+    <div className="grid min-h-svh lg:grid-cols-2 mx-auto container">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <Logo></Logo>

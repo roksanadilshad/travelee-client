@@ -8,6 +8,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Logo from "./Logo";
+import LogInButton from "../Auth/LogInButton";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "react-toastify";
 
 
 //( Role ) => don't delete any routes
@@ -22,6 +25,11 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const { user, logout } = useAuth();
+
+  console.log(user);
+  
+
 
   const isActive = (href) => {
     if (href === "/") {
@@ -29,6 +37,7 @@ export default function Navbar() {
     }
     return pathname.startsWith(href);
   };
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur-md shadow-sm">
@@ -60,18 +69,30 @@ export default function Navbar() {
 
         {/* Desktop Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <Link
-            href="/login"
-            className="px-4 py-2 text-white text-sm font-medium bg-primary hover:bg-primary/90 rounded-lg transition-colors duration-200"
-          >
-            Sign In
-          </Link>
-          <Button
-            asChild
-            className="bg-gradient-to-r from-accent to-orange-600 hover:from-accent/90 hover:to-orange-600/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
-          >
-            <Link href="/register">Sign Up</Link>
-          </Button>
+          {user ? (
+            <>
+              <h1>{user?.name}</h1>
+              <Button
+                className="cursor-pointer"
+                onClick={() => {
+                  logout();
+                  toast.success("LogOut successfull.");
+                }}
+              >
+                Logout
+              </Button>
+            </>
+          ) : (
+            <>
+              <LogInButton></LogInButton>
+              <Button
+                asChild
+                className="bg-gradient-to-r from-accent to-orange-600 hover:from-accent/90 hover:to-orange-600/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+              >
+                <Link href="/register">Sign Up</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu */}
@@ -115,20 +136,31 @@ export default function Navbar() {
 
                 {/* Mobile Buttons */}
                 <div className="mt-4 border-t border-border/50 pt-6 flex flex-col gap-3">
-                  <Link
-                    href="/login"
-                    onClick={() => setIsOpen(false)}
-                    className="px-4 py-2 text-center text-sm font-medium bg-primary hover:bg-primary/90 text-white rounded-lg transition-colors duration-200"
-                  >
-                    Sign In
-                  </Link>
-                  <Button
-                    asChild
-                    className="w-full bg-gradient-to-r from-accent to-orange-600 hover:from-accent/90 hover:to-orange-600/90 text-white font-semibold"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <Link href="/register">Sign Up</Link>
-                  </Button>
+                  {user ? (
+                    <>
+                      <h1>{user?.name}</h1>
+                      <Button
+                        className="cursor-pointer"
+                        onClick={() => {
+                          logout();
+                          toast.success("LogOut successfull.");
+                        }}
+                      >
+                        Logout
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <LogInButton></LogInButton>
+                      <Button
+                        asChild
+                        className="w-full bg-gradient-to-r from-accent to-orange-600 hover:from-accent/90 hover:to-orange-600/90 text-white font-semibold"
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <Link href="/register">Sign Up</Link>
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </SheetContent>
