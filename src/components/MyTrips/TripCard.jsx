@@ -11,9 +11,11 @@ import {
 } from "lucide-react";
 import Badge from "./Badge";
 import { cardVariants } from "./tripVariants";
+import { useRouter } from "next/navigation";
 
-export default function TripCard({ trip, onDelete }) {
+export default function TripCard({ trip, onDelete,onAddReview }) {
   const [deleting, setDeleting] = useState(false);
+  const router = useRouter();
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this trip?")) return;
@@ -95,24 +97,37 @@ export default function TripCard({ trip, onDelete }) {
 
         {/* Footer */}
         <div className="flex justify-between items-center mt-auto pt-3 border-t border-gray-100">
+          
           <Badge color="blue">
             <Activity className="w-3 h-3" />
             {trip.activities?.length || 0} Activities
           </Badge>
 
-          <motion.button
-            whileTap={{ scale: 0.92 }}
-            onClick={handleDelete}
-            disabled={deleting}
-            className="flex items-center gap-1.5 text-sm font-semibold px-4 py-1.5 rounded-xl text-white bg-[#FF9013] hover:bg-[#e07d0a] transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm hover:shadow"
-          >
-            {deleting ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Trash2 className="w-4 h-4" />
-            )}
-            {deleting ? "Deleting…" : "Delete"}
-          </motion.button>
+        <div className="flex gap-2">
+    {/* Complete Button */}
+    <motion.button
+      whileTap={{ scale: 0.92 }}
+      onClick={() => router.push(`/dashboard/my-trips/Review?tripId=${trip._id}`)}
+      className="flex items-center gap-1.5 text-sm font-semibold px-4 py-1.5 rounded-xl text-white bg-emerald-500 hover:bg-emerald-600 transition-colors duration-200 shadow-sm hover:shadow"
+    >
+      Review
+    </motion.button>
+
+    {/* Delete Button */}
+    <motion.button
+      whileTap={{ scale: 0.92 }}
+      onClick={handleDelete}
+      disabled={deleting}
+      className="flex items-center gap-1.5 text-sm font-semibold px-4 py-1.5 rounded-xl text-white bg-[#FF9013] hover:bg-[#e07d0a] transition-colors duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-sm hover:shadow"
+    >
+      {deleting ? (
+        <Loader2 className="w-4 h-4 animate-spin" />
+      ) : (
+        <Trash2 className="w-4 h-4" />
+      )}
+      {deleting ? "Deleting…" : "Delete"}
+    </motion.button>
+  </div>
         </div>
       </div>
     </motion.div>
