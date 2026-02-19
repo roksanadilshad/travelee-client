@@ -18,6 +18,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
+
   
   //( Role ) => don't delete any routes
   const navLinks = [
