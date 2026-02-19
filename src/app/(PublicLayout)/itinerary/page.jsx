@@ -47,6 +47,21 @@ Swal.fire({
   }
 };
 
+const handleDelete = async (id) => {
+  const res = await fetch(
+    `http://localhost:500/itineraries/${id}`,
+    { method: "DELETE" }
+  );
+
+  const data = await res.json();
+
+  if (data.success) {
+    alert("Deleted successfully");
+    // refresh UI
+  }
+};
+
+
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
       {/* { HEADER } */}
@@ -140,7 +155,7 @@ Swal.fire({
                                 </div>
                                 <div className="text-right">
                                     <p className="text-lg font-black text-green-600">${act.cost}</p>
-                                    <button className="text-red-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 mt-2">
+                                    <button onClick={handleDelete} className="text-red-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 mt-2">
                                         <FaTrash size={14} />
                                     </button>
                                 </div>
