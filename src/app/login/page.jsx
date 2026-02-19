@@ -1,8 +1,7 @@
-
 import { LoginForm } from "@/components/Auth/LogInForm";
 import Logo from "@/components/Share/Logo";
 import Link from "next/link";
-import { Suspense } from "react"; // 1. Import Suspense
+import { Suspense } from "react";
 import { IoPlayBackOutline } from "react-icons/io5";
 
 export default function LoginPage() {
@@ -10,7 +9,7 @@ export default function LoginPage() {
     <div className="grid min-h-svh lg:grid-cols-2 mx-auto container">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
-          <Logo></Logo>
+          <Logo />
           <Link
             className="px-4 items-center gap-2 flex py-2 text-white text-sm font-medium bg-primary hover:bg-primary/90 rounded-lg transition-colors duration-200"
             href="/"
@@ -21,8 +20,8 @@ export default function LoginPage() {
         </div>
         <div className="flex flex-1 mt-5 items-center justify-center">
           <div className="w-full max-w-xs">
-            {/* 2. Wrap LoginForm in Suspense */}
-            <Suspense fallback={<div className="text-center">Loading form...</div>}>
+            {/* The Suspense boundary below is the fix for the build error */}
+            <Suspense fallback={<div className="text-center py-4">Loading form...</div>}>
               <LoginForm />
             </Suspense>
           </div>
