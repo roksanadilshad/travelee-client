@@ -1,9 +1,8 @@
 import { LoginForm } from "@/components/Auth/LogInForm";
 import Logo from "@/components/Share/Logo";
 import Link from "next/link";
+import { Suspense } from "react"; // 1. Import Suspense
 import { IoPlayBackOutline } from "react-icons/io5";
-
-
 
 export default function LoginPage() {
   return (
@@ -21,7 +20,10 @@ export default function LoginPage() {
         </div>
         <div className="flex flex-1 mt-5 items-center justify-center">
           <div className="w-full max-w-xs">
-            <LoginForm />
+            {/* 2. Wrap LoginForm in Suspense */}
+            <Suspense fallback={<div className="text-center">Loading form...</div>}>
+              <LoginForm />
+            </Suspense>
           </div>
         </div>
       </div>
