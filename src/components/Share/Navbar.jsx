@@ -19,7 +19,6 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
 
-  console.log(user);
   
   //( Role ) => don't delete any routes
   const navLinks = [
