@@ -27,6 +27,9 @@ export default function Navbar() {
     ...(user?.email
       ? [{ name: "Dashboard", href: "/dashboard/my-profile" }]
       : []),
+    ...(user?.email
+      ? [{ name: "Itinerary", href: "/itinerary" }]
+      : []),
     { name: "Bookings", href: "/bookings" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
