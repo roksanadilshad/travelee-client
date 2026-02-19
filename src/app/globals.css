@@ -48,21 +48,21 @@
 
 :root {
   --radius: 0.625rem;
-  
+
   /* Background: Clean Off-white Travel Theme */
   --background: oklch(0.98 0.005 240);
   --foreground: oklch(0.15 0.05 260); /* Deep Text */
 
   /* Primary: Travelee Deep Blue (#0680C9) - Main Brand */
-  --primary: oklch(0.58 0.18 245); 
+  --primary: oklch(0.58 0.18 245);
   --primary-foreground: oklch(1 0 0);
 
   /* Secondary: Travelee Light Blue (#0581CB) - Accents & Headers */
-  --secondary: oklch(0.60 0.17 243); 
+  --secondary: oklch(0.6 0.17 243);
   --secondary-foreground: oklch(1 0 0);
 
   /* Accent: Travelee Orange (#E86201) - CTA / Booking Buttons */
-  --accent: oklch(0.64 0.24 32); 
+  --accent: oklch(0.64 0.24 32);
   --accent-foreground: oklch(1 0 0);
 
   --muted: oklch(0.94 0.01 240);
@@ -74,18 +74,18 @@
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.15 0.05 260);
 
-  --border: oklch(0.90 0.01 240);
-  --input: oklch(0.90 0.01 240);
+  --border: oklch(0.9 0.01 240);
+  --input: oklch(0.9 0.01 240);
   --ring: oklch(0.58 0.18 245); /* Travelee Blue Ring */
 
   --destructive: oklch(0.577 0.245 27.325);
-  
+
   /* Charts/Data Colors - Travelee Palette */
   --chart-1: oklch(0.58 0.18 245); /* Deep Blue */
-  --chart-2: oklch(0.64 0.24 32);  /* Orange */
-  --chart-3: oklch(0.60 0.17 243); /* Light Blue */
+  --chart-2: oklch(0.64 0.24 32); /* Orange */
+  --chart-3: oklch(0.6 0.17 243); /* Light Blue */
   --chart-4: oklch(0.75 0.15 200); /* Cyan */
-  --chart-5: oklch(0.85 0.10 80);  /* Gold */
+  --chart-5: oklch(0.85 0.1 80); /* Gold */
 
   --sidebar: oklch(0.98 0.01 240);
   --sidebar-foreground: oklch(0.15 0.05 260);
@@ -93,7 +93,7 @@
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.94 0.02 240);
   --sidebar-accent-foreground: oklch(0.15 0.05 260);
-  --sidebar-border: oklch(0.90 0.01 240);
+  --sidebar-border: oklch(0.9 0.01 240);
   --sidebar-ring: oklch(0.58 0.18 245);
 }
 
@@ -101,22 +101,22 @@
   /* Dark Mode adaptation */
   --background: oklch(0.12 0.03 260);
   --foreground: oklch(0.98 0.01 240);
-  
+
   --card: oklch(0.15 0.03 260);
   --card-foreground: oklch(0.98 0.01 240);
-  
+
   --primary: oklch(0.58 0.18 245);
   --primary-foreground: oklch(1 0 0);
-  
-  --secondary: oklch(0.60 0.17 243);
+
+  --secondary: oklch(0.6 0.17 243);
   --secondary-foreground: oklch(1 0 0);
-  
+
   --accent: oklch(0.64 0.24 32);
   --accent-foreground: oklch(1 0 0);
-  
+
   --muted: oklch(0.22 0.03 260);
   --muted-foreground: oklch(0.75 0.02 240);
-  
+
   --border: oklch(0.22 0.03 260);
   --input: oklch(0.22 0.03 260);
   --ring: oklch(0.58 0.18 245);
