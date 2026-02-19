@@ -1,8 +1,27 @@
-import React from "react";
+"use client";
+
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import { FaSearch, FaStar } from "react-icons/fa";
 import { MdOutlineCalendarToday } from "react-icons/md";
 
 const FilterAndSearch = () => {
+    const [searchTerm, setSearchTerm] = useState('')
+    const router = useRouter();
+
+    const handleSearch = (e) => {
+        e.preventDefault()
+        if (searchTerm.trim()) {
+
+            router.push(`destinations?city=${searchTerm}`)
+        }
+    }
+
+    const handleClear = () => {
+        setSearchTerm("");
+        router.replace("/destinations");
+    };
+
     return (
         <div className="sticky top-6">
             <div className="w-full bg-white/80 backdrop-blur rounded-lg shadow-lg p-6 space-y-6 border">
@@ -26,6 +45,8 @@ const FilterAndSearch = () => {
                     <div className="relative">
                         <input
                             type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="City, country..."
                             className="w-full rounded-full border px-5 py-3 pr-12 outline-none focus:ring-2 focus:ring-orange-400"
                         />
@@ -112,10 +133,14 @@ const FilterAndSearch = () => {
 
                 {/* Action Buttons */}
                 <div className="flex gap-3 pt-2">
-                    <button className="flex-1 rounded-full bg-orange-500 py-3 font-semibold text-white hover:bg-orange-600 transition">
+                    <button
+                        onClick={handleSearch}
+                        className="flex-1 rounded-full bg-orange-500 py-3 font-semibold text-white hover:bg-orange-600 transition">
                         Apply
                     </button>
-                    <button className="flex-1 rounded-full border py-3 font-medium text-gray-600 hover:bg-gray-100 transition">
+                    <button
+                        onClick={handleClear}
+                        className="flex-1 rounded-full border py-3 font-medium text-gray-600 hover:bg-gray-100 transition">
                         Clear
                     </button>
                 </div>
