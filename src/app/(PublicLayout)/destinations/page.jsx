@@ -5,8 +5,9 @@ import FilterAndSearch from "@/components/Share/FilterAndSearch";
 // searchParams
 export default async function DestinationsPage({ searchParams }) {
   // query params
-  const city = (await searchParams).city || "";
-  const page = parseInt((await searchParams).page) || 1;
+  const params = await searchParams
+   const city =params?.city || "";
+  const page = parseInt(params?.page) || 1;
   const limit = 9;
 
   // Fetching
@@ -16,8 +17,14 @@ export default async function DestinationsPage({ searchParams }) {
       cache: "no-store",
     },
   );
-
-  const { data: destinations, totalPages } = await res.json();
+   if (!res.ok) {
+    throw new Error("Failed to fetch destinations");
+  }
+  const json = await res.json();
+  const destinations = json.data || []
+  const totalPages = json?.totalPages || 1;
+  //console.log(destinations);
+  
   return (
     <div className="w-11/12 mx-auto">
       {/* Title---->>> */}
