@@ -32,9 +32,8 @@ export function AppSidebar({ ...props }) {
 
 
   const { user } = useAuth();
-  if (!user) return null;
+  // if (!user) return null;
 
-console.log(user);
 
 
   // This is sample data.
