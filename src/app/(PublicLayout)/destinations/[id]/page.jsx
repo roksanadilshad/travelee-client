@@ -1,4 +1,7 @@
 import DestinationDetailsCard from "@/components/Share/cards/DestinationDetailsCard";
+
+import RelatedDestinationSlider from "@/components/Share/RelatedDestinationSlider";
+
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -10,6 +13,13 @@ const DestinationDetailsPage = async ({ params }) => {
     cache: "no-store",
   });
   const destination = await res.json();
+
+  // fetch related destinations
+  const relatedRes = await fetch(
+    `http://localhost:500/destinations/${id}/related`,
+    { cache: "no-store" },
+  );
+  const relatedDestinations = await relatedRes.json();
 
   if (!destination || destination.error) {
     return (
@@ -37,7 +47,23 @@ const DestinationDetailsPage = async ({ params }) => {
         </Link>
       </span>
 
+      {/* Related Destinations */}
 
+      {relatedDestinations && relatedDestinations.length > 0 && (
+        <div className="w-11/12 mx-auto">
+          <div className="mt-12 bg-white shadow-lg rounded-xl ">
+            <div className="my-12">
+              <h2 className="text-3xl pt-8 font-semibold mb-6 text-center">
+                Related Destinations
+              </h2>
+
+              <div className="px-4 py-8">
+                <RelatedDestinationSlider destinations={relatedDestinations} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
