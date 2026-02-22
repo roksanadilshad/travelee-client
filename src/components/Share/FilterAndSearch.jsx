@@ -3,22 +3,36 @@
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { FaSearch, FaStar } from "react-icons/fa";
-import { MdOutlineCalendarToday } from "react-icons/md";
 
 const FilterAndSearch = () => {
-    const [searchTerm, setSearchTerm] = useState('')
     const router = useRouter();
 
-    const handleSearch = (e) => {
-        e.preventDefault()
-        if (searchTerm.trim()) {
+    const [keyword, setKeyword] = useState("");
+    const [duration, setDuration] = useState("Any");
+    const [month, setMonth] = useState("Any");
+    const [budget, setBudget] = useState("");
+    const [rating, setRating] = useState(0);
 
-            router.push(`destinations?city=${searchTerm}`)
-        }
-    }
+
+    const handleSearch = () => {
+        const params = new URLSearchParams();
+
+        if (keyword) params.append("city", keyword);
+        if (duration !== "Any") params.append("duration", duration);
+        if (month !== "Any") params.append("month", month);
+        if (budget) params.append("budget", budget);
+        if (rating) params.append("rating", rating);
+
+        router.push(`/destinations?${params.toString()}`);
+    };
+
 
     const handleClear = () => {
-        setSearchTerm("");
+        setKeyword("");
+        setDuration("Any");
+        setMonth("Any");
+        setBudget("");
+        setRating(0);
         router.replace("/destinations");
     };
 
@@ -34,7 +48,6 @@ const FilterAndSearch = () => {
                     </p>
                 </div>
 
-                {/* Divider */}
                 <div className="h-px bg-gray-200" />
 
                 {/* Keywords */}
@@ -44,9 +57,9 @@ const FilterAndSearch = () => {
                     </label>
                     <div className="relative">
                         <input
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
                             type="text"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="City, country..."
                             className="w-full rounded-full border px-5 py-3 pr-12 outline-none focus:ring-2 focus:ring-orange-400"
                         />
@@ -59,59 +72,62 @@ const FilterAndSearch = () => {
                     <label className="block text-sm font-medium mb-2">
                         Duration
                     </label>
-                    <select className="w-full rounded-full border px-5 py-3">
-                        <option>Any</option>
-                        <option>1-3 Days</option>
-                        <option>4-7 Days</option>
-                        <option>7+ Days</option>
+                    <select
+                        value={duration}
+                        onChange={(e) => setDuration(e.target.value)}
+                        className="w-full rounded-full border px-5 py-3"
+                    >
+                        <option value="Any">Any</option>
+                        <option value="1-3 days">1-3 Days</option>
+                        <option value="4-7 days">4-7 Days</option>
+                        <option value="7+ days">7+ Days</option>
                     </select>
-                </div>
-
-                {/* Date */}
-                <div>
-                    <label className="block text-sm font-medium mb-2">
-                        Date
-                    </label>
-                    <div className="relative">
-                        <input
-                            type="date"
-                            className="w-full rounded-full border px-5 py-3 pl-12"
-                        />
-                        <MdOutlineCalendarToday className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                    </div>
                 </div>
 
                 {/* Month */}
                 <div>
                     <label className="block text-sm font-medium mb-2">
-                        Month
+                        Month <span className="text-xs text-gray-500 mt-1">(Best Time to Visit)</span>
                     </label>
-                    <select className="w-full rounded-full border px-5 py-3">
-                        <option>Any</option>
-                        <option>January</option>
-                        <option>February</option>
-                        <option>March</option>
-                        <option>April</option>
+                    <select
+                        value={month}
+                        onChange={(e) => setMonth(e.target.value)}
+                        className="w-full rounded-full border px-5 py-3"
+                    >
+                        <option value="Any">Any</option>
+                        <option value="january">January</option>
+                        <option value="february">February</option>
+                        <option value="march">March</option>
+                        <option value="april">April</option>
+                        <option value="may">May</option>
+                        <option value="june">June</option>
+                        <option value="july">July</option>
+                        <option value="august">August</option>
+                        <option value="september">September</option>
+                        <option value="october">October</option>
+                        <option value="november">November</option>
+                        <option value="december">December</option>
                     </select>
                 </div>
 
                 {/* Price */}
                 <div>
                     <label className="block text-sm font-medium mb-2">
-                        Budget Range
+                        Your Budget (per person)
                     </label>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="relative">
                         <input
+                            value={budget}
+                            onChange={(e) => setBudget(e.target.value)}
                             type="number"
-                            placeholder="Min $"
-                            className="w-full rounded-full border px-4 py-3"
+                            placeholder="e.g. 1500"
+                            className="w-full rounded-full border px-5 py-3 pl-10 outline-none focus:ring-2 focus:ring-orange-400"
                         />
-                        <input
-                            type="number"
-                            placeholder="Max $"
-                            className="w-full rounded-full border px-4 py-3"
-                        />
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">$</span>
                     </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                        We will show destinations where your budget fits the range
+                    </p>
                 </div>
 
                 {/* Rating */}
@@ -119,15 +135,15 @@ const FilterAndSearch = () => {
                     <label className="block text-sm font-medium mb-2">
                         Minimum Rating
                     </label>
-                    <div className="flex items-center gap-1 text-orange-400 text-lg">
-                        <FaStar />
-                        <FaStar />
-                        <FaStar />
-                        <FaStar />
-                        <FaStar className="text-gray-300" />
-                        <span className="text-sm text-gray-500 ml-2">
-                            & up
-                        </span>
+                    <div className="flex items-center gap-1 text-lg">
+                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(star => (
+                            <FaStar
+                                key={star}
+                                onClick={() => setRating(star)}
+                                className={`cursor-pointer transition ${star <= rating ? "text-orange-400" : "text-gray-300"
+                                    }`}
+                            />
+                        ))}
                     </div>
                 </div>
 
@@ -135,18 +151,21 @@ const FilterAndSearch = () => {
                 <div className="flex gap-3 pt-2">
                     <button
                         onClick={handleSearch}
-                        className="flex-1 rounded-full bg-orange-500 py-3 font-semibold text-white hover:bg-orange-600 transition">
+                        className="flex-1 rounded-full bg-orange-500 py-3 font-semibold text-white hover:bg-orange-600 transition"
+                    >
                         Apply
                     </button>
                     <button
                         onClick={handleClear}
-                        className="flex-1 rounded-full border py-3 font-medium text-gray-600 hover:bg-gray-100 transition">
+                        className="flex-1 rounded-full border py-3 font-medium text-gray-600 hover:bg-gray-100 transition"
+                    >
                         Clear
                     </button>
                 </div>
 
             </div>
         </div>
+
     );
 };
 
