@@ -38,7 +38,7 @@ export default async function DestinationsPage({ searchParams }) {
         <main className="grid grid-cols-1 md:grid-cols-12  gap-3 p-3">
           
           {/* search & Filter---->> */}
-          <aside className="col-span-1 md:col-span-3 lg:col-span-2 bg-amber-100">
+          <aside className="col-span-1 md:col-span-3 lg:col-span-2 ">
             <FilterAndSearch></FilterAndSearch>
           </aside>
           {/* Card Container---->>> */}
