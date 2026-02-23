@@ -5,7 +5,7 @@ const itinerarySlice = createSlice({
   initialState: {
     currentTrip: {
       destination: '',
-      startDate: '',
+      // startDate: '',
       days: [] // Structure: [{ id, activities: [{ time, task, cost }] }]
     }
   },
