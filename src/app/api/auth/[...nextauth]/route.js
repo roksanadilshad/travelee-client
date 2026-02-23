@@ -74,56 +74,55 @@ export const authOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
-  callbacks: {
-    async signIn({ user, account, profile }) {
-      try {
-        const userData = {
-          fullName: user.name,
-          email: user.email,
-          provider: account.provider,
-          image: user.image,
-        };
+callbacks: {
+  async signIn({ user, account }) {
+    try {
+     
+      const response = await axios.get(
+        `http://localhost:500/user/email?email=${user.email}`
+      );
 
-        const response = await axios.get(
-          `http://localhost:500/user/email?email=${user?.email}`,
-        );
+      const currentUser = response.data?.data;
 
-        const currentUser = response.data.data;
-
-        // check user already exit
-        if (currentUser.email === user.email) {
-           return true;
-        }
-
-        const res = await axios.post("http://localhost:500/user", userData);
-
-        if (res.data) {
-          return true;
-        }
-
-        return false;
-      } catch (error) {
-        console.error("Error saving user:", error);
-        return false;
+    
+      if (currentUser) {
+        return true;
       }
+
       
-    },
-    // async redirect({ url, baseUrl }) {
-    //   return baseUrl;
-    // },
-    async session({ session, token, user }) {
-      return session;
-    },
-    async jwt({ token, user, account, profile, isNewUser }) {
+      await axios.post("http://localhost:500/user", {
+        fullName: user.name,
+        email: user.email,
+        provider: account.provider, 
+        image: user.image || null,
+      });
 
-      if (user) {
-        token.email = user.email;
-        token.provider = account.provider;
-      }
-      return token;
-    },
+      return true;
+    } catch (error) {
+      console.error(
+        "Error saving user:",
+        error.response?.data || error.message
+      );
+
+     
+      return false;
+    }
   },
 
+  async session({ session, token }) {
+    session.user.email = token.email;
+    session.user.provider = token.provider;
+    return session;
+  },
+
+  async jwt({ token, user, account }) {
+    if (user) {
+      token.email = user.email;
+      token.provider = account.provider;
+    }
+    return token;
+  },
+},
   pages: {
     signIn: "/login",
   },

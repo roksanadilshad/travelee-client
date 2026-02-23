@@ -14,10 +14,26 @@ export default function ProfessionalItinerary() {
 
   const handleSaveTrip = async () => {
   // 1. Check if there is actually data to save
-  if (!trip.destination) {
-    alert("Please enter a destination name first!");
-    return;
-  }
+
+if (!trip.destination) {
+  Swal.fire({
+    icon: 'warning',
+    title: 'Oops!',
+    text: 'Please enter a destination name first!',
+    confirmButtonColor: '#3085d6',
+  });
+  return;
+}
+
+if (trip.days.some(day => day.activities.length === 0)) {
+  Swal.fire({
+    icon: 'warning',
+    title: 'Incomplete Trip',
+    text: 'Each day must have at least one activity!',
+    confirmButtonColor: '#3085d6',
+  });
+  return;
+}
 
   try {
     // 2. API Call to your Node.js server
@@ -37,14 +53,24 @@ Swal.fire({
   icon: "success",
   draggable: true
 });
-      console.log("Saved ID:", result.insertedId);
+      // console.log("Saved ID:", result.insertedId);
     } else {
-      alert("Failed to save: " + result.message);
-    }
+  Swal.fire({
+    icon: 'error',
+    title: 'Failed to Save',
+    text: result.message || 'Something went wrong!',
+    confirmButtonColor: '#d33',
+  });
+}
   } catch (error) {
-    console.error("Connection Error:", error);
-    alert("Cannot connect to server. Is your Node.js backend running?");
-  }
+  // console.error("Connection Error:", error);
+  Swal.fire({
+    icon: 'error',
+    title: 'Connection Error',
+    text: 'Cannot connect to server. Is your Node.js backend running?',
+    confirmButtonColor: '#d33',
+  });
+}
 };
 
 const handleDelete = async (id) => {
@@ -60,6 +86,9 @@ const handleDelete = async (id) => {
     // refresh UI
   }
 };
+
+
+
 
 
   return (

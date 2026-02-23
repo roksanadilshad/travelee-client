@@ -206,7 +206,7 @@ const DestinationDetailsCard = ({ destination }) => {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="mb-8"
             >
-              <h3 className="text-2xl font-bold mb-4">What's Included</h3>
+              <h3 className="text-2xl font-bold mb-4">What s Included</h3>
               <div className="grid grid-cols-2 gap-x-8 gap-y-3">
                 <div className="flex items-start">
                   <Check className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
@@ -420,7 +420,7 @@ const DestinationDetailsCard = ({ destination }) => {
                 </details>
                 <details className="bg-white p-4 rounded-lg border border-gray-200 group">
                   <summary className="font-semibold cursor-pointer flex items-center justify-between">
-                    <span>What's the group size?</span>
+                    <span>Whats the group size?</span>
                     <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
                   </summary>
                   <p className="mt-3 text-gray-600 text-sm">
