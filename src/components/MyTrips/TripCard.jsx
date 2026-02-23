@@ -36,7 +36,7 @@ export default function TripCard({ trip, onDelete,onAddReview }) {
           <>
             <img
               src={trip.image}
-              alt={trip.destination}
+              alt={trip.country}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
             {/* Gradient overlay */}
@@ -55,16 +55,20 @@ export default function TripCard({ trip, onDelete,onAddReview }) {
         <div className="absolute top-3 right-3">
           <Badge color="white">
             <Clock className="w-3 h-3" />
-            {trip.durationDays} Days
+            {trip.duration} Days
           </Badge>
         </div>
 
         {/* Destination overlay (only when image exists) */}
         {trip.image && (
-          <div className="absolute bottom-3 left-4">
+          <div className="absolute bottom-3 flex gap-2 left-4">
             <span className="text-white text-sm font-bold drop-shadow flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5" />
-              {trip.destination}
+              {trip.city}
+            </span>
+            <span className="text-white text-sm font-bold drop-shadow flex items-center gap-1">
+               
+            , {trip.country}
             </span>
           </div>
         )}
@@ -100,14 +104,14 @@ export default function TripCard({ trip, onDelete,onAddReview }) {
           
           <Badge color="blue">
             <Activity className="w-3 h-3" />
-            {trip.activities?.length || 0} Activities
+            {trip.destination_id} 
           </Badge>
 
         <div className="flex gap-2">
     {/* Complete Button */}
     <motion.button
       whileTap={{ scale: 0.92 }}
-      onClick={() => router.push(`/dashboard/my-trips/Review?tripId=${trip._id}`)}
+      onClick={() => router.push(`/dashboard/my-trips/Review?tripId=${trip.destination_id}`)}
       className="flex items-center gap-1.5 text-sm font-semibold px-4 py-1.5 rounded-xl text-white bg-emerald-500 hover:bg-emerald-600 transition-colors duration-200 shadow-sm hover:shadow"
     >
       Review

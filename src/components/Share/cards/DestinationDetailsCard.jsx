@@ -1,16 +1,72 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Clock3, Globe, Tag, ThermometerSun, Star, ChevronDown, Check, Calendar, Users, Clock, Share2, Heart } from "lucide-react";
+import {
+  Clock3,
+  Globe,
+  Tag,
+  ThermometerSun,
+  Star,
+  ChevronDown,
+  Check,
+  Calendar,
+  Users,
+  Clock,
+  Share2,
+  Heart,
+} from "lucide-react";
 import Link from "next/link";
+import TripReviewsList from "@/components/Reviews/TripReviewList";
 
 const DestinationDetailsCard = ({ destination }) => {
   console.log(destination);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+    // Duration calculation in days
+  let duration = 0;
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    // Difference in milliseconds
+    const diffTime = end - start;
+    // Convert to days
+    duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
+  const handleAddToMyTrips = async (e) => {
+    e.preventDefault();
+
+    const tripData = {
+      destination_id: destination.destination_id || "d2001",
+      country: destination.country,
+      startDate: startDate,
+      endDate: endDate,
+        duration: duration,
+      city: destination.city,
+      region: destination.region || "",
+      media: {
+        cover_image: destination.media?.cover_image,
+      },
+    };
+
+    const res = await fetch("http://localhost:500/my-trips", {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(tripData),
+    });
+
+    const data = await res.json();
+    console.log("Saved to My Trips:", data);
+    alert("Trip added to My Trips!");
+  };
 
   return (
-     <div className=" bg-gray-50">
+    <div className=" bg-gray-50">
       <div className="max-w-7xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
@@ -31,7 +87,8 @@ const DestinationDetailsCard = ({ destination }) => {
               transition={{ duration: 0.5 }}
             >
               <h2 className="text-3xl font-bold text-gray-900 mb-3">
-                {destination.duration} - {destination.city}, {destination.country}
+                {destination.duration} - {destination.city},{" "}
+                {destination.country}
               </h2>
               <div className="flex items-center space-x-6 mb-4">
                 <div className="flex items-center">
@@ -40,8 +97,8 @@ const DestinationDetailsCard = ({ destination }) => {
                       key={i}
                       className={`w-4 h-4 ${
                         i < Math.floor(destination.popularityScore)
-                          ? 'fill-orange-400 text-orange-400'
-                          : 'text-gray-300'
+                          ? "fill-orange-400 text-orange-400"
+                          : "text-gray-300"
                       }`}
                     />
                   ))}
@@ -127,14 +184,18 @@ const DestinationDetailsCard = ({ destination }) => {
                 {destination.description}
               </p>
               <p className="text-gray-600 leading-relaxed mb-4">
-                Discover the enchanting beauty of {destination.city}, where ancient traditions meet modern marvels. 
-                This destination offers an unforgettable journey through stunning landscapes, rich cultural heritage, and 
-                warm hospitality that will leave you with memories to last a lifetime.
+                Discover the enchanting beauty of {destination.city}, where
+                ancient traditions meet modern marvels. This destination offers
+                an unforgettable journey through stunning landscapes, rich
+                cultural heritage, and warm hospitality that will leave you with
+                memories to last a lifetime.
               </p>
               <p className="text-gray-600 leading-relaxed">
-                From breathtaking natural wonders to vibrant local markets, every moment in {destination.city} is 
-                an adventure waiting to unfold. Experience authentic cuisine, explore historical landmarks, and immerse 
-                yourself in the unique atmosphere that makes this destination truly special.
+                From breathtaking natural wonders to vibrant local markets,
+                every moment in {destination.city} is an adventure waiting to
+                unfold. Experience authentic cuisine, explore historical
+                landmarks, and immerse yourself in the unique atmosphere that
+                makes this destination truly special.
               </p>
             </motion.div>
 
@@ -192,15 +253,40 @@ const DestinationDetailsCard = ({ destination }) => {
               <h3 className="text-2xl font-bold mb-4">Tour Plan</h3>
               <div className="space-y-3">
                 {[
-                  { day: 1, title: 'Arrival & Welcome Dinner', desc: `Arrive in ${destination.city} and transfer to your hotel. Evening welcome dinner and orientation session.` },
-                  { day: 2, title: 'City Tour & Cultural Experience', desc: 'Explore major landmarks, visit museums, and experience local culture and cuisine.' },
-                  { day: 3, title: 'Adventure & Nature Activities', desc: 'Outdoor activities, nature exploration, and scenic viewpoints.' },
-                  { day: 4, title: 'Free Day & Optional Tours', desc: 'Leisure time for shopping, relaxation, or optional excursions.' },
-                  { day: 5, title: 'Departure', desc: 'Final breakfast and airport transfer for your departure flight.' }
+                  {
+                    day: 1,
+                    title: "Arrival & Welcome Dinner",
+                    desc: `Arrive in ${destination.city} and transfer to your hotel. Evening welcome dinner and orientation session.`,
+                  },
+                  {
+                    day: 2,
+                    title: "City Tour & Cultural Experience",
+                    desc: "Explore major landmarks, visit museums, and experience local culture and cuisine.",
+                  },
+                  {
+                    day: 3,
+                    title: "Adventure & Nature Activities",
+                    desc: "Outdoor activities, nature exploration, and scenic viewpoints.",
+                  },
+                  {
+                    day: 4,
+                    title: "Free Day & Optional Tours",
+                    desc: "Leisure time for shopping, relaxation, or optional excursions.",
+                  },
+                  {
+                    day: 5,
+                    title: "Departure",
+                    desc: "Final breakfast and airport transfer for your departure flight.",
+                  },
                 ].map((item, idx) => (
-                  <details key={idx} className="bg-white p-4 rounded-lg border border-gray-200 group">
+                  <details
+                    key={idx}
+                    className="bg-white p-4 rounded-lg border border-gray-200 group"
+                  >
                     <summary className="font-semibold cursor-pointer flex items-center justify-between">
-                      <span>Day {item.day}: {item.title}</span>
+                      <span>
+                        Day {item.day}: {item.title}
+                      </span>
                       <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
                     </summary>
                     <p className="mt-3 text-gray-600 text-sm leading-relaxed">
@@ -221,8 +307,9 @@ const DestinationDetailsCard = ({ destination }) => {
               <h3 className="text-2xl font-bold mb-4">Itinerary</h3>
               <div className="bg-white p-6 rounded-lg border border-gray-200">
                 <p className="text-gray-600 leading-relaxed mb-4">
-                  Our carefully crafted itinerary ensures you experience the best of {destination.city}. 
-                  Each day is designed to balance adventure, culture, and relaxation.
+                  Our carefully crafted itinerary ensures you experience the
+                  best of {destination.city}. Each day is designed to balance
+                  adventure, culture, and relaxation.
                 </p>
                 <ul className="space-y-2 text-gray-700">
                   <li className="flex items-start">
@@ -260,8 +347,9 @@ const DestinationDetailsCard = ({ destination }) => {
                     <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
                   </summary>
                   <p className="mt-3 text-gray-600 text-sm">
-                    Check visa requirements for {destination.country}. Most nationalities can obtain visa on arrival 
-                    or e-visa. Processing time is typically 3-5 business days.
+                    Check visa requirements for {destination.country}. Most
+                    nationalities can obtain visa on arrival or e-visa.
+                    Processing time is typically 3-5 business days.
                   </p>
                 </details>
                 <details className="bg-white p-4 rounded-lg border border-gray-200 group">
@@ -270,8 +358,9 @@ const DestinationDetailsCard = ({ destination }) => {
                     <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
                   </summary>
                   <p className="mt-3 text-gray-600 text-sm">
-                    No special vaccinations required. Travel insurance is included. Emergency medical facilities are available.
-                    Safety index: {destination.safety_index}/10
+                    No special vaccinations required. Travel insurance is
+                    included. Emergency medical facilities are available. Safety
+                    index: {destination.safety_index}/10
                   </p>
                 </details>
                 <details className="bg-white p-4 rounded-lg border border-gray-200 group">
@@ -280,8 +369,9 @@ const DestinationDetailsCard = ({ destination }) => {
                     <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
                   </summary>
                   <p className="mt-3 text-gray-600 text-sm">
-                    Comfortable walking shoes, light clothing, sunscreen, hat, camera, and any personal medications. 
-                    Average temperature: {destination.climate.avg_temp_c}°C
+                    Comfortable walking shoes, light clothing, sunscreen, hat,
+                    camera, and any personal medications. Average temperature:{" "}
+                    {destination.climate.avg_temp_c}°C
                   </p>
                 </details>
                 <details className="bg-white p-4 rounded-lg border border-gray-200 group">
@@ -290,8 +380,8 @@ const DestinationDetailsCard = ({ destination }) => {
                     <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
                   </summary>
                   <p className="mt-3 text-gray-600 text-sm">
-                    Free cancellation up to 30 days before departure. 50% refund for 15-30 days. 
-                    No refund within 15 days of departure.
+                    Free cancellation up to 30 days before departure. 50% refund
+                    for 15-30 days. No refund within 15 days of departure.
                   </p>
                 </details>
               </div>
@@ -312,8 +402,9 @@ const DestinationDetailsCard = ({ destination }) => {
                     <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
                   </summary>
                   <p className="mt-3 text-gray-600 text-sm">
-                    Yes! We offer customizable itineraries. Contact our team to discuss your preferences and we'll create 
-                    a personalized experience for you.
+                    Yes! We offer customizable itineraries. Contact our team to
+                    discuss your preferences and we'll create a personalized
+                    experience for you.
                   </p>
                 </details>
                 <details className="bg-white p-4 rounded-lg border border-gray-200 group">
@@ -322,8 +413,9 @@ const DestinationDetailsCard = ({ destination }) => {
                     <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
                   </summary>
                   <p className="mt-3 text-gray-600 text-sm">
-                    This tour is family-friendly and suitable for children aged 5 and above. Special arrangements can be 
-                    made for younger children.
+                    This tour is family-friendly and suitable for children aged
+                    5 and above. Special arrangements can be made for younger
+                    children.
                   </p>
                 </details>
                 <details className="bg-white p-4 rounded-lg border border-gray-200 group">
@@ -332,7 +424,8 @@ const DestinationDetailsCard = ({ destination }) => {
                     <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
                   </summary>
                   <p className="mt-3 text-gray-600 text-sm">
-                    Our groups range from 2 to 10 people, ensuring a personalized experience with attention to each traveler.
+                    Our groups range from 2 to 10 people, ensuring a
+                    personalized experience with attention to each traveler.
                   </p>
                 </details>
                 <details className="bg-white p-4 rounded-lg border border-gray-200 group">
@@ -341,8 +434,9 @@ const DestinationDetailsCard = ({ destination }) => {
                     <ChevronDown className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform" />
                   </summary>
                   <p className="mt-3 text-gray-600 text-sm">
-                    We accommodate all dietary requirements including vegetarian, vegan, halal, and allergy-specific needs. 
-                    Please inform us during booking.
+                    We accommodate all dietary requirements including
+                    vegetarian, vegan, halal, and allergy-specific needs. Please
+                    inform us during booking.
                   </p>
                 </details>
               </div>
@@ -403,7 +497,7 @@ const DestinationDetailsCard = ({ destination }) => {
               className="mb-8"
             >
               <h3 className="text-2xl font-bold mb-6">Customer Reviews</h3>
-              
+
               {/* Overall Rating */}
               <div className="bg-white p-6 rounded-xl border border-gray-200 mb-6">
                 <div className="flex items-center space-x-8">
@@ -417,8 +511,8 @@ const DestinationDetailsCard = ({ destination }) => {
                           key={i}
                           className={`w-4 h-4 ${
                             i < Math.floor(destination.popularityScore)
-                              ? 'fill-orange-400 text-orange-400'
-                              : 'text-gray-300'
+                              ? "fill-orange-400 text-orange-400"
+                              : "text-gray-300"
                           }`}
                         />
                       ))}
@@ -428,14 +522,20 @@ const DestinationDetailsCard = ({ destination }) => {
                   <div className="flex-1 space-y-2">
                     {[5, 4, 3, 2, 1].map((rating) => (
                       <div key={rating} className="flex items-center space-x-3">
-                        <span className="text-sm text-gray-600 w-12">{rating} star</span>
+                        <span className="text-sm text-gray-600 w-12">
+                          {rating} star
+                        </span>
                         <div className="flex-1 bg-gray-200 rounded-full h-2">
                           <div
                             className="bg-orange-400 h-2 rounded-full"
-                            style={{ width: `${rating === 5 ? 75 : rating === 4 ? 20 : 5}%` }}
+                            style={{
+                              width: `${rating === 5 ? 75 : rating === 4 ? 20 : 5}%`,
+                            }}
                           />
                         </div>
-                        <span className="text-sm text-gray-500 w-8">{rating === 5 ? 96 : rating === 4 ? 26 : 6}</span>
+                        <span className="text-sm text-gray-500 w-8">
+                          {rating === 5 ? 96 : rating === 4 ? 26 : 6}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -443,34 +543,54 @@ const DestinationDetailsCard = ({ destination }) => {
               </div>
 
               {/* Individual Reviews */}
-              <div className="space-y-4">
+              {/* <div className="space-y-4">
                 {[
-                  { name: 'Sarah Johnson', rating: 5, date: 'December 2023', text: 'Amazing experience! The tour was well-organized and our guide was incredibly knowledgeable. Would definitely recommend!' },
-                  { name: 'Michael Chen', rating: 5, date: 'November 2023', text: 'Best vacation ever! Every detail was perfect, from accommodation to activities. Worth every penny.' }
+                  {
+                    name: "Sarah Johnson",
+                    rating: 5,
+                    date: "December 2023",
+                    text: "Amazing experience! The tour was well-organized and our guide was incredibly knowledgeable. Would definitely recommend!",
+                  },
+                  {
+                    name: "Michael Chen",
+                    rating: 5,
+                    date: "November 2023",
+                    text: "Best vacation ever! Every detail was perfect, from accommodation to activities. Worth every penny.",
+                  },
                 ].map((review, idx) => (
-                  <div key={idx} className="bg-white p-5 rounded-xl border border-gray-200">
+                  <div
+                    key={idx}
+                    className="bg-white p-5 rounded-xl border border-gray-200"
+                  >
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h4 className="font-semibold text-gray-900">{review.name}</h4>
+                        <h4 className="font-semibold text-gray-900">
+                          {review.name}
+                        </h4>
                         <div className="flex items-center mt-1">
                           {[...Array(5)].map((_, i) => (
                             <Star
                               key={i}
                               className={`w-3 h-3 ${
                                 i < review.rating
-                                  ? 'fill-orange-400 text-orange-400'
-                                  : 'text-gray-300'
+                                  ? "fill-orange-400 text-orange-400"
+                                  : "text-gray-300"
                               }`}
                             />
                           ))}
                         </div>
                       </div>
-                      <span className="text-sm text-gray-500">{review.date}</span>
+                      <span className="text-sm text-gray-500">
+                        {review.date}
+                      </span>
                     </div>
-                    <p className="text-gray-600 text-sm leading-relaxed">{review.text}</p>
+                    <p className="text-gray-600 text-sm leading-relaxed">
+                      {review.text}
+                    </p>
                   </div>
                 ))}
-              </div>
+              </div> */}
+              <TripReviewsList/>
             </motion.div>
           </div>
 
@@ -486,7 +606,7 @@ const DestinationDetailsCard = ({ destination }) => {
               <div className="mb-6 pb-6 border-b border-gray-200">
                 <div className="flex items-baseline mb-1">
                   <span className="text-4xl font-bold text-blue-600">
-                    {destination.price.split('-')[0]}
+                    {destination.price.split("-")[0]}
                   </span>
                   <span className="text-gray-500 ml-2">/ person</span>
                 </div>
@@ -498,21 +618,27 @@ const DestinationDetailsCard = ({ destination }) => {
               {/* Booking Form */}
               <div className="space-y-4 mb-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Check In</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Check In
+                  </label>
                   <input
                     type="date"
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Check Out</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Check Out
+                  </label>
                   <input
                     type="date"
                     className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Guests</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Guests
+                  </label>
                   <select className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     <option>1 Guest</option>
                     <option>2 Guests</option>
@@ -536,29 +662,125 @@ const DestinationDetailsCard = ({ destination }) => {
                 Contact Us
               </button>
 
+              <form onSubmit={handleAddToMyTrips} className="mt-6 space-y-3">
+                <h4 className="font-semibold text-gray-900 mb-2">
+                  Save to My Trips
+                </h4>
+
+                <input
+                  type="text"
+                  value={destination.destination_id || "d2001"}
+                  readOnly
+                  className="w-full border px-3 py-2 rounded-md text-sm"
+                  placeholder="Destination ID"
+                />
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Check In
+                  </label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Check Out
+                  </label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <input
+                  type="text"
+                  value={duration ? `${duration}` : ""}
+                  readOnly
+                  className="w-full border px-3 py-2 rounded-md text-sm"
+                  placeholder="Duration"
+                />
+                <input
+                  type="text"
+                  value={destination.country}
+                  readOnly
+                  className="w-full border px-3 py-2 rounded-md text-sm"
+                  placeholder="Country"
+                />
+
+                <input
+                  type="text"
+                  value={destination.city}
+                  readOnly
+                  className="w-full border px-3 py-2 rounded-md text-sm"
+                  placeholder="City"
+                />
+
+                <input
+                  type="text"
+                  value={destination.region || ""}
+                  readOnly
+                  className="w-full border px-3 py-2 rounded-md text-sm"
+                  placeholder="Region"
+                />
+
+                <input
+                  type="text"
+                  value={destination.media?.cover_image}
+                  readOnly
+                  className="w-full border px-3 py-2 rounded-md text-sm"
+                  placeholder="Cover Image URL"
+                />
+
+                <button
+                  type="submit"
+                  className="w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-600 transition"
+                >
+                  Save to My Trips
+                </button>
+              </form>
+
               {/* Quick Info */}
               <div className="mt-6 pt-6 border-t border-gray-200">
-                <h4 className="font-semibold text-gray-900 mb-4">Tour Information</h4>
+                <h4 className="font-semibold text-gray-900 mb-4">
+                  Tour Information
+                </h4>
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Duration</span>
-                    <span className="font-medium text-gray-900">{destination.duration}</span>
+                    <span className="font-medium text-gray-900">
+                      {destination.duration}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Best Time</span>
-                    <span className="font-medium text-gray-900">{destination.best_time_to_visit}</span>
+                    <span className="font-medium text-gray-900">
+                      {destination.best_time_to_visit}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Group Size</span>
-                    <span className="font-medium text-gray-900">2-10 People</span>
+                    <span className="font-medium text-gray-900">
+                      2-10 People
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Currency</span>
-                    <span className="font-medium text-gray-900">{destination.currency}</span>
+                    <span className="font-medium text-gray-900">
+                      {destination.currency}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Safety Rating</span>
-                    <span className="font-medium text-gray-900">{destination.safety_index}/10</span>
+                    <span className="font-medium text-gray-900">
+                      {destination.safety_index}/10
+                    </span>
                   </div>
                 </div>
               </div>
@@ -584,7 +806,10 @@ const DestinationDetailsCard = ({ destination }) => {
                 <p className="text-sm text-gray-600 mb-3">
                   Our travel experts are here to assist you
                 </p>
-                <a href="tel:+1234567890" className="text-blue-600 font-semibold text-sm hover:underline">
+                <a
+                  href="tel:+1234567890"
+                  className="text-blue-600 font-semibold text-sm hover:underline"
+                >
                   Call: +1 (234) 567-890
                 </a>
               </div>
