@@ -1,44 +1,52 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-import RelatedDestinationCard from "./RelatedDestinationCard";
+
+import DestinationCard from "./cards/DestinationCard";
+import { useEffect, useState } from "react";
 
 const RelatedDestinationSlider = ({ destinations }) => {
-  const [slidePercentage, setSlidePercentage] = useState(70);
-console.log(destinations.length);
+  const [percentage, setPercentage] = useState(30);
+
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setSlidePercentage(100);
+      const width = window.innerWidth;
+
+      if (width < 768) {
+        setPercentage(100);
+      } else if (width >= 768 && width <= 1024) {
+        setPercentage(50);
       } else {
-        setSlidePercentage(70);
+        setPercentage(30);
       }
     };
 
-    handleResize(); // run on mount
-    window.addEventListener("resize", handleResize);
+    handleResize();
 
+    window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
-    <div className="w-full">
+    <div className="">
       <Carousel
-        showArrows
-        infiniteLoop
+        showArrows={true}
+        infiniteLoop={true}
         showThumbs={false}
         showStatus={false}
-        autoPlay
-        interval={3000}
-        centerMode
-        centerSlidePercentage={slidePercentage}
-        emulateTouch
+        autoPlay={true}
+        interval={2000}
+        centerMode={true}
+        centerSlidePercentage={percentage}
+        emulateTouch={true}
+        stopOnHover={false}
+        swipeable={true}
       >
         {destinations.map((item) => (
           <div key={item._id} className="px-2">
-            <RelatedDestinationCard destination={item} />
+           
+            <DestinationCard destination={item}></DestinationCard>
           </div>
         ))}
       </Carousel>

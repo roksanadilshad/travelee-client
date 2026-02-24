@@ -1,0 +1,340 @@
+"use client";
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+const LanguageContext = createContext();
+
+const translations = {
+  EN: {
+    // Shared UI
+    "nav.home": "Home",
+    "nav.trips": "Trips",
+    "btn.explore": "Explore Now",
+    
+    // Banner
+    "banner.tag1": "Industrial Planning",
+    "banner.title1": "Precision Travel,",
+    "banner.high1": "Expertly Crafted",
+    "banner.desc1": "The world's first industrial-grade travel planner with real-time global data synchronization.",
+    "banner.tag2": "Smart Economy",
+    "banner.title2": "Budget Better,",
+    "banner.high2": "Explore Further",
+    "banner.desc2": "Our automated cost estimator calculates local taxes and transport so you never go over budget.",
+    "banner.tag3": "Group Synergy",
+    "banner.title3": "Collaborative Ready,",
+    "banner.high3": "Real-Time Sync",
+    "banner.desc3": "Invite your crew to vote on locations and split costs instantly with professional organization.",
+    "search.location": "Location",
+"search.placeholder": "Where is your next story?",
+"search.button": "Plan Adventure",
+"search.popular": "Popular:",
+"builder.badge": "Industrial UX",
+  "builder.title": "THE SMART BUILDER",
+  "builder.subtitle": "Drag to reorder. Watch your route optimize in real-time.",
+  "builder.day_title": "Day 1: Arrival & Exploration",
+  "cat.all": "All",
+  "cat.adventure": "Adventure",
+  "cat.luxury": "Luxury",
+  "cat.budget": "Budget",
+  "cat.solo": "Solo",
+  "cat.starting": "Starting at",
+  // City names as fallback
+  "Bali": "Bali",
+  "Paris": "Paris",
+  "Tokyo": "Tokyo",
+  "builder.stops_count": "3 STOPS SCHEDULED",
+  "builder.next_dest": "Next Destination",
+  // Activity Items
+  "activity.sightseeing": "Sightseeing: Old Town",
+  "activity.lunch": "Local Gourmet Lunch",
+  "activity.walk": "Sunset Coastal Walk",
+
+    // Weather Component
+    "weather.intel": "Weather Intel",
+    "weather.feels": "Feels Like",
+    "weather.humidity": "Humidity",
+    "weather.wind": "Wind Speed",
+    "weather.status": "Sync Status",
+    "weather.live": "Live",
+    "searchplaceholder": "Search Destination Intel...",
+    
+    // Trip Room
+    "room.title": "TRIP ROOM",
+    "room.online": "Online Now",
+    "room.sync": "Synchronized",
+    "room.enter": "ENTER TRIP ROOM",
+
+    // Cities (Keep keys exactly as they come from API)
+    "Phuket": "Phuket",
+    "Dhaka": "Dhaka",
+    "Tokyo": "Tokyo",
+    "clear sky": "Clear Sky",
+    "overcast clouds": "Overcast Clouds",
+    "broken clouds": "Broken Clouds",
+    "scattered clouds": "Scattered Clouds",
+    "light rain": "Light Rain",
+    "search.label": "Location",
+  "search.placeholder": "Where is your next story?",
+  "search.button": "Plan Adventure",
+  "search.popular": "Popular:",
+  "Bali": "Bali",
+  "Paris": "Paris",
+  "Tokyo": "Tokyo",
+  "Swiss Alps": "Swiss Alps",
+  "trending.sync": "Synchronizing Data",
+  "trending.title": "Global",
+  "trending.highlight": "Momentum",
+  "trending.metric_label": "Real-time planning metrics from Travelee nodes",
+  "trending.active_sessions": "Active Sessions",
+  "trending.pop_index": "Popularity Index",
+  "trending.view_specs": "VIEW SPECS",
+  "trending.avg_budget": "Avg Budget",
+  "trending.best_visit": "Best Visit",
+  "trending.init_plan": "Initialize Plan",
+  // Cities/Countries (if not already there)
+  "Phuket": "Phuket",
+  "Thailand": "Thailand",
+  "Paris": "Paris",
+  "budget.fiscal": "Fiscal Analysis",
+  "budget.title": "COST",
+  "budget.subtitle": "PROJECTION",
+  "budget.duration": "Duration of stay",
+  "budget.days": "DAYS",
+  "budget.total_label": "Estimated Total Expense",
+  "budget.allocation": "Resource Allocation",
+  "budget.stay": "Stay",
+  "budget.food": "Food",
+  "budget.transport": "Transport",
+  "France": "France",
+  "review.badge": "Curated Intelligence",
+  "review.title": "TOP",
+  "review.subtitle": "USER INTEL",
+  "review.displaying": "Displaying Featured",
+  "review.archive": "Access Full Archive",
+  "review.verified": "Verified User",
+  "review.id_prefix": "ID",
+  "room.badge_mockup": "Collaborative War-Room",
+  "room.expedition": "EXPEDITION",
+  "room.status_label": "Status",
+  "room.sync": "Synchronized",
+  "room.density": "Itinerary Density",
+  "room.active_planners": "Current Active",
+  "room.planners_count": "6 Planners",
+  "room.main_badge": "Multiplayer Planning",
+  "room.title_main": "Plan Together,",
+  "room.title_sub": "Never",
+  "room.title_end": "Solo.",
+  "room.description": "Eliminate the endless back-and-forth text threads. Dive into a tactical room where your squad builds the dream trip in real-time.",
+  "room.feature_title": "Encrypted Room",
+  "room.feature_sub": "Private & Secure Sessions",
+  "room.cta": "Create Your Trip Room",
+  "footer.news_title": "Join the Elite",
+  "footer.news_sub": "Get tactical travel intel and secret deals once a week.",
+  "footer.placeholder": "Enter your email...",
+  "footer.subscribe": "Subscribe",
+  "footer.col1_title": "Company",
+  "footer.col2_title": "Destinations",
+  "footer.col3_title": "Resources",
+  "footer.col4_title": "Socials",
+  "footer.rights": "All Rights Reserved.",
+  "budget.badge": "Fiscal Analysis",
+  "budget.title": "COST",
+  "budget.subtitle": "PROJECTION",
+  "budget.duration_label": "Duration of stay",
+  "budget.days_unit": "DAYS",
+  "budget.total_label": "Estimated Total Expense",
+  "budget.allocation_title": "Resource Allocation",
+  "budget.cat_stay": "Stay",
+  "budget.cat_food": "Food",
+  "budget.cat_transport": "Transport",
+  },
+  BN: {
+    "nav.home": "হোম",
+    "budget.badge": "আর্থিক বিশ্লেষণ",
+  "budget.title": "খরচ",
+  "budget.subtitle": "প্রাক্কলন",
+  "budget.duration_label": "অবস্থানের সময়কাল",
+  "budget.days_unit": "দিন",
+  "budget.total_label": "আনুমানিক মোট ব্যয়",
+  "budget.allocation_title": "সম্পদ বরাদ্দ",
+  "budget.cat_stay": "থাকা",
+  "budget.cat_food": "খাবার",
+  "budget.cat_transport": "পরিবহন",
+    "footer.news_title": "এলিট টিমে যোগ দিন",
+  "footer.news_sub": "সপ্তাহে একবার ভ্রমণ ইনটেল এবং গোপন ডিল পান।",
+  "footer.placeholder": "আপনার ইমেল লিখুন...",
+  "footer.subscribe": "সাবস্ক্রাইব",
+  "footer.col1_title": "কোম্পানি",
+  "footer.col2_title": "গন্তব্য",
+  "footer.col3_title": "রিসোর্স",
+  "footer.col4_title": "সোশ্যাল",
+  "footer.rights": "সর্বস্বত্ব সংরক্ষিত।",
+    "review.badge": "সংগৃহীত বুদ্ধিমত্তা",
+    "room.badge_mockup": "সহযোগিতামূলক ওয়ার-রুম",
+  "room.expedition": "অভিযান",
+  "room.status_label": "অবস্থা",
+  "room.sync": "সুসংগত (লাইভ)",
+  "room.density": "ভ্রমণসূচীর ঘনত্ব",
+  "room.active_planners": "বর্তমানে সক্রিয়",
+  "room.planners_count": "৬ জন প্ল্যানার",
+  "room.main_badge": "মাল্টিপ্লেয়ার প্ল্যানিং",
+  "room.title_main": "একসাথে পরিকল্পনা করুন,",
+  "room.title_sub": "কখনো একা নয়",
+  "room.title_end": "।",
+  "room.description": "বারবার টেক্সট মেসেজ পাঠানোর ঝামেলা দূর করুন। এমন একটি টেকনিক্যাল রুমে যোগ দিন যেখানে আপনার পুরো দল রিয়েল-টাইমে স্বপ্নের ভ্রমণ তৈরি করবে।",
+  "room.feature_title": "এনক্রিপ্ট করা রুম",
+  "room.feature_sub": "ব্যক্তিগত ও নিরাপদ সেশন",
+  "room.cta": "আপনার ট্রিপ রুম তৈরি করুন",
+  "review.title": "সেরা",
+  "review.subtitle": "ব্যবহারকারী ইনটেল",
+  "review.displaying": "ফিচারড প্রদর্শিত হচ্ছে",
+  "review.archive": "সম্পূর্ণ আর্কাইভ দেখুন",
+  "review.verified": "যাচাইকৃত ব্যবহারকারী",
+  "review.id_prefix": "আইডি",
+    "budget.fiscal": "আর্থিক বিশ্লেষণ",
+  "budget.title": "খরচ",
+  "budget.subtitle": "প্রক্ষেপণ",
+  "budget.duration": "থাকার সময়কাল",
+  "budget.days": "দিন",
+  "budget.total_label": "আনুমানিক মোট ব্যয়",
+  "budget.allocation": "সম্পদ বরাদ্দ",
+  "budget.stay": "থাকা",
+  "budget.food": "খাবার",
+  "budget.transport": "যাতায়াত",
+    "cat.all": "সব",
+  "cat.adventure": "অ্যাডভেঞ্চার",
+  "cat.luxury": "বিলাসবহুল",
+  "cat.budget": "বাজেট",
+  "cat.solo": "একাকী",
+  "cat.starting": "শুরু",
+  // City names
+  "Bali": "বালি",
+  "Paris": "প্যারিস",
+  "Tokyo": "টোকিও",
+    "trending.sync": "ডেটা সিঙ্ক্রোনাইজ করা হচ্ছে",
+  "trending.title": "বৈশ্বিক",
+  "trending.highlight": "মোমেন্টাম",
+  "trending.metric_label": "ট্রাভেলি নোড থেকে রিয়েল-টাইম পরিকল্পনা মেট্রিক্স",
+  "trending.active_sessions": "সক্রিয় সেশন",
+  "trending.pop_index": "জনপ্রিয়তা সূচক",
+  "trending.view_specs": "বিস্তারিত দেখুন",
+  "trending.avg_budget": "গড় বাজেট",
+  "trending.best_visit": "ভ্রমণের সেরা সময়",
+  "trending.init_plan": "পরিকল্পনা শুরু করুন",
+  // Cities/Countries
+  "Phuket": "ফুকেত",
+  "Thailand": "থাইল্যান্ড",
+  "Paris": "প্যারিস",
+  "France": "ফ্রান্স",
+    "nav.trips": "ভ্রমণ",
+    "search.label": "অবস্থান",
+  "search.placeholder": "আপনার পরবর্তী গন্তব্য কোথায়?",
+  "search.button": "ভ্রমণ পরিকল্পনা",
+  "search.popular": "জনপ্রিয়:",
+  "Bali": "বালি",
+  "Paris": "প্যারিস",
+  "Tokyo": "টোকিও",
+  "Swiss Alps": "সুইস আল্পস",
+    "btn.explore": "এখনই এক্সপ্লোর করুন",
+
+    "banner.tag1": "ইন্ডাস্ট্রিয়াল প্ল্যানিং",
+    "banner.title1": "নিখুঁত ভ্রমণ,",
+    "banner.high1": "দক্ষতার সাথে নির্মিত",
+    "banner.desc1": "রিয়েল-টাইম গ্লোবাল ডেটা সিনক্রোনাইজেশন সহ বিশ্বের প্রথম ইন্ডাস্ট্রিয়াল-গ্রেড ট্রাভেল প্ল্যানার।",
+    "banner.tag2": "স্মার্ট ইকোনমি",
+    "banner.title2": "বাজেট প্ল্যানিং,",
+    "banner.high2": "বেশি এক্সপ্লোরেশন",
+    "banner.desc2": "আমাদের অটোমেটেড কস্ট এস্টিমেটর ট্যাক্স এবং ট্রান্সপোর্ট খরচ হিসাব করে, যাতে বাজেট না ছাড়ায়।",
+    "banner.tag3": "গ্রুপ সিনার্জি",
+    "banner.title3": "কোলাবোরেটিভ রেডি,",
+    "builder.badge": "ইন্ডাস্ট্রিয়াল UX",
+  "builder.title": "স্মার্ট বিল্ডার",
+  "builder.subtitle": "রিঅর্ডার করতে ড্র্যাগ করুন। রিয়েল-টাইমে আপনার রুট অপ্টিমাইজড দেখুন।",
+  "builder.day_title": "দিন ১: আগমন ও অন্বেষণ",
+  "builder.stops_count": "৩টি স্টপ নির্ধারিত",
+  "builder.next_dest": "পরবর্তী গন্তব্য",
+  // Activity Items
+  "activity.sightseeing": "দর্শনীয় স্থান: ওল্ড টাউন",
+  "activity.lunch": "স্থানীয় দুপুরের খাবার",
+  "activity.walk": "সূর্যাস্তকালীন উপকূলীয় হাঁটা",
+    "banner.high3": "রিয়েল-টাইম সিঙ্ক",
+    "banner.desc3": "বন্ধুদের ইনভাইট করুন ভোট দিতে এবং খরচ ভাগ করে নিতে রিয়েল-টাইমে।",
+    "search.location": "অবস্থান",
+"search.placeholder": "আপনার পরবর্তী গন্তব্য কোথায়?",
+"search.button": "ভ্রমণ পরিকল্পনা",
+"search.popular": "জনপ্রিয়:",
+
+    "weather.intel": "আবহাওয়া তথ্য",
+    "weather.feels": "অনুভূত তাপমাত্রা",
+    "weather.humidity": "আর্দ্রতা",
+    "weather.wind": "বাতাসের গতি",
+    "weather.status": "সিঙ্ক স্ট্যাটাস",
+    "weather.live": "লাইভ",
+    "searchplaceholder": "গন্তব্য তথ্য খুঁজুন...",
+
+    "room.title": "ট্রিপ রুম",
+    "room.online": "সক্রিয় আছেন",
+    "room.sync": "সংযুক্ত",
+    "room.enter": "রুমে প্রবেশ করুন",
+
+    "Phuket": "ফুকেত",
+    "Dhaka": "ঢাকা",
+    "Tokyo": "টোকিও",
+    "clear sky": "পরিষ্কার আকাশ",
+    "overcast clouds": "মেঘাচ্ছন্ন আকাশ",
+    "broken clouds": "আংশিক মেঘলা",
+    "scattered clouds": "বিচ্ছিন্ন মেঘ",
+    "light rain": "হালকা বৃষ্টি"
+  }
+};
+
+const cityMap = {
+  "ঢাকা": "Dhaka",
+  "ফুকেত": "Phuket",
+  "সিলেট": "Sylhet",
+  "চট্টগ্রাম": "Chittagong",
+  "কক্সবাজার": "Cox's Bazar",
+  "রংপুর": "Rangpur",
+  "খুলনা": "Khulna",
+  "বরিশাল": "Barisal",
+  "কুমিল্লা": "Comilla",
+  "গাজীপুর": "Gazipur"
+};
+
+export const LanguageProvider = ({ children }) => {
+  const [lang, setLang] = useState('EN');
+
+  useEffect(() => {
+    const savedLang = localStorage.getItem('travelee_lang');
+    if (savedLang) setLang(savedLang);
+  }, []);
+
+  const toggleLanguage = (newLang) => {
+    setLang(newLang);
+    localStorage.setItem('travelee_lang', newLang);
+  };
+
+  const t = (key) => {
+    if (!key) return "";
+    // REMOVED .toLowerCase() to ensure exact key matching (banner.tag1 != BANNER.TAG1)
+    const lookupKey = key.trim();
+    return translations[lang][lookupKey] || key;
+  };
+
+  const convertToEnglish = (input) => {
+    if (!input) return "";
+    const trimmed = input.trim();
+    return cityMap[trimmed] || trimmed;
+  };
+
+  return (
+    <LanguageContext.Provider value={{ lang, toggleLanguage, t, convertToEnglish }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+};
+
+export const useLanguage = () => {
+  const context = useContext(LanguageContext);
+  if (!context) throw new Error("useLanguage must be used within a LanguageProvider");
+  return context;
+};
