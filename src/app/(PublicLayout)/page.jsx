@@ -12,6 +12,8 @@ import ReviewFeed from "@/components/Home/ReviewFeed";
 import WeatherBlock from "@/components/Home/WeatherBlock";
 import TripRoomPreview from "@/components/Home/TripRoomPreview";
 import LanguageToggle from "@/components/Home/LanguageToggle";
+import { Suspense } from "react";
+import TacticalLoader from "../loading";
 
 
 export default function Home() {
@@ -20,7 +22,10 @@ export default function Home() {
     <Banner/>
     <TrendingNow/>
     <SmartBuilderTeaser/>
+    <Suspense fallback={<TacticalLoader/>}>
+
     <CategorizedExploration/>
+    </Suspense>
     <BudgetEstimator/>
     <ReviewFeed/>
     <WeatherBlock/>
