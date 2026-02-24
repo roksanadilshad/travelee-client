@@ -16,7 +16,7 @@ const RelatedDestinationCard = ({ destination }) => {
           <div className=" rounded-xl shadow-md hover:shadow-xl overflow-hidden transform hover:-translate-y-1 transition-all duration-300">
             
             {/* IMAGE */}
-            <div className="relative w-full h-50 sm:h-72 md:h-96 lg:h-125">
+            <div className="relative w-full h-40 sm:h-48 md:h-56">
               {destination.media?.cover_image ? (
                 <Image
                   src={destination.media.cover_image}

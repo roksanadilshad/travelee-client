@@ -2,172 +2,199 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { Menu, X, LogOut, User, Compass, Briefcase, Phone, Info } from "lucide-react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import Logo from "./Logo";
 import LogInButton from "../Auth/LogInButton";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "react-toastify";
-
-
+import LanguageToggle from "../Home/LanguageToggle";
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { user, logout } = useAuth();
 
-  
-  //( Role ) => don't delete any routes
+  // Handle scroll effect for glassmorphism
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "Destinations", href: "/destinations" },
-    ...(user?.email
-      ? [{ name: "Dashboard", href: "/dashboard/my-profile" }]
-      : []),
-    ...(user?.email
-      ? [{ name: "Itinerary", href: "/itinerary" }]
-      : []),
-    { name: "Bookings", href: "/bookings" },
-    { name: "About", href: "/about" },
-    { name: "Contact", href: "/contact" },
+    { name: "Home", href: "/", icon: <Compass className="w-4 h-4" /> },
+    { name: "Destinations", href: "/destinations", icon: <Compass className="w-4 h-4" /> },
+    ...(user?.email ? [{ name: "Dashboard", href: "/dashboard/my-profile" }] : []),
+    ...(user?.email ? [{ name: "Itinerary", href: "/itinerary" }] : []),
+    { name: "Bookings", href: "/bookings", icon: <Briefcase className="w-4 h-4" /> },
+    { name: "About", href: "/about", icon: <Info className="w-4 h-4" /> },
+    { name: "Contact", href: "/contact", icon: <Phone className="w-4 h-4" /> },
   ];
 
-  const isActive = (href) => {
-    if (href === "/") {
-      return pathname === "/";
-    }
-    return pathname.startsWith(href);
-  };
+  const isActive = (href) => href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/95 backdrop-blur-md shadow-sm">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <div className="flex-shrink-0">
-          <Logo />
+    <header 
+      className={`fixed top-0 z-50 w-full transition-all duration-300 border-b ${
+        scrolled 
+          ? "border-border/60 bg-background/80 backdrop-blur-xl py-2 shadow-sm" 
+          : "border-transparent bg-transparent py-4"
+      }`}
+    >
+      <div className="container mx-auto flex items-center justify-between px-6">
+        
+        {/* Logo Section */}
+        <div className="flex-shrink-0 transition-transform duration-300 hover:scale-105">
+          <Logo variant="nav"/>
         </div>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8">
+        {/* Desktop Navigation */}
+        <nav className="hidden lg:flex items-center bg-muted/20 backdrop-blur-md border border-border/40 rounded-full px-2 py-1">
           {navLinks.map((link) => {
             const active = isActive(link.href);
             return (
               <Link
                 key={link.name}
                 href={link.href}
-                className={`text-sm font-medium transition-all duration-300 relative group ${
+                className={`px-5 py-2 text-sm font-semibold transition-all duration-300 relative rounded-full ${
                   active
-                    ? "text-primary font-semibold"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "text-primary bg-background shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                 }`}
               >
                 {link.name}
+                {active && (
+                   <motion.div 
+                    layoutId="activeNav"
+                    className="absolute inset-0 border-2 border-primary/10 rounded-full -z-10"
+                   />
+                )}
               </Link>
             );
           })}
         </nav>
+        <LanguageToggle />
 
-        {/* Desktop Buttons */}
-        <div className="hidden md:flex items-center gap-3">
+        {/* Action Buttons */}
+        <div className="hidden lg:flex items-center gap-4">
           {user ? (
-            <>
-              <h1>{user?.name}</h1>
-              <Button
-                className="cursor-pointer"
-                onClick={() => {
-                  logout();
-                  toast.success("LogOut successfull.");
-                }}
-              >
-                Logout
-              </Button>
-            </>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-10 w-10 rounded-full border border-border/50 p-0 overflow-hidden">
+                  <Avatar>
+                    <AvatarImage src={user?.image} />
+                    <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                      {user?.name?.charAt(0) || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 mt-2 rounded-2xl p-2" align="end">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-bold leading-none">{user?.name}</p>
+                    <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/dashboard/my-profile" className="cursor-pointer rounded-lg">
+                    <User className="mr-2 h-4 w-4" /> Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer rounded-lg"
+                  onClick={() => { logout(); toast.success("Signed out successfully"); }}
+                >
+                  <LogOut className="mr-2 h-4 w-4" /> Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           ) : (
-            <>
-              <LogInButton></LogInButton>
+            <div className="flex items-center gap-2">
+              <LogInButton />
               <Button
                 asChild
-                className="bg-gradient-to-r from-accent to-orange-600 hover:from-accent/90 hover:to-orange-600/90 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+                className="rounded-full bg-[#FF6B6B] hover:bg-[#ff5252] text-white font-bold px-6 shadow-lg shadow-[#FF6B6B]/20 transition-all active:scale-95"
               >
                 <Link href="/register">Sign Up</Link>
               </Button>
-            </>
+            </div>
           )}
         </div>
 
-        {/* Mobile Menu */}
-        <div className="md:hidden">
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-primary hover:bg-primary"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
-            </SheetTrigger>
+        {/* Mobile Toggle */}
+        <div className="lg:hidden flex items-center gap-3">
+            {user && (
+                <span className="text-xs font-bold text-slate-500">{user.name.split(' ')[0]}</span>
+            )}
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild>
+                <Button variant="outline" size="icon" className="rounded-xl border-border/50">
+                    <Menu className="h-5 w-5 text-primary" />
+                </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className="w-[300px] border-l-0 bg-background/95 backdrop-blur-2xl">
+                    <div className="flex flex-col h-full py-6">
+                        <div className="flex items-center justify-between mb-8 px-2">
+                            <Logo />
+                        </div>
+                        
+                        <nav className="flex flex-col gap-2">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.name}
+                                href={link.href}
+                                onClick={() => setIsOpen(false)}
+                                className={`flex items-center gap-4 px-4 py-3 rounded-2xl text-base font-bold transition-all ${
+                                    isActive(link.href)
+                                    ? "bg-primary text-white shadow-lg shadow-primary/20"
+                                    : "text-slate-600 hover:bg-slate-100"
+                                }`}
+                            >
+                                {link.name}
+                            </Link>
+                        ))}
+                        </nav>
 
-            <SheetContent
-              side="right"
-              className="w-70 p-4 bg-background border-l border-border/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right duration-300"
-            >
-              <div className="mt-8 flex flex-col gap-6">
-                {/* Mobile Nav Links */}
-                <nav className="flex flex-col gap-2">
-                  {navLinks.map((link) => {
-                    const active = isActive(link.href);
-                    return (
-                      <Link
-                        key={link.name}
-                        href={link.href}
-                        onClick={() => setIsOpen(false)}
-                        className={`text-base font-medium px-4 py-2 rounded-lg transition-all duration-200 ${
-                          active
-                            ? "bg-primary/20 text-primary font-semibold"
-                            : "text-foreground hover:bg-primary/5"
-                        }`}
-                      >
-                        {link.name}
-                      </Link>
-                    );
-                  })}
-                </nav>
-
-                {/* Mobile Buttons */}
-                <div className="mt-4 border-t border-border/50 pt-6 flex flex-col gap-3">
-                  {user ? (
-                    <>
-                      <h1>{user?.name}</h1>
-                      <Button
-                        className="cursor-pointer"
-                        onClick={() => {
-                          logout();
-                          toast.success("LogOut successfull.");
-                        }}
-                      >
-                        Logout
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <LogInButton></LogInButton>
-                      <Button
-                        asChild
-                        className="w-full bg-gradient-to-r from-accent to-orange-600 hover:from-accent/90 hover:to-orange-600/90 text-white font-semibold"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        <Link href="/register">Sign Up</Link>
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+                        <div className="mt-auto pt-6 border-t border-border/50">
+                            {!user ? (
+                                <div className="flex flex-col gap-3">
+                                    <LogInButton />
+                                    <Button asChild className="w-full rounded-2xl bg-[#FF6B6B] py-6 font-bold">
+                                        <Link href="/register">Create Account</Link>
+                                    </Button>
+                                </div>
+                            ) : (
+                                <Button 
+                                    variant="destructive" 
+                                    className="w-full rounded-2xl py-6 font-bold"
+                                    onClick={() => { logout(); setIsOpen(false); }}
+                                >
+                                    <LogOut className="mr-2 h-4 w-4" /> Logout
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+                </SheetContent>
+            </Sheet>
         </div>
       </div>
     </header>

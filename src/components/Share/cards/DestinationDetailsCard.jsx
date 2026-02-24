@@ -7,12 +7,14 @@ import { Clock3, Globe, Tag, ThermometerSun, Star, ChevronDown, Check, Calendar,
 import Link from "next/link";
 
 const DestinationDetailsCard = ({ destination }) => {
-  console.log(destination);
+  //console.log(destination);
 
   return (
      <div className=" bg-gray-50">
       <div className="max-w-7xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <section className="relative">
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           {/* Main Content */}
           <div className="lg:col-span-2">
             {/* Breadcrumb */}
@@ -475,12 +477,12 @@ const DestinationDetailsCard = ({ destination }) => {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-6">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="bg-white rounded-xl shadow-lg p-6 sticky top-24"
+              className="bg-white rounded-xl shadow-lg p-6 lg:sticky lg:top-24 top-24 fixed right-20"
             >
               {/* Price */}
               <div className="mb-6 pb-6 border-b border-gray-200">
@@ -537,7 +539,7 @@ const DestinationDetailsCard = ({ destination }) => {
               </button>
 
               {/* Quick Info */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="mt-6 pt-6 border-t border-gray-200 bg-white rounded-xl shadow-lg p-6">
                 <h4 className="font-semibold text-gray-900 mb-4">Tour Information</h4>
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
@@ -579,7 +581,7 @@ const DestinationDetailsCard = ({ destination }) => {
               </div>
 
               {/* Need Help */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="mt-6  pt-6 border-t border-gray-200">
                 <h4 className="font-semibold text-gray-900 mb-2">Need Help?</h4>
                 <p className="text-sm text-gray-600 mb-3">
                   Our travel experts are here to assist you
@@ -590,7 +592,9 @@ const DestinationDetailsCard = ({ destination }) => {
               </div>
             </motion.div>
           </div>
+          
         </div>
+        </section>
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ import RelatedDestinationCard from "./RelatedDestinationCard";
 
 const RelatedDestinationSlider = ({ destinations }) => {
   const [slidePercentage, setSlidePercentage] = useState(70);
-console.log(destinations.length);
+//console.log(destinations.length);
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
@@ -24,7 +24,7 @@ console.log(destinations.length);
   }, []);
 
   return (
-    <div className="w-full">
+    <div className="">
       <Carousel
         showArrows
         infiniteLoop
