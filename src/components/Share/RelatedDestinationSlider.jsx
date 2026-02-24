@@ -29,7 +29,7 @@ const RelatedDestinationSlider = ({ destinations }) => {
   }, []);
 
   return (
-    <div className="w-full">
+    <div className="">
       <Carousel
         showArrows={true}
         infiniteLoop={true}
