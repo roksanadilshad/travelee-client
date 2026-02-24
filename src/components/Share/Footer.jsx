@@ -60,7 +60,7 @@ const Footer = () => {
         </div>
 
         {/* 4-COLUMN LINKS SECTION */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-5  gap-12 mb-24">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5  gap-12 mb-24">
           <div className='pr-10 pt-10 '>
 
           <Logo variant="footer" />
