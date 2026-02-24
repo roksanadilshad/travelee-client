@@ -19,13 +19,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import TripReviewsList from "@/components/Reviews/TripReviewList";
+import { useAuth } from "@/hooks/useAuth";
 
 const DestinationDetailsCard = ({ destination }) => {
   console.log(destination);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-    // Duration calculation in days
+  // Duration calculation in days
   let duration = 0;
   if (startDate && endDate) {
     const start = new Date(startDate);
@@ -35,35 +36,52 @@ const DestinationDetailsCard = ({ destination }) => {
     // Convert to days
     duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
+  const { user } = useAuth();
 
-  const handleAddToMyTrips = async (e) => {
-    e.preventDefault();
+const handleAddToMyTrips = async (e) => {
+  e.preventDefault();
 
-    const tripData = {
-      destination_id: destination.destination_id || "d2001",
-      country: destination.country,
-      startDate: startDate,
-      endDate: endDate,
-        duration: duration,
-      city: destination.city,
-      region: destination.region || "",
-      media: {
-        cover_image: destination.media?.cover_image,
-      },
-    };
+  if (!user || !user.email) {
+    alert("Please login first to save trips 🙏");
+    return;
+  }
 
-    const res = await fetch("http://localhost:500/my-trips", {
-      method: "PUT",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(tripData),
-    });
 
-    const data = await res.json();
-    console.log("Saved to My Trips:", data);
-    alert("Trip added to My Trips!");
-  };
+const tripData = {
+  destination_id: destination.destination_id || "d2001",
+  country: destination.country,
+  startDate,
+  endDate,
+  duration,
+  city: destination.city,
+  region: destination.region || "",
+  media: {
+    cover_image: destination.media?.cover_image,
+  },
+  userEmail: user?.email ?? "", // <-- must not be empty
+  userName: user?.name,
+};
+
+if (!tripData.userEmail) {
+  alert("Please login first to save trips 🙏");
+  return;
+}
+
+  const res = await fetch("http://localhost:500/my-trips", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(tripData),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.message || "Failed to save trip");
+    return;
+  }
+
+  alert("Trip added to My Trips! ✅");
+};
 
   return (
     <div className=" bg-gray-50">
@@ -590,7 +608,7 @@ const DestinationDetailsCard = ({ destination }) => {
                   </div>
                 ))}
               </div> */}
-              <TripReviewsList/>
+              <TripReviewsList />
             </motion.div>
           </div>
 
@@ -661,7 +679,7 @@ const DestinationDetailsCard = ({ destination }) => {
               <button className="w-full border-2 border-gray-300 text-gray-700 py-3.5 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
                 Contact Us
               </button>
-
+              {/* add my trip form */}
               <form onSubmit={handleAddToMyTrips} className="mt-6 space-y-3">
                 <h4 className="font-semibold text-gray-900 mb-2">
                   Save to My Trips
