@@ -24,7 +24,7 @@ export default function MyTrips() {
       setLoading(true);
       try {
         const res = await fetch(
-          `http://localhost:500/my-trips?userEmail=${session.user.email}`
+          `https://travelee-server.vercel.app/my-trips?userEmail=${session.user.email}`
         );
         const data = await res.json();
         setTrips(data);
@@ -42,7 +42,7 @@ export default function MyTrips() {
     if (!confirm("Are you sure you want to delete this trip?")) return;
 
     try {
-      const res = await fetch(`http://localhost:500/my-trips/${id}`, {
+      const res = await fetch(`https://travelee-server.vercel.app/my-trips/${id}`, {
         method: "DELETE",
       });
       if (res.ok) {

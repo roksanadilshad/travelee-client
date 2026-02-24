@@ -9,14 +9,14 @@ const DestinationDetailsPage = async ({ params }) => {
   const { id } = await params;
 
   // fetch destination
-  const res = await fetch(`http://localhost:500/destinations/${id}`, {
+  const res = await fetch(`https://travelee-server.vercel.app/destinations/${id}`, {
     cache: "no-store",
   });
   const destination = await res.json();
 
   // fetch related destinations
   const relatedRes = await fetch(
-    `http://localhost:500/destinations/${id}/related`,
+    `https://travelee-server.vercel.app/destinations/${id}/related`,
     { cache: "no-store" },
   );
   const relatedDestinations = await relatedRes.json();

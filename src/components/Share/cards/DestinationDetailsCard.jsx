@@ -67,7 +67,7 @@ if (!tripData.userEmail) {
   return;
 }
 
-  const res = await fetch("http://localhost:500/my-trips", {
+  const res = await fetch("https://travelee-server.vercel.app/my-trips", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(tripData),
