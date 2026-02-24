@@ -610,7 +610,7 @@ if (!tripData.userEmail) {
                   </div>
                 ))}
               </div> */}
-              <TripReviewsList />
+              <TripReviewsList destinationId={destination.destination_id} />
             </motion.div>
           </div>
 
