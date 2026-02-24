@@ -93,7 +93,7 @@ const Footer = () => {
                 </div>
                 <span className="text-emerald-400 font-black text-[10px] uppercase tracking-widest">{t('footer.status')}</span>
               </div>
-              <p className="text-slate-600 text-[10px] leading-relaxed font-bold uppercase tracking-tight">
+              <p suppressHydrationWarning className="text-slate-600 text-[10px] leading-relaxed font-bold uppercase tracking-tight">
                 Last Sync: {new Date().toLocaleTimeString()} UTC
               </p>
             </div>

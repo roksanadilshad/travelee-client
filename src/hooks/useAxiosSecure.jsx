@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 
 const axiosSecure = axios.create({
-  baseURL: "http://localhost:500",
+  baseURL: "https://travelee-server.vercel.app",
 });
 
 const useAxiosSecure = () => {

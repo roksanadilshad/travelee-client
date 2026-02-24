@@ -12,7 +12,7 @@ export default function TripReviewsList({ tripId }) {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        let url = "http://localhost:500/api/tripreviews";
+        let url = "https://travelee-server.vercel.app/api/tripreviews";
         if (tripId) url += `?tripId=${tripId}`;
 
         const res = await fetch(url);

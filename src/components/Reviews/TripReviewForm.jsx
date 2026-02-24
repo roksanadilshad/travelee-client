@@ -34,7 +34,7 @@ export default function TripReviewForm({ onReviewAdded }) {
     const fetchUser = async () => {
       try {
         const res = await fetch(
-          "http://localhost:500/user/email?email=rimon@gmail.com",
+          "https://travelee-server.vercel.app/user/email?email=rimon@gmail.com",
         );
         const data = await res.json();
         if (data.success) setUser(data.data);
@@ -49,7 +49,7 @@ export default function TripReviewForm({ onReviewAdded }) {
   // useEffect(() => {
   //   const fetchTrips = async () => {
   //     try {
-  //       const res = await fetch("http://localhost:500/my-trips");
+  //       const res = await fetch("https://travelee-server.vercel.app/my-trips");
   //       const data = await res.json();
   //       setTrips(data);
   //       // Auto-select
@@ -129,7 +129,7 @@ export default function TripReviewForm({ onReviewAdded }) {
         images: imagesUrls,
       };
 
-      const res = await fetch("http://localhost:500/api/tripreviews", {
+      const res = await fetch("https://travelee-server.vercel.app/api/tripreviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

@@ -18,7 +18,7 @@ const ForgotPasswordFun = () => {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:500/forgot-password", {
+      const res = await fetch("https://travelee-server.vercel.app/forgot-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
