@@ -176,12 +176,7 @@ export function SignupForm({ className, ...props }) {
             Sign up with Google
           </Button>
 
-          <FieldDescription className="px-6 text-center">
-            Already have an account?{" "}
-            <a className="text-[#E86201] hover:underline" href="/login">
-              Sign in
-            </a>
-          </FieldDescription>
+          
         </Field>
       </FieldGroup>
     </form>

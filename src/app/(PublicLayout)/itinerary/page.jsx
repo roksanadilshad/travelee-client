@@ -92,7 +92,7 @@ const handleDelete = async (id) => {
 
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[#F8FAFC] mt-20">
       {/* { HEADER } */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-30 px-8 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">

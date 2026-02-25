@@ -41,7 +41,7 @@ const DestinationDetailsPage = async ({ params }) => {
 
       <span className="flex justify-center my-8">
         <Link href="/destinations">
-          <button className="mt-4 bg-orange-500 text-white px-4 py-2 flex items-center rounded-lg hover:bg-amber-700 transition">
+          <button className="mt-4 bg-primary text-white px-4 py-2 flex items-center rounded-lg hover:bg-amber-700 transition">
             <ArrowLeft className="w-5 h-5" /> Destinations
           </button>
         </Link>
