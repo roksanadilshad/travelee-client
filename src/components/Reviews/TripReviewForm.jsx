@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "react-toastify";
 
 export default function TripReviewForm({ onReviewAdded }) {
   const searchParams = useSearchParams();
@@ -103,61 +104,64 @@ export default function TripReviewForm({ onReviewAdded }) {
     return data.data.url;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!form.tripId) return alert("Trip ID missing!");
-    if (!form.rating) return alert("Please select a rating!");
+ const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    setLoading(true);
-    try {
-      let imagesUrls = [];
-      if (form.images.length > 0) {
-        imagesUrls = await Promise.all(form.images.map((f) => uploadImage(f)));
-      }
+  if (!form.tripId) return toast.error("Trip ID missing!");
+  if (!form.rating) return toast.warning("Please select a rating!");
 
-      if (!user || !user.email) {
-        alert("Please login first to submit a review 🙏");
-        return;
-      }
+  if (!user || !user.email) {
+    toast.info("Please login first to submit a review 🙏");
+    return;
+  }
 
-      const payload = {
-  userEmail: user.email,
-  userName: user.fullName || user.name || "User",
-  userAvatar:
-    user.image ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      user.fullName || user.name || "User"
-    )}&background=6366f1&color=fff&size=128`,
-  destination_id: tripIdFromURL,
-  rating: parseInt(form.rating),
-  comment: form.comment,
-  images: imagesUrls,
-};
-
-      const res = await fetch("https://travelee-server.vercel.app/api/tripreviews", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to add review");
-
-      setForm({
-        destination_id: tripIdFromURL,
-        rating: "",
-        comment: "",
-        images: [],
-      });
-      setImagesPreviews([]);
-      if (onReviewAdded) onReviewAdded();
-      alert("Review submitted successfully!");
-    } catch (err) {
-      console.error(err);
-      alert(err.message || "Failed to submit review");
-    } finally {
-      setLoading(false);
+  setLoading(true);
+  try {
+    let imagesUrls = [];
+    if (form.images.length > 0) {
+      imagesUrls = await Promise.all(form.images.map((f) => uploadImage(f)));
     }
-  };
+
+    const payload = {
+      userEmail: user.email,
+      userName: user.fullName || user.name || "User",
+      userAvatar:
+        user.image ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(
+          user.fullName || user.name || "User"
+        )}&background=6366f1&color=fff&size=128`,
+      destination_id: tripIdFromURL,
+      rating: parseInt(form.rating),
+      comment: form.comment,
+      images: imagesUrls,
+    };
+
+    const res = await fetch("https://travelee-server.vercel.app/api/tripreviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to add review");
+
+    setForm({
+      destination_id: tripIdFromURL,
+      rating: "",
+      comment: "",
+      images: [],
+    });
+    setImagesPreviews([]);
+    if (onReviewAdded) onReviewAdded();
+
+    toast.success("Review submitted successfully! 🎉");
+  } catch (err) {
+    console.error(err);
+    toast.error(err.message || "Failed to submit review");
+  } finally {
+    setLoading(false);
+  }
+};
 
   // const tripName =
   //   trips.find((t) => t._id === form.tripId)?.tripName || "Loading...";
