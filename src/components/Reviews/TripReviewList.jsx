@@ -13,7 +13,7 @@ export default function TripReviewsList({ destinationId }) {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        let url = `${process.env.NEXT_PUBLIC_API_URL}/api/tripreviews`;
+        let url = `http://localhost:500/api/tripreviews`;
         if (destinationId) url += `?destination_id=${destinationId}`;
 
         const res = await fetch(url);
