@@ -121,16 +121,18 @@ export default function TripReviewForm({ onReviewAdded }) {
       }
 
       const payload = {
-        userEmail: user.email, // same as My Trips
-        userName: user.name || "User", // same source
-        userAvatar:
-          user.photoURL ||
-          `https://ui-avatars.com/api/?name=${user.name}&background=6366f1&color=fff&size=128`,
-        destination_id: tripIdFromURL,
-        rating: parseInt(form.rating),
-        comment: form.comment,
-        images: imagesUrls,
-      };
+  userEmail: user.email,
+  userName: user.fullName || user.name || "User",
+  userAvatar:
+    user.image ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      user.fullName || user.name || "User"
+    )}&background=6366f1&color=fff&size=128`,
+  destination_id: tripIdFromURL,
+  rating: parseInt(form.rating),
+  comment: form.comment,
+  images: imagesUrls,
+};
 
       const res = await fetch("https://travelee-server.vercel.app/api/tripreviews", {
         method: "POST",
