@@ -16,7 +16,7 @@ export default function ReviewForm() {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/reviews");
+        const res = await axios.get("https://travelee-server.vercel.app0/reviews");
         setReviews(res.data);
       } catch (err) {
         console.error("Failed to load reviews:", err);
@@ -52,7 +52,7 @@ export default function ReviewForm() {
       };
 
       // 4. SAVE TO BACKEND
-      const response = await axios.post("http://localhost:5000/reviews", reviewData);
+      const response = await axios.post("https://travelee-server.vercel.app0/reviews", reviewData);
 
       if (response.data.insertedId) {
         setReviews([reviewData, ...reviews]); // Update UI

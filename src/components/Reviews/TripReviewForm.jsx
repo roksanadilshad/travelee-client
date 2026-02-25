@@ -51,7 +51,7 @@ export default function TripReviewForm({ onReviewAdded }) {
   // useEffect(() => {
   //   const fetchTrips = async () => {
   //     try {
-  //       const res = await fetch("http://localhost:500/my-trips");
+  //       const res = await fetch("https://travelee-server.vercel.app/my-trips");
   //       const data = await res.json();
   //       setTrips(data);
   //       // Auto-select
