@@ -1,27 +1,26 @@
-
-import ForgotPasswordFun from '@/components/Auth/ForgotPassword';
+import ResetPassword from '@/components/Auth/ResetPassword';
 import Link from 'next/link';
-
 import React from 'react';
 import { IoPlayBackOutline } from 'react-icons/io5';
 
-const ForgotPassword = () => {
+const ResetPass = () => {
     return (
-      <div className="flex justify-center gap-5 items-center min-h-screen flex-col ">
-        <div >
+      <div className="flex justify-center flex-col gap-5 items-center min-h-screen">
+        <div>
           <Link
             className="px-4 items-center gap-2 flex py-2 text-white text-sm font-medium bg-primary hover:bg-primary/90 rounded-lg transition-colors duration-200"
-            href="/"
+            href="/login"
           >
             <IoPlayBackOutline />
-            Back home
+            Back Login
           </Link>
         </div>
+
         <div>
-          <ForgotPasswordFun></ForgotPasswordFun>
+          <ResetPassword></ResetPassword>
         </div>
       </div>
     );
 };
 
-export default ForgotPassword;
+export default ResetPass;

@@ -3,12 +3,15 @@
 import React, { useState } from "react";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import axios from "axios";
+
 
 const ForgotPasswordFun = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,24 +21,19 @@ const ForgotPasswordFun = () => {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:500/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
+      const res = await axios.patch(
+        "http://localhost:500/user/forgot-password",
+        { email },
+      );
 
-      const data = await res.json();
-
-      if (res.ok) {
+      if (res.status === 200) {
         setMessage("If this email exists, a reset link has been sent.");
         setEmail("");
-      } else {
-        setError(data.message || "Something went wrong");
       }
     } catch (err) {
-      setError("Server error. Please try again.");
+      setError(
+        err?.response?.data?.message || "Server error. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
