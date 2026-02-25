@@ -4,8 +4,9 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 import GoogleProvider from "next-auth/providers/google";
+import GitHubProvider from "next-auth/providers/github";
 
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:500";
 
 export const authOptions = {
   providers: [
@@ -35,9 +36,8 @@ export const authOptions = {
         }
 
         try {
-          // Call backend
           const response = await axios.get(
-            `http://localhost:500/user/email?email=${email}`,
+            `${API_BASE_URL}/user/email?email=${encodeURIComponent(email)}`,
           );
 
           const user = response.data.data;
@@ -73,56 +73,75 @@ export const authOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
+      authorization: { params: { scope: "read:user user:email" } },
+    }),
   ],
-callbacks: {
-  async signIn({ user, account }) {
-    try {
-     
-      const response = await axios.get(
-        `http://localhost:500/user/email?email=${user.email}`
-      );
+  callbacks: {
+    async signIn({ user, account }) {
+      if (!account) return true;
+      if (account.provider === "credentials") return true;
 
-      const currentUser = response.data?.data;
+      const fallbackGithubEmail =
+        account.provider === "github" && account.providerAccountId
+          ? `${account.providerAccountId}@users.noreply.github.com`
+          : null;
+      const email = user?.email || fallbackGithubEmail;
 
-    
-      if (currentUser) {
+      if (!email) {
+        console.warn("OAuth sign-in: missing user email, skipping DB sync.");
         return true;
       }
 
-      
-      await axios.post("http://localhost:500/user", {
-        fullName: user.name,
-        email: user.email,
-        provider: account.provider, 
-        image: user.image || null,
-      });
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/user/email?email=${encodeURIComponent(email)}`,
+        );
 
-      return true;
-    } catch (error) {
-      console.error(
-        "Error saving user:",
-        error.response?.data || error.message
-      );
+        const currentUser = response.data?.data;
 
-     
-      return false;
-    }
+        if (currentUser) {
+          return true;
+        }
+
+        await axios.post(`${API_BASE_URL}/user`, {
+          fullName: user?.name || "OAuth User",
+          email,
+          provider: account.provider,
+          image: user?.image || null,
+        });
+
+        return true;
+      } catch (error) {
+        console.error(
+          "Error saving user (OAuth sync):",
+          error.response?.data || error.message,
+        );
+        // OAuth login should not be denied because of DB sync failure.
+        return true;
+      }
+    },
+
+    async session({ session, token }) {
+      if (session?.user) {
+        session.user.email = token.email;
+        session.user.provider = token.provider;
+      }
+      return session;
+    },
+
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.email = user.email || token.email;
+      }
+      if (account?.provider) {
+        token.provider = account.provider;
+      }
+      return token;
+    },
   },
-
-  async session({ session, token }) {
-    session.user.email = token.email;
-    session.user.provider = token.provider;
-    return session;
-  },
-
-  async jwt({ token, user, account }) {
-    if (user) {
-      token.email = user.email;
-      token.provider = account.provider;
-    }
-    return token;
-  },
-},
   pages: {
     signIn: "/login",
   },
