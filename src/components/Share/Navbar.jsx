@@ -47,7 +47,7 @@ export default function Navbar() {
     { name: "Destinations", href: "/destinations", icon: <Compass className="w-4 h-4" /> },
     ...(user?.email ? [{ name: "Dashboard", href: "/dashboard/my-profile" }] : []),
     ...(user?.email ? [{ name: "Itinerary", href: "/itinerary" }] : []),
-    { name: "Bookings", href: "/dashboard/my-trips", icon: <Briefcase className="w-4 h-4" /> },
+    ...(user?.email ? [{ name: "Bookings", href: "/dashboard/my-trips" }] : []),
     { name: "About", href: "/about", icon: <Info className="w-4 h-4" /> },
     { name: "Contact", href: "/contact", icon: <Phone className="w-4 h-4" /> },
   ];
@@ -62,7 +62,7 @@ export default function Navbar() {
           : "border-transparent bg-transparent py-4"
       }`}
     >
-      <div className="container mx-auto flex items-center justify-between px-6">
+      <div className="container mx-auto flex items-center justify-between px-6 ">
         
         {/* Logo Section */}
         <div className="flex-shrink-0 transition-transform duration-300 hover:scale-105">
@@ -77,22 +77,26 @@ export default function Navbar() {
             const active = isActive(link.href);
             return (
               <Link
-                key={link.name}
-                href={link.href}
-                className={`px-5 py-2 text-sm font-semibold transition-all duration-300 relative rounded-full ${
-                  active
-                    ? "text-primary bg-background shadow-sm"
-                    : "text-gray-300 hover:text-foreground hover:bg-background/50"
-                }`}
-              >
-                {link.name}
-                {active && (
-                   <motion.div 
-                    layoutId="activeNav"
-                    className="absolute inset-0 border-2 border-primary/10 rounded-full -z-10"
-                   />
-                )}
-              </Link>
+  key={link.name}
+  href={link.href}
+  className={`px-5 py-2 text-sm font-semibold transition-all duration-300 relative rounded-full ${
+    active
+      ? "text-primary bg-background shadow-sm"
+      : `${
+          scrolled
+            ? "text-foreground hover:text-primary"
+            : "text-white hover:text-gray-200"
+        } hover:bg-background/50`
+  }`}
+>
+  {link.name}
+  {active && (
+    <motion.div 
+      layoutId="activeNav"
+      className="absolute inset-0 border-2 border-primary/10 rounded-full -z-10"
+    />
+  )}
+</Link>
             );
           })}
         </nav>

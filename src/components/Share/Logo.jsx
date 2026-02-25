@@ -92,22 +92,40 @@ const TraveleeLogo = ({ variant = "nav" }) => {
             </div>
 
             {/* THE TEXT */}
-            <div className="flex flex-col">
-                <h1 className={`lg:text-3xl font-black ${textColor} tracking-[-0.06em] flex items-baseline leading-none`}>
-                    TRAVELEE
-                    <motion.span 
-                        animate={{ opacity: [1, 0.4, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className="text-[#0EA5A4] ml-1"
-                    >●</motion.span>
-                </h1>
-                <div className="flex items-center gap-2 mt-1">
-                    <div className="h-[2px] w-5 bg-gradient-to-r from-[#FF6B6B] to-transparent" />
-                    <span className={`text-[10px]  font-black uppercase tracking-[0.5em] ${subTextColor}`}>
-                        Intelligence Unit
-                    </span>
-                </div>
-            </div>
+           <div className="flex flex-col">
+    {/* Keyframe Injection */}
+    <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes gradient-move {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    `}} />
+
+    <h1 className="lg:text-3xl font-black tracking-[-0.06em] flex items-baseline leading-none">
+        {/* - bg-clip-text: clips the background to the letters
+            - text-transparent: lets the background show through
+            - bg-[length:200%_200%]: makes the gradient larger than the text for movement
+            - animate-[gradient-move_3s_ease_infinite]: applies our custom keyframes
+        */}
+        <span className="bg-gradient-to-r from-[#0EA5A4] via-[#FF6B6B] to-[#0EA5A4] bg-[length:200%_auto] bg-clip-text text-transparent animate-[gradient-move_3s_ease_infinite]">
+            TRAVELEE
+        </span>
+        
+        <motion.span 
+            animate={{ opacity: [1, 0.4, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="text-[#0EA5A4] ml-1"
+        >●</motion.span>
+    </h1>
+
+    <div className="flex items-center gap-2 mt-1">
+        <div className="h-[2px] w-5 bg-gradient-to-r from-[#FF6B6B] to-transparent" />
+        <span className={`text-[10px] font-black uppercase tracking-[0.5em] ${subTextColor}`}>
+            Intelligence Unit
+        </span>
+    </div>
+</div>
         </div>
     );
 };
