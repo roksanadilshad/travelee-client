@@ -12,7 +12,7 @@ const FilterAndSearch = () => {
     const [month, setMonth] = useState("Any");
     const [budget, setBudget] = useState("");
     const [rating, setRating] = useState(0);
-
+    const [sort, setSort] = useState("");
 
     const handleSearch = () => {
         const params = new URLSearchParams();
@@ -22,10 +22,10 @@ const FilterAndSearch = () => {
         if (month !== "Any") params.append("month", month);
         if (budget) params.append("budget", budget);
         if (rating) params.append("rating", rating);
+        if (sort) params.append("sort", sort);
 
         router.push(`/destinations?${params.toString()}`);
     };
-
 
     const handleClear = () => {
         setKeyword("");
@@ -33,6 +33,8 @@ const FilterAndSearch = () => {
         setMonth("Any");
         setBudget("");
         setRating(0);
+        setSort("");
+
         router.replace("/destinations");
     };
 
@@ -40,7 +42,6 @@ const FilterAndSearch = () => {
         <div className="sticky top-6">
             <div className="w-full bg-white/80 backdrop-blur rounded-lg shadow-lg p-6 space-y-6 border">
 
-                {/* Header */}
                 <div>
                     <h3 className="text-xl font-bold">Search & Filter</h3>
                     <p className="text-sm text-gray-500">
@@ -50,7 +51,24 @@ const FilterAndSearch = () => {
 
                 <div className="h-px bg-gray-200" />
 
-                {/* Keywords */}
+
+                {/* 🔥 ADDED */}
+                <div>
+                    <label className="block text-sm font-medium mb-2">
+                        Sort By
+                    </label>
+                    <select
+                        value={sort}
+                        onChange={(e) => setSort(e.target.value)}
+                        className="w-full rounded-full border px-5 py-3"
+                    >
+                        <option value="">Default</option>
+                        <option value="priceLow">Price: Low → High</option>
+                        <option value="priceHigh">Price: High → Low</option>
+                    </select>
+                </div>
+
+
                 <div>
                     <label className="block text-sm font-medium mb-2">
                         Keywords
@@ -67,7 +85,6 @@ const FilterAndSearch = () => {
                     </div>
                 </div>
 
-                {/* Duration */}
                 <div>
                     <label className="block text-sm font-medium mb-2">
                         Duration
@@ -84,7 +101,6 @@ const FilterAndSearch = () => {
                     </select>
                 </div>
 
-                {/* Month */}
                 <div>
                     <label className="block text-sm font-medium mb-2">
                         Month <span className="text-xs text-gray-500 mt-1">(Best Time to Visit)</span>
@@ -110,7 +126,6 @@ const FilterAndSearch = () => {
                     </select>
                 </div>
 
-                {/* Price */}
                 <div>
                     <label className="block text-sm font-medium mb-2">
                         Your Budget (per person)
@@ -130,7 +145,7 @@ const FilterAndSearch = () => {
                     </p>
                 </div>
 
-                {/* Rating */}
+
                 <div>
                     <label className="block text-sm font-medium mb-2">
                         Minimum Rating
@@ -147,7 +162,6 @@ const FilterAndSearch = () => {
                     </div>
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex gap-3 pt-2">
                     <button
                         onClick={handleSearch}
@@ -165,7 +179,6 @@ const FilterAndSearch = () => {
 
             </div>
         </div>
-
     );
 };
 
