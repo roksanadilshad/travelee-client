@@ -7,11 +7,16 @@ export default function TripReviewCard({ review, onImageClick }) {
     <div className="flex flex-col rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-3 px-5 pt-5 pb-4 border-b border-gray-50">
-        <img
-          src={review.user.avatar}
-          alt={review.user.name}
-          className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-100"
-        />
+       <img
+  src={
+    review.user.avatar ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      review.user.name
+    )}&background=6366f1&color=fff&size=128`
+  }
+  alt={review.user.name}
+  className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-100"
+/>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-gray-800 text-sm truncate">
             {review.user.name}
