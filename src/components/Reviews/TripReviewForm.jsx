@@ -36,7 +36,7 @@ export default function TripReviewForm({ onReviewAdded }) {
   //   const fetchUser = async () => {
   //     try {
   //       const res = await fetch(
-  //         "http://localhost:500/user/email?email=rimon@gmail.com",
+  //         "https://travelee-server.vercel.app/user/email?email=rimon@gmail.com",
   //       );
   //       const data = await res.json();
   //       if (data.success) setUser(data.data);

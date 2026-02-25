@@ -26,7 +26,7 @@ const ResetPassword = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:500/user/reset-password",
+        "https://travelee-server.vercel.app/user/reset-password",
         {
           token,
           newPassword: password,
