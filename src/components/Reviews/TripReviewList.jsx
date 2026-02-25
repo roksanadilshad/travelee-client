@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import TripReviewCard from "./TripReviewCard";
 import Lightbox from "./Lightbox";
 
-export default function TripReviewsList({ tripId }) {
+ 
+export default function TripReviewsList({ destinationId }) {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lightbox, setLightbox] = useState(null);
@@ -12,8 +13,8 @@ export default function TripReviewsList({ tripId }) {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        let url = "https://travelee-server.vercel.app/api/tripreviews";
-        if (tripId) url += `?tripId=${tripId}`;
+        let url = `http://localhost:500/api/tripreviews`;
+        if (destinationId) url += `?destination_id=${destinationId}`;
 
         const res = await fetch(url);
         const data = await res.json();
@@ -25,7 +26,7 @@ export default function TripReviewsList({ tripId }) {
       }
     };
     fetchReviews();
-  }, [tripId]);
+  }, [destinationId]);
 
   if (loading) return <LoadingSkeleton />;
   if (!reviews.length) return <NoReviews />;

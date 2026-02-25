@@ -423,7 +423,7 @@ if (!tripData.userEmail) {
                   </summary>
                   <p className="mt-3 text-gray-600 text-sm">
                     Yes! We offer customizable itineraries. Contact our team to
-                    discuss your preferences and we'll create a personalized
+                    discuss your preferences and we will create a personalized
                     experience for you.
                   </p>
                 </details>
@@ -610,7 +610,7 @@ if (!tripData.userEmail) {
                   </div>
                 ))}
               </div> */}
-              <TripReviewsList />
+              <TripReviewsList destinationId={destination.destination_id} />
             </motion.div>
           </div>
 

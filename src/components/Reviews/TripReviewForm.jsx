@@ -14,11 +14,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function TripReviewForm({ onReviewAdded }) {
   const searchParams = useSearchParams();
   const tripIdFromURL = searchParams.get("tripId");
-  const [user, setUser] = useState(null);
+  const [ setUser] = useState(null);
   // const [trips, setTrips] = useState([]);
   const [form, setForm] = useState({
     tripId: tripIdFromURL || "",
@@ -29,21 +30,22 @@ export default function TripReviewForm({ onReviewAdded }) {
   const [imagesPreviews, setImagesPreviews] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch user
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await fetch(
-          "https://travelee-server.vercel.app/user/email?email=rimon@gmail.com",
-        );
-        const data = await res.json();
-        if (data.success) setUser(data.data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchUser();
-  }, []);
+  const { user } = useAuth();
+  // // Fetch user
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     try {
+  //       const res = await fetch(
+  //         "http://localhost:500/user/email?email=rimon@gmail.com",
+  //       );
+  //       const data = await res.json();
+  //       if (data.success) setUser(data.data);
+  //     } catch (err) {
+  //       console.error(err);
+  //     }
+  //   };
+  //   fetchUser();
+  // }, []);
 
   // Fetch trips
   // useEffect(() => {
@@ -113,23 +115,24 @@ export default function TripReviewForm({ onReviewAdded }) {
         imagesUrls = await Promise.all(form.images.map((f) => uploadImage(f)));
       }
 
-      // const tripName =
-      //   trips.find((t) => t._id === form.tripId)?.tripName || "Your Trip";
+      if (!user || !user.email) {
+        alert("Please login first to submit a review 🙏");
+        return;
+      }
 
       const payload = {
-        userId: user._id,
-        userName: user.fullName,
+        userEmail: user.email, // same as My Trips
+        userName: user.name || "User", // same source
         userAvatar:
-          user.image ||
-          `https://ui-avatars.com/api/?name=${user.fullName}&background=6366f1&color=fff&size=128`,
-        // tripId: form.tripId,
+          user.photoURL ||
+          `https://ui-avatars.com/api/?name=${user.name}&background=6366f1&color=fff&size=128`,
         destination_id: tripIdFromURL,
         rating: parseInt(form.rating),
         comment: form.comment,
         images: imagesUrls,
       };
 
-      const res = await fetch("https://travelee-server.vercel.app/api/tripreviews", {
+      const res = await fetch("http://localhost:500/api/tripreviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -137,7 +140,12 @@ export default function TripReviewForm({ onReviewAdded }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to add review");
 
-      setForm({ destination_id: tripIdFromURL, rating: "", comment: "", images: [] });
+      setForm({
+        destination_id: tripIdFromURL,
+        rating: "",
+        comment: "",
+        images: [],
+      });
       setImagesPreviews([]);
       if (onReviewAdded) onReviewAdded();
       alert("Review submitted successfully!");
