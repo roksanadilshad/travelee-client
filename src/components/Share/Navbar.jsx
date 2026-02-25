@@ -2,12 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LogOut, User, Compass, Briefcase, Phone, Info } from "lucide-react";
+import { Menu, LogOut, User, Compass, Briefcase, Phone, Info } from "lucide-react";
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetTrigger, 
+  SheetTitle, 
+  SheetDescription 
+} from "@/components/ui/sheet"; // Fixed Import
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -30,7 +36,6 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const { user, logout } = useAuth();
 
-  // Handle scroll effect for glassmorphism
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
@@ -42,7 +47,7 @@ export default function Navbar() {
     { name: "Destinations", href: "/destinations", icon: <Compass className="w-4 h-4" /> },
     ...(user?.email ? [{ name: "Dashboard", href: "/dashboard/my-profile" }] : []),
     ...(user?.email ? [{ name: "Itinerary", href: "/itinerary" }] : []),
-    { name: "Bookings", href: "/bookings", icon: <Briefcase className="w-4 h-4" /> },
+    { name: "Bookings", href: "/dashboard/my-trips", icon: <Briefcase className="w-4 h-4" /> },
     { name: "About", href: "/about", icon: <Info className="w-4 h-4" /> },
     { name: "Contact", href: "/contact", icon: <Phone className="w-4 h-4" /> },
   ];
@@ -61,7 +66,9 @@ export default function Navbar() {
         
         {/* Logo Section */}
         <div className="flex-shrink-0 transition-transform duration-300 hover:scale-105">
-          <Logo variant="nav"/>
+          <Link href='/'>
+            <Logo variant="nav"/>
+          </Link>
         </div>
 
         {/* Desktop Navigation */}
@@ -75,7 +82,7 @@ export default function Navbar() {
                 className={`px-5 py-2 text-sm font-semibold transition-all duration-300 relative rounded-full ${
                   active
                     ? "text-primary bg-background shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                    : "text-gray-300 hover:text-foreground hover:bg-background/50"
                 }`}
               >
                 {link.name}
@@ -89,7 +96,10 @@ export default function Navbar() {
             );
           })}
         </nav>
-        <LanguageToggle />
+
+        <div className="hidden lg:block">
+          <LanguageToggle />
+        </div>
 
         {/* Action Buttons */}
         <div className="hidden lg:flex items-center gap-4">
@@ -99,7 +109,7 @@ export default function Navbar() {
                 <Button variant="ghost" className="relative h-10 w-10 rounded-full border border-border/50 p-0 overflow-hidden">
                   <Avatar>
                     <AvatarImage src={user?.image} />
-                    <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                    <AvatarFallback className="bg-primary text-secondary font-bold">
                       {user?.name?.charAt(0) || "U"}
                     </AvatarFallback>
                   </Avatar>
@@ -108,22 +118,22 @@ export default function Navbar() {
               <DropdownMenuContent className="w-56 mt-2 rounded-2xl p-2" align="end">
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-bold leading-none">{user?.name}</p>
-                    <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                    <p className="text-primary text-sm font-bold leading-none">{user?.name}</p>
+                    <p className="text-xs text-gray-300 leading-none ">{user?.email}</p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link href="/dashboard/my-profile" className="cursor-pointer rounded-lg">
-                    <User className="mr-2 h-4 w-4" /> Profile
+                  <Link href="/dashboard/my-profile" className="cursor-pointer text-primary rounded-lg">
+                    <User className="mr-2 text-accent h-4 w-4" /> Profile
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
-                  className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer rounded-lg"
+                  className="focus:bg-destructive/10 focus:text-destructive cursor-pointer text-primary rounded-lg"
                   onClick={() => { logout(); toast.success("Signed out successfully"); }}
                 >
-                  <LogOut className="mr-2 h-4 w-4" /> Logout
+                  <LogOut className="mr-2 text-accent h-4 w-4" /> Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -152,9 +162,18 @@ export default function Navbar() {
                 </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[300px] border-l-0 bg-background/95 backdrop-blur-2xl">
+                    {/* ACCESSIBILITY FIX START */}
+                    <div className="sr-only">
+                        <SheetTitle>Navigation Menu</SheetTitle>
+                        <SheetDescription>Access your account and site navigation</SheetDescription>
+                    </div>
+                    {/* ACCESSIBILITY FIX END */}
+
                     <div className="flex flex-col h-full py-6">
                         <div className="flex items-center justify-between mb-8 px-2">
-                            <Logo />
+                         <Link href='/' onClick={() => setIsOpen(false)}>
+                            <Logo variant="footer"/>
+                         </Link>
                         </div>
                         
                         <nav className="flex flex-col gap-2">
@@ -174,7 +193,10 @@ export default function Navbar() {
                         ))}
                         </nav>
 
-                        <div className="mt-auto pt-6 border-t border-border/50">
+                        <div className="mt-auto pt-6 border-t border-border/50 flex flex-col gap-4">
+                            <div className="px-2">
+                              <LanguageToggle/>
+                            </div>
                             {!user ? (
                                 <div className="flex flex-col gap-3">
                                     <LogInButton />
@@ -185,7 +207,7 @@ export default function Navbar() {
                             ) : (
                                 <Button 
                                     variant="destructive" 
-                                    className="w-full rounded-2xl py-6 font-bold"
+                                    className="w-full rounded-2xl py-6 text-white font-bold"
                                     onClick={() => { logout(); setIsOpen(false); }}
                                 >
                                     <LogOut className="mr-2 h-4 w-4" /> Logout

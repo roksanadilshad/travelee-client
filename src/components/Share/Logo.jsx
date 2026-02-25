@@ -15,10 +15,10 @@ const TraveleeLogo = ({ variant = "nav" }) => {
         <div 
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className="relative flex items-center gap-5 cursor-pointer py-2 px-5 group select-none transition-all duration-500"
+            className="relative flex items-center gap-5 cursor-pointer py-2 lg:px-5 group select-none transition-all duration-500"
         >
             {/* THE TACTICAL RADAR ICON */}
-            <div className="relative w-14 h-14 shrink-0">
+            <div className="relative w-4 h-4 lg:w-10 lg:h-10 shrink-0">
                 <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible">
                     {/* Outer Glow / Glass Frame */}
                     <circle cx="50" cy="50" r="48" fill="none" className={`${isFooter ? 'stroke-slate-200' : 'stroke-white/10'}`} strokeWidth="0.5" />
@@ -93,7 +93,7 @@ const TraveleeLogo = ({ variant = "nav" }) => {
 
             {/* THE TEXT */}
             <div className="flex flex-col">
-                <h1 className={`text-3xl font-black ${textColor} tracking-[-0.06em] flex items-baseline leading-none`}>
+                <h1 className={`lg:text-3xl font-black ${textColor} tracking-[-0.06em] flex items-baseline leading-none`}>
                     TRAVELEE
                     <motion.span 
                         animate={{ opacity: [1, 0.4, 1] }}
@@ -103,7 +103,7 @@ const TraveleeLogo = ({ variant = "nav" }) => {
                 </h1>
                 <div className="flex items-center gap-2 mt-1">
                     <div className="h-[2px] w-5 bg-gradient-to-r from-[#FF6B6B] to-transparent" />
-                    <span className={`text-[11px] font-black uppercase tracking-[0.5em] ${subTextColor}`}>
+                    <span className={`text-[10px]  font-black uppercase tracking-[0.5em] ${subTextColor}`}>
                         Intelligence Unit
                     </span>
                 </div>
