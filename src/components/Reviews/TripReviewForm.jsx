@@ -132,7 +132,7 @@ export default function TripReviewForm({ onReviewAdded }) {
         images: imagesUrls,
       };
 
-      const res = await fetch("http://localhost:500/api/tripreviews", {
+      const res = await fetch("https://travelee-server.vercel.app/api/tripreviews", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

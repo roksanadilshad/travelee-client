@@ -23,7 +23,7 @@ const ForgotPasswordFun = () => {
     try {
 <<<<<<< HEAD
       const res = await axios.patch(
-        "http://localhost:500/user/forgot-password",
+        `${process.env.NEXT_PUBLIC_API_URL}/user/forgot-password`,
         { email },
       );
 =======
