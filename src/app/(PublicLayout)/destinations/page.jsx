@@ -18,7 +18,7 @@ export default async function DestinationsPage({ searchParams }) {
 
   // Fetching
   const res = await fetch(
-    `http://localhost:500/destinations?${query}`,
+    `https://travelee-server.vercel.app/destinations?${query}`,
     { cache: "no-store" }
   );
   if (!res.ok) {

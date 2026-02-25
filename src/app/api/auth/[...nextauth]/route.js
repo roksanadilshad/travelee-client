@@ -37,7 +37,7 @@ export const authOptions = {
         try {
           // Call backend
           const response = await axios.get(
-            `http://localhost:500/user/email?email=${email}`,
+            `https://travelee-server.vercel.app/user/email?email=${email}`,
           );
 
           const user = response.data.data;
@@ -79,7 +79,7 @@ callbacks: {
     try {
      
       const response = await axios.get(
-        `http://localhost:500/user/email?email=${user.email}`
+        `https://travelee-server.vercel.app/user/email?email=${user.email}`
       );
 
       const currentUser = response.data?.data;
@@ -90,7 +90,7 @@ callbacks: {
       }
 
       
-      await axios.post("http://localhost:500/user", {
+      await axios.post("https://travelee-server.vercel.app/user", {
         fullName: user.name,
         email: user.email,
         provider: account.provider, 

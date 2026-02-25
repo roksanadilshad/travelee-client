@@ -79,7 +79,7 @@ const Banner = () => {
     return (
         <section 
             onMouseMove={handleMouseMove}
-            className="relative w-full h-[100vh] flex items-center justify-center overflow-hidden bg-black"
+            className="relative w-full h-[100vh] flex items-center justify-center overflow-hidden lg:pt-0 pt-10 bg-black"
         >
             {/* 1. IMMERSIVE BACKGROUND LAYER */}
             <AnimatePresence mode="wait">
@@ -107,7 +107,7 @@ const Banner = () => {
             </AnimatePresence>
 
             {/* 2. CONTENT LAYER */}
-            <div className="relative z-10 w-11/12 max-w-5xl mx-auto text-center">
+            <div className="relative z-10 w-11/12 max-w-5xl mx-auto text-center ">
                 <AnimatePresence mode="wait">
                     <motion.div
                         // FIX: Key includes 'lang' so text refreshes on toggle
@@ -116,16 +116,16 @@ const Banner = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -30 }}
                         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                        className="flex flex-col items-center space-y-6"
+                        className="flex flex-col items-center space-y-2"
                     >
                         {/* Glass Badge */}
-                        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-[10px] uppercase tracking-[0.3em]">
+                        <div className="lg:flex items-center gap-2 px-4 py-1.5 hidden rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-[10px] uppercase tracking-[0.3em]">
                             {SLIDE_DATA[index].icon}
                             {SLIDE_DATA[index].tag}
                         </div>
 
                         {/* Immersive Typography */}
-                        <h1 className="text-6xl md:text-8xl font-black text-white tracking-tighter leading-none">
+                        <h1 className="text-6xl mt-20 md:text-8xl font-black text-white tracking-tighter leading-none">
                             {SLIDE_DATA[index].title} <br />
                             <span className="text-[#0EA5A4] drop-shadow-[0_0_30px_rgba(14,165,164,0.5)]">
                                 {SLIDE_DATA[index].highlight}
