@@ -51,7 +51,7 @@ export function SignupForm({ className, ...props }) {
       };
 
       // FIX 2: Use an Env variable or a relative path for production
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:500";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://travelee-server.vercel.app";
       
       await axios.post(`${apiUrl}/user`, userData);
       toast.success("Registration Successful!");

@@ -21,10 +21,13 @@ const ForgotPasswordFun = () => {
     setError("");
 
     try {
-      const res = await axios.patch(
-        "http://localhost:500/user/forgot-password",
-        { email },
-      );
+      const res = await fetch("https://travelee-server.vercel.app/user/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
 
       if (res.status === 200) {
         setMessage("If this email exists, a reset link has been sent.");

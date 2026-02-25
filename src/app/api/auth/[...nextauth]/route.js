@@ -37,7 +37,7 @@ export const authOptions = {
 
         try {
           const response = await axios.get(
-            `${API_BASE_URL}/user/email?email=${encodeURIComponent(email)}`,
+            `https://travelee-server.vercel.app/user/email?email=${email}`,
           );
 
           const user = response.data.data;

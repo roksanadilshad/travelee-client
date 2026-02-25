@@ -37,7 +37,7 @@ if (trip.days.some(day => day.activities.length === 0)) {
 
   try {
     // 2. API Call to your Node.js server
-    const response = await fetch('http://localhost:500/itineraries', {
+    const response = await fetch('https://travelee-server.vercel.app/itineraries', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ Swal.fire({
 
 const handleDelete = async (id) => {
   const res = await fetch(
-    `http://localhost:500/itineraries/${id}`,
+    `https://travelee-server.vercel.app/itineraries/${id}`,
     { method: "DELETE" }
   );
 

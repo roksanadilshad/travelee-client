@@ -15,11 +15,12 @@ const TrendingNow = () => {
     const { t } = useLanguage(); // INITIALIZE TRANSLATOR
     const [destinations, setDestinations] = useState([]);
     const [loading, setLoading] = useState(true);
+    const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
     useEffect(() => {
         const fetchTrending = async () => {
             try {
-                const res = await axios.get('http://localhost:500/destinations/trending');
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/destinations/trending`);
                 setDestinations(res.data);
                 setLoading(false);
             } catch (err) {
