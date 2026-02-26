@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "react-toastify";
 
 export default function TripReviewForm({ onReviewAdded }) {
   const searchParams = useSearchParams();
@@ -75,17 +76,13 @@ export default function TripReviewForm({ onReviewAdded }) {
     if (!form.tripId && !tripIdFromURL) return alert("Trip ID missing!");
     if (!form.rating) return alert("Please select a rating!");
 
-    setLoading(true);
-    try {
-      let imagesUrls = [];
-      if (form.images.length > 0) {
-        imagesUrls = await Promise.all(form.images.map((f) => uploadImage(f)));
-      }
+  if (!form.tripId) return toast.error("Trip ID missing!");
+  if (!form.rating) return toast.warning("Please select a rating!");
 
-      if (!user || !user.email) {
-        alert("Please login first to submit a review 🙏");
-        return;
-      }
+  if (!user || !user.email) {
+    toast.info("Please login first to submit a review 🙏");
+    return;
+  }
 
       const payload = {
         userEmail: user.email,
