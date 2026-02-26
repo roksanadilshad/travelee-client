@@ -20,6 +20,7 @@ import {
 import Link from "next/link";
 import TripReviewsList from "@/components/Reviews/TripReviewList";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "react-toastify";
 import { useLanguage } from "@/context/LanguageContext";
 
 const DestinationDetailsCard = ({ destination }) => {
@@ -44,45 +45,46 @@ const handleAddToMyTrips = async (e) => {
   e.preventDefault();
 
   if (!user || !user.email) {
-    alert("Please login first to save trips 🙏");
-    return;
+    return toast.info("Please login first to save trips 🙏");
   }
 
+  const tripData = {
+    destination_id: destination.destination_id || "d2001",
+    country: destination.country,
+    startDate,
+    endDate,
+    duration,
+    city: destination.city,
+    region: destination.region || "",
+    media: {
+      cover_image: destination.media?.cover_image,
+    },
+    userEmail: user?.email ?? "",
+    userName: user?.name,
+  };
 
-const tripData = {
-  destination_id: destination.destination_id || "d2001",
-  country: destination.country,
-  startDate,
-  endDate,
-  duration,
-  city: destination.city,
-  region: destination.region || "",
-  media: {
-    cover_image: destination.media?.cover_image,
-  },
-  userEmail: user?.email ?? "", // <-- must not be empty
-  userName: user?.name,
-};
-
-if (!tripData.userEmail) {
-  alert("Please login first to save trips 🙏");
-  return;
-}
-
-  const res = await fetch("https://travelee-server.vercel.app/my-trips", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(tripData),
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    alert(data.message || "Failed to save trip");
-    return;
+  if (!tripData.userEmail) {
+    return toast.info("Please login first to save trips 🙏");
   }
 
-  alert("Trip added to My Trips! ✅");
+  try {
+    const res = await fetch("https://travelee-server.vercel.app/my-trips", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(tripData),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return toast.error(data.message || "Failed to save trip");
+    }
+
+    toast.success("Trip added to My Trips! ✅");
+  } catch (err) {
+    console.error(err);
+    toast.error(err.message || "Failed to save trip");
+  }
 };
 
   return (
