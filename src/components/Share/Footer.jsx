@@ -5,13 +5,14 @@ import { motion } from 'framer-motion';
 import { Facebook, Twitter, Instagram, Linkedin, Send, Activity } from "lucide-react";
 import { useLanguage } from '@/context/LanguageContext';
 import Logo from "./Logo";
+import { FaXTwitter } from 'react-icons/fa6';
 
 const Footer = () => {
   const { t } = useLanguage();
 
   const socialLinks = [
     { Icon: Facebook, color: 'hover:text-[#1877F2]', hoverBg: 'hover:bg-[#1877F2]/10', href: '#' },
-    { Icon: Twitter, color: 'hover:text-[#1DA1F2]', hoverBg: 'hover:bg-[#1DA1F2]/10', href: '#' },
+    { Icon: FaXTwitter, color: 'hover:text-[#1DA1F2]', hoverBg: 'hover:bg-[#1DA1F2]/10', href: '#' },
     { Icon: Instagram, color: 'hover:text-[#E4405F]', hoverBg: 'hover:bg-[#E4405F]/10', href: '#' },
     { Icon: Linkedin, color: 'hover:text-[#0A66C2]', hoverBg: 'hover:bg-[#0A66C2]/10', href: '#' },
   ];
