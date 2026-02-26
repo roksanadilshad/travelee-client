@@ -31,7 +31,7 @@ const Footer = () => {
       <div className="container mx-auto px-6">
         
         {/* NEWSLETTER ISLAND */}
-        <div className="bg-[#0EA5A4] rounded-2xl p-8 md:p-14 mb-24 flex flex-col lg:flex-row items-center justify-between gap-10 relative overflow-hidden shadow-2xl shadow-[#0ea5a41a]">
+        <div className="bg-[#0EA5A4] rounded-2xl p-8 md:p-14 mb-10 flex flex-col lg:flex-row items-center justify-between gap-10 relative overflow-hidden shadow-2xl shadow-[#0ea5a41a]">
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]" />
           
           <div className="relative z-10 max-w-xl text-center lg:text-left">
@@ -115,13 +115,13 @@ const Footer = () => {
               </span>
             </div> */}
             <div className="h-px w-8 bg-slate-800 hidden md:block" />
-            <p className="text-slate-600 text-[10px] font-black uppercase tracking-[0.2em] text-center md:text-left">
+            <p className="text-slate-600 text-[10px] font-black py-4 uppercase tracking-[0.2em] text-center md:text-left">
               © {new Date().getFullYear()} Travelee. {t('footer.rights')}
             </p>
           </div>
 
           {/* RIGHT: SOCIALS */}
-          <div className="flex items-center gap-3">
+          <div className="flex py-2 items-center gap-3">
             <span className="text-primary-700 text-[9px] font-black uppercase tracking-[0.3em] mr-2 hidden lg:block">Command Centers</span>
             {socialLinks.map(({ Icon, color, hoverBg, href }, idx) => (
               <motion.a

@@ -79,7 +79,7 @@ const Banner = () => {
     return (
         <section 
             onMouseMove={handleMouseMove}
-            className="relative w-full h-[100vh] flex items-center justify-center overflow-hidden bg-black"
+            className="relative w-full h-[100vh] flex items-center justify-center overflow-hidden lg:pt-0 pt-10 bg-black"
         >
             {/* 1. IMMERSIVE BACKGROUND LAYER */}
             <AnimatePresence mode="wait">
@@ -116,7 +116,7 @@ const Banner = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -30 }}
                         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                        className="flex flex-col items-center space-y-6"
+                        className="flex flex-col items-center space-y-2"
                     >
                         {/* Glass Badge */}
                         <div className="lg:flex items-center gap-2 px-4 py-1.5 hidden rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold text-[10px] uppercase tracking-[0.3em]">

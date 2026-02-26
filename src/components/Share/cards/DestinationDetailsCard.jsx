@@ -21,11 +21,13 @@ import Link from "next/link";
 import TripReviewsList from "@/components/Reviews/TripReviewList";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "react-toastify";
+import { useLanguage } from "@/context/LanguageContext";
 
 const DestinationDetailsCard = ({ destination }) => {
   console.log(destination);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const { t } = useLanguage();
 
   // Duration calculation in days
   let duration = 0;
@@ -90,7 +92,7 @@ const handleAddToMyTrips = async (e) => {
       <div className="max-w-7xl mx-auto px-6 py-8">
         <section className="relative">
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="grid   lg:grid-cols-3 gap-8 items-start">
           {/* Main Content */}
           <div className="lg:col-span-2">
             {/* Breadcrumb */}
@@ -617,17 +619,17 @@ const handleAddToMyTrips = async (e) => {
           </div>
 
           {/* Sidebar */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="lg:col-span-1 lg:space-y-6">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5 }}
-              className="bg-white rounded-xl shadow-lg p-6 lg:sticky lg:top-24 top-24 fixed right-20"
+              className="bg-white rounded-xl shadow-lg p-6 lg:sticky lg:top-24"
             >
               {/* Price */}
               <div className="mb-6 pb-6 border-b border-gray-200">
                 <div className="flex items-baseline mb-1">
-                  <span className="text-4xl font-bold text-blue-600">
+                  <span className="text-4xl font-bold text-primary">
                     {destination.price.split("-")[0]}
                   </span>
                   <span className="text-gray-500 ml-2">/ person</span>
@@ -638,7 +640,7 @@ const handleAddToMyTrips = async (e) => {
               </div>
 
               {/* Booking Form */}
-              <div className="space-y-4 mb-6">
+              <div className="space-y-4 mb-6 ">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Check In
@@ -675,7 +677,7 @@ const handleAddToMyTrips = async (e) => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full bg-blue-600 text-white py-3.5 rounded-lg font-semibold mb-3 hover:bg-blue-700 transition-colors"
+                className="w-full bg-primary text-white py-3.5 rounded-lg font-semibold mb-3 hover:bg-green-900 transition-colors"
               >
                 Book Now
               </motion.button>
@@ -762,7 +764,7 @@ const handleAddToMyTrips = async (e) => {
 
                 <button
                   type="submit"
-                  className="w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-600 transition"
+                  className="w-full bg-accent text-white py-2 rounded-md hover:bg-red-700 transition"
                 >
                   Save to My Trips
                 </button>

@@ -15,10 +15,10 @@ const TraveleeLogo = ({ variant = "nav" }) => {
         <div 
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className="relative flex items-center gap-5 cursor-pointer py-2 px-5 group select-none transition-all duration-500"
+            className="relative flex items-center gap-5 cursor-pointer py-2 lg:px-5 group select-none transition-all duration-500"
         >
             {/* THE TACTICAL RADAR ICON */}
-            <div className="relative w-14 h-14 shrink-0">
+            <div className="relative w-4 h-4 lg:w-10 lg:h-10 shrink-0">
                 <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible">
                     {/* Outer Glow / Glass Frame */}
                     <circle cx="50" cy="50" r="48" fill="none" className={`${isFooter ? 'stroke-slate-200' : 'stroke-white/10'}`} strokeWidth="0.5" />
@@ -92,22 +92,40 @@ const TraveleeLogo = ({ variant = "nav" }) => {
             </div>
 
             {/* THE TEXT */}
-            <div className="flex flex-col">
-                <h1 className={`text-3xl font-black ${textColor} tracking-[-0.06em] flex items-baseline leading-none`}>
-                    TRAVELEE
-                    <motion.span 
-                        animate={{ opacity: [1, 0.4, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                        className="text-[#0EA5A4] ml-1"
-                    >●</motion.span>
-                </h1>
-                <div className="flex items-center gap-2 mt-1">
-                    <div className="h-[2px] w-5 bg-gradient-to-r from-[#FF6B6B] to-transparent" />
-                    <span className={`text-[11px] font-black uppercase tracking-[0.5em] ${subTextColor}`}>
-                        Intelligence Unit
-                    </span>
-                </div>
-            </div>
+           <div className="flex flex-col">
+    {/* Keyframe Injection */}
+    <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes gradient-move {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    `}} />
+
+    <h1 className="lg:text-3xl font-black tracking-[-0.06em] flex items-baseline leading-none">
+        {/* - bg-clip-text: clips the background to the letters
+            - text-transparent: lets the background show through
+            - bg-[length:200%_200%]: makes the gradient larger than the text for movement
+            - animate-[gradient-move_3s_ease_infinite]: applies our custom keyframes
+        */}
+        <span className="bg-gradient-to-r from-[#0EA5A4] via-[#FF6B6B] to-[#0EA5A4] bg-[length:200%_auto] bg-clip-text text-transparent animate-[gradient-move_3s_ease_infinite]">
+            TRAVELEE
+        </span>
+        
+        <motion.span 
+            animate={{ opacity: [1, 0.4, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="text-[#0EA5A4] ml-1"
+        >●</motion.span>
+    </h1>
+
+    <div className="flex items-center gap-2 mt-1">
+        <div className="h-[2px] w-5 bg-gradient-to-r from-[#FF6B6B] to-transparent" />
+        <span className={`text-[10px] font-black uppercase tracking-[0.5em] ${subTextColor}`}>
+            Intelligence Unit
+        </span>
+    </div>
+</div>
         </div>
     );
 };
