@@ -15,7 +15,8 @@ export default function Search() {
     const handleSearch = (e) => {
         e.preventDefault();
         if (searchTerm.trim()) {
-            router.push(`destinations?city=${searchTerm}`);
+            router.push(`/destinations?city=${searchTerm}`);
+           
         }
     };
 
@@ -79,7 +80,7 @@ export default function Search() {
                 {['Bali', 'Paris', 'Tokyo', 'Swiss Alps'].map((city) => (
                     <button 
                         key={city}
-                        onClick={() => router.push(`destinations?city=${city}`)}
+                        onClick={() => router.push(`/destinations?city=${city}`)}
                         className="text-xs font-semibold text-[#0EA5A4] hover:text-[#FF6B6B] transition-colors whitespace-nowrap"
                     >
                         {t(city)}
