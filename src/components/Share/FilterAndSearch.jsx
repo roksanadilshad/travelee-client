@@ -1,8 +1,14 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
-import { FaSearch, FaStar, FaRegClock, FaMoneyBillWave, FaSortAmountDown } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { 
+    FaSearch, 
+    FaStar, 
+    FaRegClock, 
+    FaMoneyBillWave, 
+    FaSortAmountDown 
+} from "react-icons/fa";
 import { useLanguage } from "@/context/LanguageContext";
 
 const FilterAndSearch = () => {
@@ -10,24 +16,42 @@ const FilterAndSearch = () => {
     const searchParams = useSearchParams();
     const { t } = useLanguage();
 
-    const [keyword, setKeyword] = useState(searchParams.get("city") || "");
-    const [duration, setDuration] = useState(searchParams.get("duration") || "Any");
-    const [budget, setBudget] = useState(searchParams.get("budget") || "");
-    const [rating, setRating] = useState(Number(searchParams.get("rating")) || 0);
-    const [sort, setSort] = useState(searchParams.get("sort") || "");
+    // ✅ Initialize safely (NOT directly from searchParams)
+    const [keyword, setKeyword] = useState("");
+    const [duration, setDuration] = useState("Any");
+    const [budget, setBudget] = useState("");
+    const [rating, setRating] = useState(0);
+    const [sort, setSort] = useState("");
+
+    // ✅ Fix hydration issue in production
+    useEffect(() => {
+        if (!searchParams) return;
+
+        setKeyword(searchParams.get("city") || "");
+        setDuration(searchParams.get("duration") || "Any");
+        setBudget(searchParams.get("budget") || "");
+        setRating(Number(searchParams.get("rating")) || 0);
+        setSort(searchParams.get("sort") || "");
+    }, [searchParams]);
 
     const handleSearch = () => {
         const params = new URLSearchParams();
+
         if (keyword) params.append("city", keyword);
         if (duration !== "Any") params.append("duration", duration);
         if (budget) params.append("budget", budget);
-        if (rating) params.append("rating", rating);
+        if (rating) params.append("rating", rating.toString());
         if (sort) params.append("sort", sort);
+
         router.push(`/destinations?${params.toString()}`);
     };
 
     const handleClear = () => {
-        setKeyword(""); setDuration("Any"); setBudget(""); setRating(0); setSort("");
+        setKeyword("");
+        setDuration("Any");
+        setBudget("");
+        setRating(0);
+        setSort("");
         router.replace("/destinations");
     };
 
@@ -35,7 +59,7 @@ const FilterAndSearch = () => {
         <div className="sticky top-24">
             <div className="w-full bg-white border border-[#CBD5E1] rounded-2xl shadow-xl shadow-slate-200/50 p-6 space-y-7">
                 
-                {/* Header Section */}
+                {/* Header */}
                 <div className="border-l-4 border-[#0EA5A4] pl-4">
                     <h3 className="text-xl font-black italic uppercase tracking-tighter text-[#1E293B]">
                         {t("filter.title")}
@@ -46,7 +70,8 @@ const FilterAndSearch = () => {
                 </div>
 
                 <div className="space-y-5">
-                    {/* Search Field */}
+
+                    {/* Search */}
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] flex items-center gap-2">
                             <FaSearch className="text-[#0EA5A4]" /> {t("filter.search_placeholder")}
@@ -60,7 +85,7 @@ const FilterAndSearch = () => {
                         />
                     </div>
 
-                    {/* Sorting Field */}
+                    {/* Sorting */}
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] flex items-center gap-2">
                             <FaSortAmountDown className="text-[#0EA5A4]" /> {t("filter.sort_label")}
@@ -77,7 +102,7 @@ const FilterAndSearch = () => {
                         </select>
                     </div>
 
-                    {/* Duration Grid */}
+                    {/* Duration */}
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] flex items-center gap-2">
                             <FaRegClock className="text-[#0EA5A4]" /> {t("filter.duration")}
@@ -86,6 +111,7 @@ const FilterAndSearch = () => {
                             {["Any", "1-3 days", "4-7 days", "7+ days"].map((d) => (
                                 <button
                                     key={d}
+                                    type="button"
                                     onClick={() => setDuration(d)}
                                     className={`py-2 rounded-lg text-[9px] font-black uppercase border transition-all ${
                                         duration === d 
@@ -99,7 +125,7 @@ const FilterAndSearch = () => {
                         </div>
                     </div>
 
-                    {/* Budget Input */}
+                    {/* Budget */}
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] flex items-center gap-2">
                             <FaMoneyBillWave className="text-[#0EA5A4]" /> {t("filter.budget")}
@@ -116,7 +142,7 @@ const FilterAndSearch = () => {
                         </div>
                     </div>
 
-                    {/* Safety Rating with Coral Accent */}
+                    {/* Rating */}
                     <div className="space-y-2">
                         <label className="text-[10px] font-black uppercase tracking-widest text-[#64748B] flex items-center gap-2">
                             <FaStar className="text-[#FF6B6B]" /> {t("filter.safety")}
@@ -127,16 +153,20 @@ const FilterAndSearch = () => {
                                     <FaStar
                                         key={star}
                                         onClick={() => setRating(star)}
-                                        className={`cursor-pointer text-sm transition-all ${star <= rating ? "text-[#FF6B6B]" : "text-[#E2E8F0]"}`}
+                                        className={`cursor-pointer text-sm transition-all ${
+                                            star <= rating ? "text-[#FF6B6B]" : "text-[#E2E8F0]"
+                                        }`}
                                     />
                                 ))}
                            </div>
-                           <span className="text-[10px] font-black italic text-[#FF6B6B]">{rating}/10</span>
+                           <span className="text-[10px] font-black italic text-[#FF6B6B]">
+                               {rating}/10
+                           </span>
                         </div>
                     </div>
                 </div>
 
-                {/* Actions */}
+                {/* Buttons */}
                 <div className="flex flex-col gap-3 pt-4">
                     <button
                         onClick={handleSearch}
