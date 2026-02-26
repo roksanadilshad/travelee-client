@@ -12,7 +12,7 @@ const ReviewFeed = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await axios.get("https://travelee-server.vercel.app/reviews");
+        const res = await axios.get("https://travelee-server.vercel.app/api/tripreviews");
         setReviews(res.data);
       } catch (err) {
         console.error("Critical: Could not sync reviews", err);
@@ -20,6 +20,7 @@ const ReviewFeed = () => {
     };
     fetchReviews();
   }, []);
+//console.log(reviews);
 
   return (
    <section className="py-24 bg-[#F8FAFC]">
@@ -80,9 +81,9 @@ const ReviewFeed = () => {
 
               {/* REVIEW TEXT */}
               <div className="relative mb-6 flex-grow">
-                <FaQuoteLeft className="text-slate-50 absolute -top-3 -left-2 text-3xl -z-0" />
+                <FaQuoteLeft className="text-slate-50 absolute -top-3 -left-2 mr-4  text-3xl -z-0" />
                 <p className="relative z-10 text-slate-600 text-[13px] leading-relaxed italic line-clamp-4">
-                  "{review.comment}"
+                  {review.comment}
                 </p>
               </div>
 
@@ -90,7 +91,7 @@ const ReviewFeed = () => {
               {review.images && review.images.length > 0 && (
                 <div className="flex gap-2 mb-6">
                   {review.images.slice(0, 3).map((img, i) => (
-                    <div key={i} className="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-100 grayscale hover:grayscale-0 transition-all">
+                    <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden border  hover:grayscale-0 transition-all">
                        <img src={img} className="object-cover w-full h-full" alt="evidence" />
                     </div>
                   ))}
@@ -108,7 +109,7 @@ const ReviewFeed = () => {
                   <FaClock size={10} />
                   <span className="text-[9px] font-bold uppercase tracking-widest">
                     {/* Locale-aware date formatting */}
-                    {new Date(review.date).toLocaleDateString(language === 'BN' ? 'bn-BD' : 'en-US')}
+                    {new Date(review.createdAt).toLocaleDateString(language === 'BN' ? 'bn-BD' : 'en-US')}
                   </span>
                 </div>
                 <div className="w-1.5 h-1.5 rounded-full bg-[#0EA5A4]" />
