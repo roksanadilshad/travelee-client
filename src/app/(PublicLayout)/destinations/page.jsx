@@ -58,7 +58,7 @@ export default function DestinationsPage({ searchParams }) {
         </div>
         
         {/* Units Found Badge */}
-        <div className="bg-gray-600 text-gray-600 px-8 py-3 rounded-full font-black text-xs italic shadow-xl shadow-[var(--primary)]/10 flex items-center gap-2">
+        <div className="bg-white text-gray-600 px-8 py-3 rounded-full font-black text-xs italic shadow-xl shadow-[var(--primary)]/10 flex items-center gap-2">
           <span className="text-primary text-lg">●</span>
           {data.destinations.length} {t("dest.found_count")}
         </div>
