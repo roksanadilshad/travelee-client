@@ -55,7 +55,7 @@ const FilterAndSearch = () => {
                             value={keyword}
                             onChange={(e) => setKeyword(e.target.value)}
                             type="text"
-                            placeholder="city/country"
+                            placeholder=" city/country"
                             className="w-full rounded-xl border border-[#CBD5E1] bg-[#F8FAFC] px-5 py-3 outline-none focus:ring-2 focus:ring-[#0EA5A4] transition-all font-semibold text-sm"
                         />
                     </div>
