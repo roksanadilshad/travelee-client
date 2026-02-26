@@ -110,7 +110,7 @@ const handleAddToMyTrips = async (e) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-3xl font-bold text-gray-900 mb-3">
+              <h2 className="text-3xl font-black italic uppercase tracking-tighter leading-none mb-4">
                 {destination.duration} - {destination.city},{" "}
                 {destination.country}
               </h2>
@@ -640,7 +640,7 @@ const handleAddToMyTrips = async (e) => {
               </div>
 
               {/* Booking Form */}
-              <div className="space-y-4 mb-6 ">
+              {/* <div className="space-y-4 mb-6 ">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Check In
@@ -671,10 +671,10 @@ const handleAddToMyTrips = async (e) => {
                     <option>5+ Guests</option>
                   </select>
                 </div>
-              </div>
+              </div> */}
 
               {/* Buttons */}
-              <motion.button
+              {/* <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="w-full bg-primary text-white py-3.5 rounded-lg font-semibold mb-3 hover:bg-green-900 transition-colors"
@@ -684,7 +684,7 @@ const handleAddToMyTrips = async (e) => {
 
               <button className="w-full border-2 border-gray-300 text-gray-700 py-3.5 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
                 Contact Us
-              </button>
+              </button> */}
               {/* add my trip form */}
               <form onSubmit={handleAddToMyTrips} className="mt-6 space-y-3">
                 <h4 className="font-semibold text-gray-900 mb-2">

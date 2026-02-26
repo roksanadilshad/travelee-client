@@ -42,7 +42,7 @@ const DestinationCard = ({ destination }) => {
 
       {/* Intel Grid */}
       <div className="p-5 flex flex-col flex-1 space-y-4">
-        <p className="text-[#64748B] text-xs font-medium leading-relaxed line-clamp-2 italic">
+        <p className="text-gray-500 text-xs font-medium leading-relaxed line-clamp-2 italic">
           "{destination.description}"
         </p>
 
@@ -51,7 +51,7 @@ const DestinationCard = ({ destination }) => {
             <span className="text-[9px] font-black uppercase text-[#64748B] flex items-center gap-1">
               <Clock3 className="w-3 h-3 text-[#0EA5A4]" /> {t("card.duration_label")}
             </span>
-            <p className="text-xs font-bold text-[#1E293B]">{destination.duration}</p>
+            <p className="text-xs font-bold text-gray-500">{destination.duration}</p>
           </div>
           {/* <div className="space-y-1">
             <span className="text-[9px] font-black uppercase text-[#64748B] flex items-center gap-1">
