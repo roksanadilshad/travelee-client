@@ -11,6 +11,7 @@ export default function ProfessionalItinerary() {
   const trip = useSelector((state) => state.itinerary.currentTrip);
   const [activeDay, setActiveDay] = useState(null);
   const [selectedDayIdx, setSelectedDayIdx] = useState(0);
+  const [tripId,setTripId]=useState(null)
 
   const handleSaveTrip = async () => {
   // 1. Check if there is actually data to save
@@ -37,6 +38,7 @@ if (trip.days.some(day => day.activities.length === 0)) {
 
   try {
     // 2. API Call to your Node.js server
+
     const response = await fetch('https://travelee-server.vercel.app/itineraries', {
       method: 'POST',
       headers: {
@@ -47,14 +49,14 @@ if (trip.days.some(day => day.activities.length === 0)) {
 
     const result = await response.json();
 
-    if (response.ok) {
-Swal.fire({
-  title: "Trip plan save successfully",
-  icon: "success",
-  draggable: true
-});
-      // console.log("Saved ID:", result.insertedId);
-    } else {
+if (response.ok) {
+  setTripId(result.insertedId);
+
+  Swal.fire({
+    title: "Trip plan save successfully",
+    icon: "success",
+  });
+}else {
   Swal.fire({
     icon: 'error',
     title: 'Failed to Save',
@@ -73,26 +75,60 @@ Swal.fire({
 }
 };
 
-const handleDelete = async (id) => {
-  const res = await fetch(
-    `https://travelee-server.vercel.app/itineraries/${id}`,
-    { method: "DELETE" }
-  );
 
-  const data = await res.json();
+const handleDelete = async (activityId) => {
+  if (!tripId) {
+    Swal.fire({
+      icon: "warning",
+      title: "Save Trip First",
+      text: "You must save the trip before deleting activity!",
+    });
+    return;
+  }
 
-  if (data.success) {
-    alert("Deleted successfully");
-    // refresh UI
+  try {
+    const res = await fetch(
+      `https://travelee-server.vercel.app/${tripId}/activity/${activityId}`,
+      { method: "DELETE" }
+    );
+
+    const data = await res.json();
+
+    if (data.success) {
+      dispatch({
+        type: "itinerary/removeActivity",
+        payload: {
+          dayIndex: selectedDayIdx,
+          activityId,
+        },
+      });
+
+
+      Swal.fire({
+        icon: "success",
+        title: "Activity Deleted",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Delete Failed",
+        text: data.message || "Something went wrong!",
+      });
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: "error",
+      title: "Delete Failed",
+      text: "Cannot connect to server.",
+    });
   }
 };
 
 
-
-
-
   return (
-    <div className="min-h-screen bg-[#F8FAFC] mt-20">
+    <div className="min-h-screen mt-20 bg-[#F8FAFC]">
       {/* { HEADER } */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-30 px-8 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -184,7 +220,7 @@ const handleDelete = async (id) => {
                                 </div>
                                 <div className="text-right">
                                     <p className="text-lg font-black text-green-600">${act.cost}</p>
-                                    <button onClick={handleDelete} className="text-red-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 mt-2">
+                                    <button onClick={()=>handleDelete(act.id)} className="text-red-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 mt-2">
                                         <FaTrash size={14} />
                                     </button>
                                 </div>
@@ -203,13 +239,22 @@ const handleDelete = async (id) => {
           )}
         </main>
       </div>
+<ActivityModal 
+  isOpen={activeDay !== null} 
+  onClose={() => setActiveDay(null)} 
+  onSave={(data) =>
+    dispatch(
+      addActivity({
+        dayIndex: activeDay,
+        activity: {
+          ...data,
+          id: Date.now()
+        }
+      })
+    )
+  }
+/>
 
-      {/* MODAL COMPONENT */}
-      <ActivityModal 
-        isOpen={activeDay !== null} 
-        onClose={() => setActiveDay(null)} 
-        onSave={(data) => dispatch(addActivity({ dayIndex: activeDay, activity: data }))}
-      />
     </div>
   );
 }
