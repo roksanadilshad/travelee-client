@@ -1,131 +1,145 @@
-'use client';
-import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { addDay, addActivity, setTripDetails } from '@/lib/redux/itinerarySlice';
-import { FaPlus, FaCalendarAlt, FaClock, FaMapMarkerAlt, FaTrash, FaCheckCircle } from 'react-icons/fa';
-import ActivityModal from '@/components/Itinerary/ActivityModal';
-import Swal from 'sweetalert2';
+"use client";
+import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  addDay,
+  addActivity,
+  setTripDetails,
+} from "@/lib/redux/itinerarySlice";
+import {
+  FaPlus,
+  FaCalendarAlt,
+  FaClock,
+  FaTrash,
+  FaCheckCircle,
+} from "react-icons/fa";
+import ActivityModal from "@/components/Itinerary/ActivityModal";
+import Swal from "sweetalert2";
+import BudgetSummary from "@/components/Itinerary/BudgetSummary";
 
 export default function ProfessionalItinerary() {
   const dispatch = useDispatch();
   const trip = useSelector((state) => state.itinerary.currentTrip);
   const [activeDay, setActiveDay] = useState(null);
   const [selectedDayIdx, setSelectedDayIdx] = useState(0);
-  const [tripId,setTripId]=useState(null)
+  const [tripId, setTripId] = useState(null);
+
+  const allActivities =
+    trip?.days?.flatMap((day) => day.activities || []) || [];
 
   const handleSaveTrip = async () => {
-  // 1. Check if there is actually data to save
+    // 1. Check if there is actually data to save
 
-if (!trip.destination) {
-  Swal.fire({
-    icon: 'warning',
-    title: 'Oops!',
-    text: 'Please enter a destination name first!',
-    confirmButtonColor: '#3085d6',
-  });
-  return;
-}
-
-if (trip.days.some(day => day.activities.length === 0)) {
-  Swal.fire({
-    icon: 'warning',
-    title: 'Incomplete Trip',
-    text: 'Each day must have at least one activity!',
-    confirmButtonColor: '#3085d6',
-  });
-  return;
-}
-
-  try {
-    // 2. API Call to your Node.js server
-
-    const response = await fetch('https://travelee-server.vercel.app/itineraries', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(trip), 
-    });
-
-    const result = await response.json();
-
-if (response.ok) {
-  setTripId(result.insertedId);
-
-  Swal.fire({
-    title: "Trip plan save successfully",
-    icon: "success",
-  });
-}else {
-  Swal.fire({
-    icon: 'error',
-    title: 'Failed to Save',
-    text: result.message || 'Something went wrong!',
-    confirmButtonColor: '#d33',
-  });
-}
-  } catch (error) {
-  // console.error("Connection Error:", error);
-  Swal.fire({
-    icon: 'error',
-    title: 'Connection Error',
-    text: 'Cannot connect to server. Is your Node.js backend running?',
-    confirmButtonColor: '#d33',
-  });
-}
-};
-
-
-const handleDelete = async (activityId) => {
-  if (!tripId) {
-    Swal.fire({
-      icon: "warning",
-      title: "Save Trip First",
-      text: "You must save the trip before deleting activity!",
-    });
-    return;
-  }
-
-  try {
-    const res = await fetch(
-      `https://travelee-server.vercel.app/${tripId}/activity/${activityId}`,
-      { method: "DELETE" }
-    );
-
-    const data = await res.json();
-
-    if (data.success) {
-      dispatch({
-        type: "itinerary/removeActivity",
-        payload: {
-          dayIndex: selectedDayIdx,
-          activityId,
-        },
-      });
-
-
+    if (!trip.destination) {
       Swal.fire({
-        icon: "success",
-        title: "Activity Deleted",
-        timer: 1500,
-        showConfirmButton: false,
+        icon: "warning",
+        title: "Oops!",
+        text: "Please enter a destination name first!",
+        confirmButtonColor: "#3085d6",
       });
-    } else {
+      return;
+    }
+
+    if (trip.days.some((day) => day.activities.length === 0)) {
+      Swal.fire({
+        icon: "warning",
+        title: "Incomplete Trip",
+        text: "Each day must have at least one activity!",
+        confirmButtonColor: "#3085d6",
+      });
+      return;
+    }
+
+    try {
+      // 2. API Call to your Node.js server
+
+      const response = await fetch(
+        "https://travelee-server.vercel.app/itineraries",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(trip),
+        },
+      );
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setTripId(result.insertedId);
+
+        Swal.fire({
+          title: "Trip plan save successfully",
+          icon: "success",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Failed to Save",
+          text: result.message || "Something went wrong!",
+          confirmButtonColor: "#d33",
+        });
+      }
+    } catch (error) {
+      // console.error("Connection Error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Connection Error",
+        text: "Cannot connect to server. Is your Node.js backend running?",
+        confirmButtonColor: "#d33",
+      });
+    }
+  };
+
+  const handleDelete = async (activityId) => {
+    if (!tripId) {
+      Swal.fire({
+        icon: "warning",
+        title: "Save Trip First",
+        text: "You must save the trip before deleting activity!",
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `https://travelee-server.vercel.app/${tripId}/activity/${activityId}`,
+        { method: "DELETE" },
+      );
+
+      const data = await res.json();
+
+      if (data.success) {
+        dispatch({
+          type: "itinerary/removeActivity",
+          payload: {
+            dayIndex: selectedDayIdx,
+            activityId,
+          },
+        });
+
+        Swal.fire({
+          icon: "success",
+          title: "Activity Deleted",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Delete Failed",
+          text: data.message || "Something went wrong!",
+        });
+      }
+    } catch (error) {
       Swal.fire({
         icon: "error",
         title: "Delete Failed",
-        text: data.message || "Something went wrong!",
+        text: "Cannot connect to server.",
       });
     }
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      title: "Delete Failed",
-      text: "Cannot connect to server.",
-    });
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen mt-20 bg-[#F8FAFC]">
@@ -137,16 +151,23 @@ const handleDelete = async (activityId) => {
               <FaCalendarAlt size={20} />
             </div>
             <div>
-              <input 
+              <input
                 className="text-xl font-bold text-gray-900 bg-transparent outline-none placeholder-gray-300 border-b border-transparent focus:border-blue-500 transition-all"
                 placeholder="Name your adventure..."
                 value={trip.destination}
-                onChange={(e) => dispatch(setTripDetails({ destination: e.target.value }))}
+                onChange={(e) =>
+                  dispatch(setTripDetails({ destination: e.target.value }))
+                }
               />
-              <p className="text-xs text-gray-400 font-medium uppercase tracking-widest mt-1">Travel Itinerary Builder</p>
+              <p className="text-xs text-gray-400 font-medium uppercase tracking-widest mt-1">
+                Travel Itinerary Builder
+              </p>
             </div>
           </div>
-          <button onClick={handleSaveTrip} className="bg-gray-900 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-black transition-all shadow-xl shadow-gray-200">
+          <button
+            onClick={handleSaveTrip}
+            className="bg-gray-900 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-black transition-all shadow-xl shadow-gray-200"
+          >
             Save Trip
           </button>
         </div>
@@ -155,23 +176,27 @@ const handleDelete = async (activityId) => {
       <div className="max-w-7xl mx-auto flex px-8 py-10 gap-8">
         {/* 2. SIDEBAR - DAY NAVIGATION */}
         <aside className="w-64 hidden lg:block">
-          <h3 className="text-sm font-bold text-gray-400 uppercase mb-4 px-2">Trip Timeline</h3>
+          <h3 className="text-sm font-bold text-gray-400 uppercase mb-4 px-2">
+            Trip Timeline
+          </h3>
           <nav className="space-y-2">
             {trip.days.map((day, idx) => (
               <button
                 key={day.id}
                 onClick={() => setSelectedDayIdx(idx)}
                 className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
-                  selectedDayIdx === idx 
-                  ? 'bg-white shadow-md border border-gray-100 text-blue-600' 
-                  : 'text-gray-500 hover:bg-gray-100'
+                  selectedDayIdx === idx
+                    ? "bg-white shadow-md border border-gray-100 text-blue-600"
+                    : "text-gray-500 hover:bg-gray-100"
                 }`}
               >
                 <span className="font-bold text-sm">Day {idx + 1}</span>
-                {day.activities.length > 0 && <FaCheckCircle className="text-green-500" size={12} />}
+                {day.activities.length > 0 && (
+                  <FaCheckCircle className="text-green-500" size={12} />
+                )}
               </button>
             ))}
-            <button 
+            <button
               onClick={() => dispatch(addDay())}
               className="w-full mt-4 flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-gray-200 text-gray-400 hover:border-blue-300 hover:text-blue-500 transition-all text-sm font-bold"
             >
@@ -186,10 +211,15 @@ const handleDelete = async (activityId) => {
             <div className="space-y-6">
               <div className="flex justify-between items-end mb-8">
                 <div>
-                  <h2 className="text-4xl font-black text-gray-900">Day {selectedDayIdx + 1}</h2>
-                  <p className="text-gray-500 mt-1">{trip.days[selectedDayIdx].activities.length} activities planned</p>
+                  <h2 className="text-4xl font-black text-gray-900">
+                    Day {selectedDayIdx + 1}
+                  </h2>
+                  <p className="text-gray-500 mt-1">
+                    {trip.days[selectedDayIdx].activities.length} activities
+                    planned
+                  </p>
                 </div>
-                <button 
+                <button
                   onClick={() => setActiveDay(selectedDayIdx)}
                   className="bg-blue-600 text-white flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-100 hover:scale-105 transition-transform"
                 >
@@ -203,58 +233,82 @@ const handleDelete = async (activityId) => {
                 <div className="absolute left-6 top-4 bottom-4 w-0.5 bg-gray-200"></div>
 
                 {trip.days[selectedDayIdx].activities.length === 0 ? (
-                    <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
-                        <p className="text-gray-400 italic">No activities yet. Click <span className='text-gray-700'>Add Activity</span> to start.</p>
-                    </div>
+                  <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
+                    <p className="text-gray-400 italic">
+                      No activities yet. Click{" "}
+                      <span className="text-gray-700">Add Activity</span> to
+                      start.
+                    </p>
+                  </div>
                 ) : (
-                    trip.days[selectedDayIdx].activities.map((act, i) => (
+                  trip.days[selectedDayIdx].activities.map((act, i) => (
                     <div key={i} className="relative flex gap-6 items-start">
-                        <div className="z-10 bg-white border-4 border-[#F8FAFC] text-blue-600 p-2 rounded-full shadow-md">
+                      <div className="z-10 bg-white border-4 border-[#F8FAFC] text-blue-600 p-2 rounded-full shadow-md">
                         <FaClock size={16} />
+                      </div>
+                      <div className="bg-white flex-1 p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">
+                              {act.time}
+                            </span>
+                            <h4 className="text-lg font-bold text-gray-800 mt-2">
+                              {act.task}
+                            </h4>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-lg font-black text-green-600">
+                              ${act.cost}
+                            </p>
+                            <button
+                              onClick={() => handleDelete(act.id)}
+                              className="text-red-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 mt-2"
+                            >
+                              <FaTrash size={14} />
+                            </button>
+                          </div>
                         </div>
-                        <div className="bg-white flex-1 p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow group">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md">{act.time}</span>
-                                    <h4 className="text-lg font-bold text-gray-800 mt-2">{act.task}</h4>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-lg font-black text-green-600">${act.cost}</p>
-                                    <button onClick={()=>handleDelete(act.id)} className="text-red-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 mt-2">
-                                        <FaTrash size={14} />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                      </div>
                     </div>
-                    ))
+                  ))
                 )}
               </div>
             </div>
           ) : (
             <div className="text-center py-20 bg-white rounded-3xl border border-gray-200">
-                <p className="text-gray-400 mb-4">You have not added any days to your trip.</p>
-                <button onClick={() => dispatch(addDay())} className="text-blue-600 font-bold hover:underline underline-offset-4">Click here to start Day 1</button>
+              <p className="text-gray-400 mb-4">
+                You have not added any days to your trip.
+              </p>
+              <button
+                onClick={() => dispatch(addDay())}
+                className="text-blue-600 font-bold hover:underline underline-offset-4"
+              >
+                Click here to start Day 1
+              </button>
             </div>
           )}
         </main>
       </div>
-<ActivityModal 
-  isOpen={activeDay !== null} 
-  onClose={() => setActiveDay(null)} 
-  onSave={(data) =>
-    dispatch(
-      addActivity({
-        dayIndex: activeDay,
-        activity: {
-          ...data,
-          id: Date.now()
+      <ActivityModal
+        isOpen={activeDay !== null}
+        onClose={() => setActiveDay(null)}
+        onSave={(data) =>
+          dispatch(
+            addActivity({
+              dayIndex: activeDay,
+              activity: {
+                ...data,
+                id: Date.now(),
+              },
+            }),
+          )
         }
-      })
-    )
-  }
-/>
-
+      />
+      <div className="max-w-7xl mx-auto px-8 pb-20">
+        <div className="w-full lg:w-9/12 mx-auto">
+          <BudgetSummary activities={allActivities} />
+        </div>
+      </div>
     </div>
   );
 }
