@@ -2,9 +2,10 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Target, ShieldCheck, Zap, Globe, ArrowRight, Star, Heart, Lightbulb } from "lucide-react";
+import { Target, ShieldCheck, Zap, Globe, ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/context/LanguageContext"; // Added hook
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -14,22 +15,23 @@ const fadeIn = {
 };
 
 const AboutPage = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="bg-background text-foreground overflow-x-hidden">
       
-      {/* 1. HERO SECTION: Identity & Vision */}
+      {/* 1. HERO SECTION */}
       <section className="relative min-h-[80vh] flex items-center py-24 border-b">
         <div className="container mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
           <motion.div {...fadeIn}>
-            <Badge variant="secondary" className="mb-6 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-primary/10 text-primary border-none">
-              Since 2024
+            <Badge variant="secondary" className="mb-6 px-4 py-1.5 rounded-full text-xs font-bold bg-primary/10 text-primary border-none">
+              {t("about_hero_badge")}
             </Badge>
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-[1.05]">
-              Connecting the <br />
-              <span className="text-primary italic">Global Traveler.</span>
+              {t("about_hero_title")}
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
-              Travelee is the digital backbone for modern exploration. We've built an ecosystem that simplifies movement, ensures safety, and democratizes access to the world's most remote corners.
+              {t("about_hero_desc")}
             </p>
           </motion.div>
 
@@ -41,30 +43,30 @@ const AboutPage = () => {
           >
             <img 
               src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80&w=1000" 
-              alt="Tech and Travel" 
+              alt="Tech" 
               className="object-cover w-full h-full"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
-              <p className="text-white font-medium italic">"The journey is the product."</p>
+              <p className="text-white font-medium italic">"{t("about_quote")}"</p>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* 2. CORE PILLARS: Philosophy */}
+      {/* 2. CORE PILLARS */}
       <section className="py-24 bg-muted/30">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { icon: <Target />, title: "Precision Driven", desc: "Every line of code is written with a purpose: absolute reliability in every timezone." },
-              { icon: <ShieldCheck />, title: "Security First", desc: "We protect your data like it's our own, using quantum-ready encryption standards." },
-              { icon: <Zap />, title: "Limitless Speed", desc: "Global edge computing ensures your travel plans update in real-time, no matter the latency." }
+              { icon: <Target />, title: t("about_pillar_1_title"), desc: t("about_pillar_1_desc") },
+              { icon: <ShieldCheck />, title: t("about_pillar_2_title"), desc: t("about_pillar_2_desc") },
+              { icon: <Zap />, title: t("about_pillar_3_title"), desc: t("about_pillar_3_desc") }
             ].map((item, i) => (
               <motion.div 
                 key={i}
                 {...fadeIn}
                 transition={{ delay: i * 0.2 }}
-                className="p-8 bg-card rounded-3xl border shadow-sm hover:shadow-md transition-shadow"
+                className="p-8 bg-card rounded-3xl border shadow-sm"
               >
                 <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-6">
                   {item.icon}
@@ -77,21 +79,22 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* 3. NEW SECTION: Our Journey (Timeline) */}
+      {/* 3. JOURNEY (TIMELINE) */}
       <section className="py-24 overflow-hidden">
         <div className="container mx-auto px-6 text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">Our Journey</h2>
-          <p className="text-muted-foreground">The milestones that define our rapid evolution.</p>
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">{t("about_journey_title")}</h2>
+          <p className="text-muted-foreground">{t("about_journey_subtitle")}</p>
         </div>
         <div className="container mx-auto px-6 grid md:grid-cols-4 gap-4">
-           <TimelineStep year="2024" title="The Spark" desc="Founded in a small hub in London with a team of five visionaries." />
-           <TimelineStep year="2025" title="Series A" desc="Secured $50M to build our global edge infrastructure." active />
-           <TimelineStep year="2026" title="Global Reach" desc="Expanding to 45+ countries with over 1M active users." />
-           <TimelineStep year="Future" title="Unity" desc="Building the world's first truly borderless travel protocol." />
+           {/* You can add specific translation keys for years/titles if needed, but using fixed ones for this example */}
+           <TimelineStep year="2024" title="The Spark" desc="London foundation." />
+           <TimelineStep year="2025" title="Series A" desc="$50M Infrastructure build." active />
+           <TimelineStep year="2026" title="Global Reach" desc="45+ Countries." />
+           <TimelineStep year="Future" title="Unity" desc="Borderless protocols." />
         </div>
       </section>
 
-      {/* 4. IMPACT: Global Reach */}
+      {/* 4. IMPACT */}
       <section className="py-24">
         <div className="container mx-auto px-6">
           <motion.div 
@@ -102,13 +105,13 @@ const AboutPage = () => {
             <div className="relative z-10 grid lg:grid-cols-2 gap-16 items-center">
               <div>
                 <h2 className="text-4xl md:text-6xl font-bold text-primary-foreground mb-8">
-                  Scaling globally, <br />acting locally.
+                  {t("about_impact_title")}
                 </h2>
                 <div className="grid grid-cols-2 gap-6">
-                  <StatBox label="Active Users" value="1.2M" />
-                  <StatBox label="Countries" value="45+" />
-                  <StatBox label="API Requests" value="1B+" />
-                  <StatBox label="Uptime" value="99.9%" />
+                  <StatBox label={t("about_stat_users")} value="1.2M" />
+                  <StatBox label={t("about_stat_countries")} value="45+" />
+                  <StatBox label={t("about_stat_api")} value="1B+" />
+                  <StatBox label={t("about_stat_uptime")} value="99.9%" />
                 </div>
               </div>
               <div className="hidden lg:block relative">
@@ -118,30 +121,27 @@ const AboutPage = () => {
                 >
                   <Globe className="w-96 h-96 text-white/20 stroke-[1px]" />
                 </motion.div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                   <div className="w-4 h-4 bg-white rounded-full animate-ping" />
-                </div>
               </div>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* 5. NEW SECTION: Our Leadership (Team) */}
+      {/* 5. LEADERSHIP */}
       <section className="py-24 bg-muted/20">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
             <div className="max-w-xl">
-              <h2 className="text-4xl font-bold mb-4">The Minds Behind Travelee</h2>
-              <p className="text-muted-foreground">A diverse collective of engineers, explorers, and dreamers.</p>
+              <h2 className="text-4xl font-bold mb-4">{t("about_team_title")}</h2>
+              <p className="text-muted-foreground">{t("about_team_subtitle")}</p>
             </div>
-            <Button variant="outline" className="rounded-full">Meet the whole team</Button>
+            <Button variant="outline" className="rounded-full">{t("about_team_btn")}</Button>
           </div>
           <div className="grid md:grid-cols-4 gap-6">
-            <TeamMember name="Sarah Chen" role="CEO & Founder" img="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400" />
+            <TeamMember name="Sarah Chen" role="CEO" img="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400" />
             <TeamMember name="Marcus Thorne" role="CTO" img="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400" />
-            <TeamMember name="Elena Rodriguez" role="Head of Design" img="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400" />
-            <TeamMember name="Julian Vole" role="VP of Engineering" img="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400" />
+            <TeamMember name="Elena Rodriguez" role="Design" img="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400" />
+            <TeamMember name="Julian Vole" role="Engineering" img="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400" />
           </div>
         </div>
       </section>
@@ -150,17 +150,17 @@ const AboutPage = () => {
       <section className="py-32 relative overflow-hidden">
         <div className="container mx-auto px-6 text-center">
           <motion.div {...fadeIn}>
-            <h2 className="text-4xl md:text-6xl font-bold mb-8">Ready to explore?</h2>
+            <h2 className="text-4xl md:text-6xl font-bold mb-8">{t("about_cta_title")}</h2>
             <p className="text-muted-foreground mb-12 max-w-2xl mx-auto text-lg">
-              Join the 1.2 million users who are already traveling smarter. Our door is always open for new partners and talent.
+              {t("about_cta_desc")}
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Button size="lg" className="rounded-full px-10 h-14 text-lg">
-                Get Started Now <ArrowRight className="ml-2 w-5 h-5" />
+                {t("about_cta_btn_start")} <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
-              <Button size="lg" variant="outline" className="rounded-full px-10 h-14 text-lg">
-                Contact Sales
-              </Button>
+              {/* <Button size="lg" variant="outline" className="rounded-full px-10 h-14 text-lg">
+                {t("about_cta_btn_sales")}
+              </Button> */}
             </div>
           </motion.div>
         </div>
@@ -169,10 +169,10 @@ const AboutPage = () => {
   );
 };
 
-/* --- Helper Components --- */
+/* --- Helper Components (Internal) --- */
 
 const StatBox = ({ label, value }) => (
-  <div className="bg-white/10 backdrop-blur-lg border border-white/20 p-6 rounded-3xl text-primary-foreground hover:bg-white/20 transition-colors">
+  <div className="bg-white/10 backdrop-blur-lg border border-white/20 p-6 rounded-3xl text-primary-foreground">
     <p className="text-4xl font-extrabold mb-1 tracking-tighter">{value}</p>
     <p className="text-xs uppercase font-bold tracking-widest opacity-80">{label}</p>
   </div>
@@ -183,7 +183,7 @@ const TimelineStep = ({ year, title, desc, active = false }) => (
     {...fadeIn}
     className={`p-6 rounded-3xl border transition-all ${active ? 'bg-primary text-primary-foreground shadow-xl scale-105 z-10' : 'bg-card'}`}
   >
-    <span className={`text-sm font-bold opacity-60`}>{year}</span>
+    <span className="text-sm font-bold opacity-60">{year}</span>
     <h4 className="text-xl font-bold mt-2 mb-3">{title}</h4>
     <p className={`text-xs leading-relaxed ${active ? 'text-primary-foreground/80' : 'text-muted-foreground'}`}>{desc}</p>
   </motion.div>
