@@ -6,9 +6,11 @@ import TripCard from "./TripCard";
 import TripReviewForm from "../Reviews/TripReviewForm";
 import SkeletonCard from "./SkeletonCard";
 import EmptyState from "./EmptyState";
+import { useLanguage } from "@/context/LanguageContext"; // Added translation hook
 
 export default function MyTrips() {
   const { data: session, status } = useSession();
+  const { t } = useLanguage(); // Initialize translation
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTrip, setSelectedTrip] = useState(null);
@@ -27,7 +29,7 @@ export default function MyTrips() {
           `https://travelee-server.vercel.app/my-trips?userEmail=${session.user.email}`
         );
         const data = await res.json();
-       setTrips(data.data || []);
+        setTrips(data.data || []);
       } catch (err) {
         console.error(err);
       } finally {
@@ -39,7 +41,8 @@ export default function MyTrips() {
   }, [status, session?.user?.email]);
 
   const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this trip?")) return;
+    // Translated confirmation dialog
+    if (!confirm(t("trips_delete_confirm"))) return;
 
     try {
       const res = await fetch(`https://travelee-server.vercel.app/my-trips/${id}`, {
@@ -55,7 +58,7 @@ export default function MyTrips() {
 
   if (status === "loading") {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 max-w-6xl mx-auto px-4 py-8">
         {[...Array(3)].map((_, i) => (
           <SkeletonCard key={i} />
         ))}
@@ -66,8 +69,8 @@ export default function MyTrips() {
   if (status !== "authenticated") {
     return (
       <div className="text-center py-20">
-        <p className="text-gray-700">
-          Please login first to see your saved trips 🙏
+        <p className="text-gray-700 text-lg">
+          {t("trips_login_required")}
         </p>
       </div>
     );
@@ -82,6 +85,7 @@ export default function MyTrips() {
           ))}
         </div>
       ) : trips.length === 0 ? (
+        // Note: Ensure EmptyState component also uses t() inside it
         <EmptyState />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -97,13 +101,14 @@ export default function MyTrips() {
       )}
 
       {selectedTrip && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl w-full max-w-3xl p-4 relative">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-xl w-full max-w-3xl p-4 relative shadow-2xl">
             <button
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-700 transition-colors"
               onClick={() => setSelectedTrip(null)}
+              aria-label={t("trips_modal_close")}
             >
-              ✕
+              <span className="text-2xl">✕</span>
             </button>
             <TripReviewForm
               preselectedTrip={selectedTrip}

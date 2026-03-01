@@ -82,7 +82,9 @@ export default function DashboardLayout({ children }) {
             </div>
             <span className="text-xl font-black text-slate-800 tracking-tighter">TRAVELEE</span>
           </Link> */}
+          <Link href="/">
           <TraveleeLogo/>
+          </Link>
         </div>
 
         {/* Navigation Groups */}
