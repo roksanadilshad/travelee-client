@@ -43,7 +43,7 @@ const DestinationCard = ({ destination }) => {
       {/* Intel Grid */}
       <div className="p-5 flex flex-col flex-1 space-y-4">
         <p className="text-gray-500 text-xs font-medium leading-relaxed line-clamp-2 italic">
-          "{destination.description}"
+          {destination.description}
         </p>
 
         <div className="grid grid-cols-2 gap-y-1 gap-x-2  border-y border-[#E2E8F0]">
