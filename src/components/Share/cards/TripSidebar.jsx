@@ -1,15 +1,26 @@
+"use client";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
+// 1. Fixed Import: Changed from 'next/router' to 'next/navigation'
+import { useRouter } from "next/navigation"; 
 
 export const TripSidebar = ({ destination, startDate, setStartDate, endDate, setEndDate, handleAddToMyTrips }) => {
   const { t } = useLanguage();
+  const router = useRouter();
+  console.log(destination);
+
+  const basePriceValue = destination.price.split("-")[0].replace(/[^0-9.]/g, '');
+  
 
   return (
     <div className="lg:col-span-1 lg:space-y-6">
       <motion.div className="bg-white rounded-xl shadow-lg p-6 lg:sticky lg:top-24">
         <div className="mb-6 pb-6 border-b border-gray-200">
           <div className="flex items-baseline mb-1">
-            <span className="text-4xl font-bold text-primary">{destination.price.split("-")[0]}</span>
+            {/* Added optional chaining to prevent crash if destination.price is missing */}
+            <span className="text-4xl font-bold text-primary">
+              {destination?.price?.split("-")[0] || "$0"}
+            </span>
             <span className="text-gray-500 ml-2">/ {t("person")}</span>
           </div>
         </div>
@@ -34,8 +45,20 @@ export const TripSidebar = ({ destination, startDate, setStartDate, endDate, set
               className="w-full border rounded-lg px-4 py-2 text-sm" 
             />
           </div>
+
+          {/* 2. Fixed Button: Added type="button" to prevent form submission */}
+          <button 
+            type="button" 
+            onClick={() => router.push(`/itinerary?name=${encodeURIComponent(destination.city)}&price=${basePriceValue}&id=${destination._id}`)}
+            className="w-full bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+          >
+            Start Planning This Trip
+          </button>
           
-          <button type="submit" className="w-full bg-primary text-white py-3.5 rounded-lg font-semibold hover:opacity-90 transition-opacity">
+          <button 
+            type="submit" 
+            className="w-full bg-primary text-white py-3.5 rounded-lg font-semibold hover:opacity-90 transition-opacity"
+          >
             {t("btn_save_trip")}
           </button>
         </form>
