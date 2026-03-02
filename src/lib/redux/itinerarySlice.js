@@ -54,7 +54,11 @@ const itinerarySlice = createSlice({
     // Optional: Useful for starting over
     resetTrip: (state) => {
       state.currentTrip = { destination: '', basePrice: 0, days: [] };
-    }
+    },
+    reorderActivities: (state, action) => {
+  const { dayIndex, newActivities } = action.payload;
+  state.currentTrip.days[dayIndex].activities = newActivities;
+},
   }
 });
 
@@ -63,7 +67,8 @@ export const {
   addDay, 
   addActivity, 
   removeActivity, 
-  resetTrip 
+  resetTrip ,
+  reorderActivities
 } = itinerarySlice.actions;
 
 export default itinerarySlice.reducer;

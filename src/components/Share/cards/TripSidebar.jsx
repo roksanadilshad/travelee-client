@@ -7,9 +7,10 @@ import { useRouter } from "next/navigation";
 export const TripSidebar = ({ destination, startDate, setStartDate, endDate, setEndDate, handleAddToMyTrips }) => {
   const { t } = useLanguage();
   const router = useRouter();
-  console.log(destination);
+  //console.log(destination);
 
-  const basePriceValue = destination.price.split("-")[0].replace(/[^0-9.]/g, '');
+  const displayPrice = destination?.price?.split("-")[0] || "$0";
+  const numericPriceForURL = displayPrice.replace(/[^0-9.]/g, '');
   
 
   return (
@@ -49,7 +50,7 @@ export const TripSidebar = ({ destination, startDate, setStartDate, endDate, set
           {/* 2. Fixed Button: Added type="button" to prevent form submission */}
           <button 
             type="button" 
-            onClick={() => router.push(`/itinerary?name=${encodeURIComponent(destination.city)}&price=${basePriceValue}&id=${destination._id}`)}
+            onClick={() => router.push(`/itinerary?name=${encodeURIComponent(destination.city)}&price=${numericPriceForURL}&id=${destination._id}`)}
             className="w-full bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
           >
             Start Planning This Trip
@@ -59,7 +60,7 @@ export const TripSidebar = ({ destination, startDate, setStartDate, endDate, set
             type="submit" 
             className="w-full bg-primary text-white py-3.5 rounded-lg font-semibold hover:opacity-90 transition-opacity"
           >
-            {t("btn_save_trip")}
+          Book Now
           </button>
         </form>
       </motion.div>
