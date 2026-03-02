@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { 
   Bell, Search, LayoutDashboard, CalendarDays, Heart, 
   MessageSquare, UserCircle, Users, Settings, LogOut, 
@@ -13,12 +13,31 @@ import "react-toastify/dist/ReactToastify.css";
 import { useLanguage } from "@/context/LanguageContext";
 import TraveleeLogo from "@/components/Share/Logo";
 
+
 export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const pathname = usePathname();
   
   const { t, lang } = useLanguage();
+
+  const router = useRouter();
+const searchParams = useSearchParams();
+const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
   
+
+const handleSearch = (e) => {
+  const value = e.target.value;
+  setSearchTerm(value);
+  
+  // Update URL query without refreshing the page
+  const params = new URLSearchParams(searchParams);
+  if (value) {
+    params.set("q", value);
+  } else {
+    params.delete("q");
+  }
+  router.replace(`${pathname}?${params.toString()}`);
+};
   // Role Logic
   const userRole = "user"; 
 
@@ -148,10 +167,12 @@ export default function DashboardLayout({ children }) {
             <div className="hidden md:flex items-center bg-slate-100 rounded-full px-4 py-2 w-64 border border-transparent focus-within:border-blue-200 focus-within:bg-white transition-all">
                <Search size={16} className="text-slate-400 mr-2" />
                <input 
-                type="text" 
-                placeholder={t("searchplaceholder")} 
-                className="bg-transparent border-none text-xs w-full focus:ring-0 outline-none text-slate-600"
-               />
+  type="text" 
+  placeholder={t("searchplaceholder")} 
+  className="bg-transparent border-none text-xs w-full focus:ring-0 outline-none text-slate-600"
+  value={searchTerm}
+  onChange={handleSearch}
+/>
             </div>
 
             <div className="flex items-center gap-3">
