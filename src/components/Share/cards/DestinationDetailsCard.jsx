@@ -23,32 +23,38 @@ const DestinationDetailsCard = ({ destination }) => {
     : 0;
 
  const handleBookNow = async (e) => {
-  e.preventDefault();
+  if (e) e.preventDefault();
 
-  const numericPrice = parseFloat(numericPriceForURL) || 0;
+  if (!user?.email || !startDate || !endDate) {
+    return Swal.fire("Missing Info", "Please log in and select dates", "warning");
+  }
 
   try {
     const response = await fetch("http://localhost:500/api/payments/create-checkout-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        destination: destination.city,
+        // Matching your "Previous" format exactly:
+        destination_id: destination._id || destination.destination_id,
+        country: destination.country || "",
+        city: destination.city || "",
+        region: destination.region || "",
+        startDate: startDate,
+        endDate: endDate,
+        duration: duration, 
         totalCost: parseFloat(numericPriceForURL),
-        tripId: destination._id,
+        userEmail: user.email,
+        userName: user.name || "Traveler", // Added userName
+        media: {
+          cover_image: destination.media?.cover_image || ""
+        }
       }),
     });
 
     const data = await response.json();
-
-    if (data.url) {
-      // REDIRECT TO THE GENERATED URL DIRECTLY
-      window.location.href = data.url; 
-    } else {
-      console.error("Backend did not return a session URL", data);
-      Swal.fire("Error", "Session creation failed", "error");
-    }
+    if (data.url) window.location.href = data.url;
   } catch (error) {
-    console.error("Connection Error:", error);
+    console.error("Booking Error:", error);
   }
 };
 

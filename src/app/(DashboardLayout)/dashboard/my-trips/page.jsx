@@ -7,6 +7,7 @@ import { FaMapMarkerAlt, FaTrashAlt, FaExternalLinkAlt, FaSuitcase } from "react
 import Link from "next/link";
 import Swal from "sweetalert2";
 import MyTrip from "@/components/MyTrips/MyTrips";
+import BookedTrips from "@/components/MyTrips/BookedTrips";
 
 export default function MyTrips() {
   const { data: session } = useSession();
@@ -158,7 +159,7 @@ export default function MyTrips() {
         )}
 
         {/* Bookings Section Separator */}
-        <hr className="my-16 border-gray-100" />
+        {/* <hr className="my-16 border-gray-100" />
 
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <h1 className="text-4xl font-black text-gray-900 tracking-tight">My Bookings</h1>
@@ -168,10 +169,11 @@ export default function MyTrips() {
           >
             + Book New Trip
           </Link>
-        </div>
+        </div> */}
         
         {/* Your separate MyTrip component for actual flight/hotel bookings */}
-        <MyTrip />
+        {/* <MyTrip /> */}
+        <BookedTrips/>
       </div>
     </div>
   );
