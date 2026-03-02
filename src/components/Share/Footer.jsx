@@ -18,9 +18,24 @@ const Footer = () => {
   ];
 
   const footerSections = {
-    company: ["About Us", "Careers", "Blog", "Press"],
-    destinations: ["Asia", "Europe", "Americas", "Oceania"],
-    resources: ["Travel Guides", "API Room", "Help Center", "Privacy"],
+    company: [
+      { label: "About Us", href: "/about" },
+      { label: "Careers", href: "/careers" },
+      { label: "Blog", href: "/blog" },
+      { label: "Press", href: "/press" },
+    ],
+    destinations: [
+      { label: "Asia", href: "/destinations/asia" },
+      { label: "Europe", href: "/destinations/europe" },
+      { label: "Americas", href: "/destinations/americas" },
+      { label: "Oceania", href: "/destinations/oceania" },
+    ],
+    resources: [
+      { label: "Travel Guides", href: "/travel-guides" },
+      { label: "API Room", href: "/api-room" },
+      { label: "Help Center", href: "/help-center" },
+      { label: "Privacy", href: "/privacy" },
+    ],
   };
 
   return (
@@ -72,10 +87,10 @@ const Footer = () => {
                 <span className="w-1.5 h-1.5 bg-[#0EA5A4] rounded-full" /> {t(`footer.${key}`)}
               </h4>
               <ul className="space-y-4">
-                {links.map((link) => (
-                  <li key={link}>
-                    <Link href="#" className="text-slate-500 hover:text-[#0EA5A4] text-sm font-bold transition-all duration-300 hover:translate-x-1 inline-block">
-                      {link}
+                {links.map(({ label, href }) => (
+                  <li key={label}>
+                    <Link href={href} className="text-slate-500 hover:text-[#0EA5A4] text-sm font-bold transition-all duration-300 hover:translate-x-1 inline-block">
+                      {label}
                     </Link>
                   </li>
                 ))}
