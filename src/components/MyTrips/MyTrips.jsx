@@ -26,7 +26,7 @@ export default function MyTrips() {
       setLoading(true);
       try {
         const res = await fetch(
-          `https://travelee-server.vercel.app/my-trips?userEmail=${session.user.email}`
+          `http://localhost:500/my-trips?userEmail=${session.user.email}`
         );
         const data = await res.json();
         setTrips(data.data || []);

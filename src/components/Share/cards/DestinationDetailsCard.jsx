@@ -8,40 +8,55 @@ import { TripSidebar } from "./TripSidebar";
 import TripReviewsList from "@/components/Reviews/TripReviewList";
 import { TourQuickInfo } from "./TourQuickInfo";
 import { motion } from "framer-motion";
+import Swal from "sweetalert2";
 
 const DestinationDetailsCard = ({ destination }) => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const { user } = useAuth();
 
+  const displayPrice = destination?.price?.split("-")[0] || "$0";
+  const numericPriceForURL = displayPrice.replace(/[^0-9.]/g, '');
+
   const duration = (startDate && endDate) 
     ? Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)) 
     : 0;
 
-  const handleAddToMyTrips = async (e) => {
-    e.preventDefault();
-    if (!user?.email) return toast.info("Please login first to save trips 🙏");
+ const handleBookNow = async (e) => {
+  if (e) e.preventDefault();
 
-    const tripData = {
-      destination_id: destination.destination_id || "d2001",
-      country: destination.country,
-      startDate, endDate, duration,
-      city: destination.city,
-      media: { cover_image: destination.media?.cover_image },
-      userEmail: user.email,
-    };
+  if (!user?.email || !startDate || !endDate) {
+    return Swal.fire("Missing Info", "Please log in and select dates", "warning");
+  }
 
-    try {
-      const res = await fetch("https://travelee-server.vercel.app/my-trips", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(tripData),
-      });
-      if (res.ok) toast.success("Trip added! ✅");
-    } catch (err) {
-      toast.error("Failed to save trip");
-    }
-  };
+  try {
+    const response = await fetch("http://localhost:500/api/payments/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        // Matching your "Previous" format exactly:
+        destination_id: destination._id || destination.destination_id,
+        country: destination.country || "",
+        city: destination.city || "",
+        region: destination.region || "",
+        startDate: startDate,
+        endDate: endDate,
+        duration: duration, 
+        totalCost: parseFloat(numericPriceForURL),
+        userEmail: user.email,
+        userName: user.name || "Traveler", // Added userName
+        media: {
+          cover_image: destination.media?.cover_image || ""
+        }
+      }),
+    });
+
+    const data = await response.json();
+    if (data.url) window.location.href = data.url;
+  } catch (error) {
+    console.error("Booking Error:", error);
+  }
+};
 
   const tourPlanData = [
   { day: 1, titleKey: "arrival_title", descKey: "arrival_desc" },
@@ -77,7 +92,7 @@ const DestinationDetailsCard = ({ destination }) => {
           endDate={endDate}
           setEndDate={setEndDate}
           duration={duration}
-          handleAddToMyTrips={handleAddToMyTrips}
+          handleAddToMyTrips={handleBookNow}
         />
       </div>
       <div className="lg:col-span-1 lg:space-y-6">
