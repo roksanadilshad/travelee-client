@@ -13,7 +13,7 @@ export default function BookedTrips() {
       
       // FIX 1: Send BOTH 'email' and 'userEmail' just to be safe, 
       // or change this to match exactly what your backend controller uses.
-      fetch(`http://localhost:500/my-trips?userEmail=${session.user.email}`)
+      fetch(`https://travelee-server.vercel.app/my-trips?userEmail=${session.user.email}`)
         .then((res) => {
           if (!res.ok) throw new Error(`Error: ${res.status}`);
           return res.json();

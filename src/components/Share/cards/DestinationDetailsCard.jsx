@@ -30,7 +30,7 @@ const DestinationDetailsCard = ({ destination }) => {
   }
 
   try {
-    const response = await fetch("http://localhost:500/api/payments/create-checkout-session", {
+    const response = await fetch("https://travelee-server.vercel.app/api/payments/create-checkout-session", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
