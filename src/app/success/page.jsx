@@ -21,7 +21,7 @@ export default function SuccessPage() {
   // 2. Fixed Fetch (correct port and error handling)
   if (tripId) {
     // Changed port to 5000 to match your server.js
-    fetch("http://localhost:500/api/payments/mark-as-paid", {
+    fetch("https://travelee-server.vercel.app/api/payments/mark-as-paid", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ tripId }),

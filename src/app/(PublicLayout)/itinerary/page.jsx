@@ -135,7 +135,7 @@ export default function ProfessionalItinerary() {
     };
 
     try {
-      const response = await fetch("http://localhost:500/itineraries", {
+      const response = await fetch("https://travelee-server.vercel.app/itineraries", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(tripToSave),
@@ -243,7 +243,7 @@ export default function ProfessionalItinerary() {
                     >
                       {trip.days[selectedDayIdx].activities.map((act) => (
                         <SortableActivity 
-                          key={act.id} 
+                          key={`${act.id}-${index}`} 
                           act={act} 
                           onDelete={handleDelete} 
                         />

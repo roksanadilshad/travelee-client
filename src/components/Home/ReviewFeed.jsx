@@ -12,7 +12,7 @@ const ReviewFeed = () => {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const res = await axios.get("http://localhost:500/api/tripreviews");
+        const res = await axios.get("https://travelee-server.vercel.app/api/tripreviews");
         setReviews(res.data);
       } catch (err) {
         console.error("Critical: Could not sync reviews", err);
