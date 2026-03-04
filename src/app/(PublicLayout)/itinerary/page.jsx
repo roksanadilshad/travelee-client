@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   addDay,
@@ -16,13 +16,69 @@ import {
 import ActivityModal from "@/components/Itinerary/ActivityModal";
 import Swal from "sweetalert2";
 import BudgetSummary from "@/components/Itinerary/BudgetSummary";
+import { socket } from "@/lib/socket";
+import { useSession } from "next-auth/react";
+import PresenceBar from "@/components/Share/PresenceBar";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProfessionalItinerary() {
   const dispatch = useDispatch();
   const trip = useSelector((state) => state.itinerary.currentTrip);
+  const { data: session } = useSession(); // <--New Code
   const [activeDay, setActiveDay] = useState(null);
   const [selectedDayIdx, setSelectedDayIdx] = useState(0);
   const [tripId, setTripId] = useState(null);
+
+  // --- NEW CODE START (Real-time Presence) ---
+  const [activeUsers, setActiveUsers] = useState([]);
+
+  useEffect(() => {
+    if (!session?.user) return;
+    socket.connect();
+
+    const roomName = "my-awesome-trip";
+
+    socket.emit("join-trip", {
+      tripId: roomName,
+      user: {
+        displayName: session.user.name,
+        photoURL: session.user.image,
+        email: session.user.email,
+      },
+    });
+
+    socket.removeAllListeners("receive-activity");
+
+    socket.on("user-presence", (users) => {
+      setActiveUsers(users);
+    });
+
+    socket.on("receive-activity", (data) => {
+      if (!trip?.days || !trip.days[data.dayIndex]) {
+        console.warn("Day index does not exist in this client yet!");
+        return; 
+      }
+      const currentDayActivities = trip.days[data.dayIndex]?.activities || [];
+      const alreadyExists = currentDayActivities.some(
+        (act) => act.id === data.activity.id,
+      );
+      if (!alreadyExists) {
+        dispatch(
+          addActivity({
+            dayIndex: data.dayIndex,
+            activity: data.activity,
+          }),
+        );
+      }
+    });
+
+    return () => {
+      socket.off("user-presence");
+      socket.off("receive-activity");
+      socket.disconnect();
+    };
+  }, [session?.user?.email, dispatch, trip.days]);
+  // --- NEW CODE END ---
 
   const allActivities =
     trip?.days?.flatMap((day) => day.activities || []) || [];
@@ -164,12 +220,18 @@ export default function ProfessionalItinerary() {
               </p>
             </div>
           </div>
-          <button
-            onClick={handleSaveTrip}
-            className="bg-gray-900 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-black transition-all shadow-xl shadow-gray-200"
-          >
-            Save Trip
-          </button>
+
+          {/* --- CHANGE START (Presence Bar Added Here) --- */}
+          <div className="flex items-center gap-4">
+            <PresenceBar activeUsers={activeUsers} />
+            <button
+              onClick={handleSaveTrip}
+              className="bg-gray-900 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-black transition-all shadow-xl shadow-gray-200"
+            >
+              Save Trip
+            </button>
+          </div>
+          {/* --- CHANGE END --- */}
         </div>
       </header>
 
@@ -228,21 +290,20 @@ export default function ProfessionalItinerary() {
               </div>
 
               {/* TIMELINE CARDS */}
+
               <div className="relative space-y-4">
-                {/* Connecting Line */}
                 <div className="absolute left-6 top-4 bottom-4 w-0.5 bg-gray-200"></div>
 
-                {trip.days[selectedDayIdx].activities.length === 0 ? (
-                  <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
-                    <p className="text-gray-400 italic">
-                      No activities yet. Click{" "}
-                      <span className="text-gray-700">Add Activity</span> to
-                      start.
-                    </p>
-                  </div>
-                ) : (
-                  trip.days[selectedDayIdx].activities.map((act, i) => (
-                    <div key={i} className="relative flex gap-6 items-start">
+                <AnimatePresence mode="popLayout">
+                  {trip.days[selectedDayIdx].activities.map((act) => (
+                    <motion.div
+                      key={act.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.3 }}
+                      className="relative flex gap-6 items-start"
+                    >
                       <div className="z-10 bg-white border-4 border-[#F8FAFC] text-blue-600 p-2 rounded-full shadow-md">
                         <FaClock size={16} />
                       </div>
@@ -269,9 +330,9 @@ export default function ProfessionalItinerary() {
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))
-                )}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
             </div>
           ) : (
@@ -292,17 +353,26 @@ export default function ProfessionalItinerary() {
       <ActivityModal
         isOpen={activeDay !== null}
         onClose={() => setActiveDay(null)}
-        onSave={(data) =>
+        onSave={(data) => {
+          console.log("Activity saved button clicked!");
+          const newActivity = {
+            ...data,
+            id: Date.now(),
+          };
+
           dispatch(
             addActivity({
               dayIndex: activeDay,
-              activity: {
-                ...data,
-                id: Date.now(),
-              },
+              activity: newActivity,
             }),
-          )
-        }
+          );
+          console.log("Sending activity to socket once:", newActivity);
+          socket.emit("send-activity", {
+            tripId: "my-awesome-trip",
+            dayIndex: activeDay,
+            activity: newActivity,
+          });
+        }}
       />
       <div className="max-w-7xl mx-auto px-8 pb-20">
         <div className="w-full lg:w-9/12 mx-auto">
