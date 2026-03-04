@@ -45,7 +45,7 @@ export default function Navbar() {
   const navLinks = [
     { name: "Home", href: "/", icon: <Compass className="w-4 h-4" /> },
     { name: "Destinations", href: "/destinations", icon: <Compass className="w-4 h-4" /> },
-    ...(user?.email ? [{ name: "Dashboard", href: "/dashboard/my-profile" }] : []),
+    ...(user?.email ? [{ name: "Dashboard", href: "/dashboard/browse" }] : []),
     ...(user?.email ? [{ name: "Itinerary", href: "/itinerary" }] : []),
     ...(user?.email ? [{ name: "Bookings", href: "/dashboard/my-trips" }] : []),
     { name: "About", href: "/about", icon: <Info className="w-4 h-4" /> },
@@ -85,7 +85,7 @@ export default function Navbar() {
       : `${
           scrolled
             ? "text-foreground hover:text-primary"
-            : "text-white hover:text-gray-200"
+            : "text-gray-400 hover:text-gray-200"
         } hover:bg-background/50`
   }`}
 >

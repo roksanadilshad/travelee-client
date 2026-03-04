@@ -47,7 +47,7 @@ export default function DestinationsPage() {
     async function fetchData() {
       try {
         const res = await fetch(
-          `https://travelee-server.vercel.app/destinations?${query}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/destinations?${query}`,
           { cache: "no-store" }
         );
 

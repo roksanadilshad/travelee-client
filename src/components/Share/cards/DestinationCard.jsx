@@ -15,7 +15,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const SERVER_URL = "http://localhost:500";
+const SERVER_URL = "https://travelee-server.vercel.app";
 
 const DestinationCard = ({ destination }) => {
   const { t } = useLanguage();

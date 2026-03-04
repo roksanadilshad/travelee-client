@@ -36,7 +36,7 @@ const CategorizedExploration = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`https://travelee-server.vercel.app/destinations`, {
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/destinations`, {
           params: { page: currentPage, city: currentCity, limit: 6 }
         });
         setItems(res.data.data);

@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:500";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://travelee-server.vercel.app";
 
 export const authOptions = {
   providers: [
