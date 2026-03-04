@@ -7,7 +7,7 @@ import { MapPin, Search, Thermometer, Wind, Droplets } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
 const WeatherBlock = () => {
-  const [city, setCity] = useState("Phuket");
+  const [city, setCity] = useState("Dhaka");
   const [searchInput, setSearchInput] = useState("");
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +35,7 @@ const WeatherBlock = () => {
       setLoading(false);
     }
   };
-
+console.log("API KEY:", process.env.NEXT_PUBLIC_WEATHER_API_KEY);
   useEffect(() => { fetchWeather(city); }, []);
 
   // src/components/Home/WeatherBlock.jsx
