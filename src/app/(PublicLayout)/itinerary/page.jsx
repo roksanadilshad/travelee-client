@@ -90,13 +90,13 @@ export default function ProfessionalItinerary() {
   const [tripId, setTripId] = useState(null);
   const [activeUsers, setActiveUsers] = useState([]);
 
-  // Sensors for Drag and Drop
+  
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  // --- Real-time Socket Logic ---
+  // --- Real-time Socket Logic (Presence Only) ---
   useEffect(() => {
     if (!session?.user) return;
     socket.connect();
@@ -112,39 +112,24 @@ export default function ProfessionalItinerary() {
       },
     });
 
-    socket.removeAllListeners("receive-activity");
-
+    
     socket.on("user-presence", (users) => {
       setActiveUsers(users);
     });
 
-    socket.on("receive-activity", (data) => {
-      if (!trip?.days || !trip.days[data.dayIndex]) return;
-      
-      const currentDayActivities = trip.days[data.dayIndex]?.activities || [];
-      const alreadyExists = currentDayActivities.some((act) => act.id === data.activity.id);
-      
-      if (!alreadyExists) {
-        dispatch(addActivity({
-            dayIndex: data.dayIndex,
-            activity: data.activity,
-        }));
-      }
-    });
-
+    
     return () => {
       socket.off("user-presence");
-      socket.off("receive-activity");
       socket.disconnect();
     };
-  }, [session?.user?.email, dispatch, trip.days]);
+  }, [session?.user?.email]);
 
   // Handle Drag End
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const currentActivities = trip.days[selectedDayIdx].activities;
+    const currentActivities = trip.days[selectedDayIdx]?.activities || [];
     const oldIndex = currentActivities.findIndex((a) => a.id === active.id);
     const newIndex = currentActivities.findIndex((a) => a.id === over.id);
 
@@ -248,7 +233,7 @@ export default function ProfessionalItinerary() {
                 className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${selectedDayIdx === idx ? "bg-white shadow-md border border-gray-100 text-primary" : "text-gray-500 hover:bg-gray-100"}`}
               >
                 <span className="font-bold text-sm">Day {idx + 1}</span>
-                {day.activities.length > 0 && <FaCheckCircle className="text-green-500" size={12} />}
+                {day.activities?.length > 0 && <FaCheckCircle className="text-green-500" size={12} />}
               </button>
             ))}
             <button onClick={() => dispatch(addDay())} className="w-full mt-4 flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-dashed border-gray-200 text-gray-400 hover:text-blue-500 text-sm font-bold transition-all">
@@ -263,7 +248,7 @@ export default function ProfessionalItinerary() {
               <div className="flex justify-between items-end mb-8">
                 <div>
                   <h2 className="text-4xl font-black text-gray-900">Day {selectedDayIdx + 1}</h2>
-                  <p className="text-gray-500 mt-1">{trip.days[selectedDayIdx].activities.length} activities planned</p>
+                  <p className="text-gray-500 mt-1">{trip.days[selectedDayIdx]?.activities?.length || 0} activities planned</p>
                 </div>
                 <button onClick={() => setActiveDay(selectedDayIdx)} className="bg-primary text-white flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold shadow-lg shadow-blue-100 hover:scale-105 transition-transform">
                   <FaPlus size={14} /> Add Activity
@@ -274,9 +259,9 @@ export default function ProfessionalItinerary() {
                 <div className="absolute left-6 top-4 bottom-4 w-0.5 bg-gray-200"></div>
 
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                  <SortableContext items={trip.days[selectedDayIdx].activities.map(act => act.id)} strategy={verticalListSortingStrategy}>
+                  <SortableContext items={trip.days[selectedDayIdx]?.activities?.map(act => act.id) || []} strategy={verticalListSortingStrategy}>
                     <AnimatePresence mode="popLayout">
-                      {trip.days[selectedDayIdx].activities.map((act) => (
+                      {trip.days[selectedDayIdx]?.activities?.map((act) => (
                         <motion.div key={act.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, scale: 0.9 }}>
                           <SortableActivity act={act} onDelete={handleDelete} />
                         </motion.div>
@@ -299,12 +284,9 @@ export default function ProfessionalItinerary() {
         onClose={() => setActiveDay(null)}
         onSave={(data) => {
           const newActivity = { ...data, id: Date.now() };
+          
           dispatch(addActivity({ dayIndex: activeDay, activity: newActivity }));
-          socket.emit("send-activity", {
-            tripId: "my-awesome-trip",
-            dayIndex: activeDay,
-            activity: newActivity,
-          });
+          setActiveDay(null);
         }}
       />
 
