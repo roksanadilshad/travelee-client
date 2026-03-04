@@ -41,7 +41,9 @@ function ItinerarySearchHandler() {
   const dispatch = useDispatch();
   const searchParams = useSearchParams();
   const trip = useSelector((state) => state.itinerary.currentTrip);
+  console.log(searchParams.get("startDate"));
   
+  const startDate = searchParams.get("startDate")
   const destName = searchParams.get("name");
   const destPrice = searchParams.get("price");
 
@@ -158,6 +160,7 @@ export default function ProfessionalItinerary() {
     });
     Swal.fire({ icon: "success", title: "Activity Removed", timer: 1000, showConfirmButton: false });
   };
+console.log(trip);
 
   return (
     <div className="min-h-screen mt-20 bg-[#F8FAFC] pb-32">
@@ -241,7 +244,7 @@ export default function ProfessionalItinerary() {
                       items={trip.days[selectedDayIdx].activities.map(act => act.id)} 
                       strategy={verticalListSortingStrategy}
                     >
-                      {trip.days[selectedDayIdx].activities.map((act) => (
+                      {trip.days[selectedDayIdx].activities.map((act, index) => (
                         <SortableActivity 
                           key={`${act.id}-${index}`} 
                           act={act} 
