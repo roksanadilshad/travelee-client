@@ -4,8 +4,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { MapPin, Star, Trash2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MapPin, Star, Trash2, Heart, ChevronRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "react-toastify";
 import DestinationCard from "@/components/Share/cards/DestinationCard"; // <-- Add this import
@@ -20,7 +20,6 @@ const WishlistPage = () => {
 
   const fetchData = async () => {
     if (!user?.email) return;
-
     try {
       // Fetch Wishlist
       const resWishlist = await fetch(`${SERVER_URL}/wishlists/${user.email}`);
@@ -66,7 +65,13 @@ const WishlistPage = () => {
     }
   };
 
-  if (loading) return <p className="p-10">Loading wishlist...</p>;
+  if (loading) return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="h-80 bg-white rounded-[2.5rem] shadow-sm" />
+      ))}
+    </div>
+  );
 
   return (
     <div className="min-h-screen p-8 mt-20">

@@ -243,7 +243,7 @@ export default function ProfessionalItinerary() {
                     >
                       {trip.days[selectedDayIdx].activities.map((act) => (
                         <SortableActivity 
-                          key={act.id} 
+                          key={`${act.id}-${index}`} 
                           act={act} 
                           onDelete={handleDelete} 
                         />
