@@ -1,3 +1,4 @@
+// WishlistPage.jsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,30 +8,40 @@ import { motion } from "framer-motion";
 import { MapPin, Star, Trash2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "react-toastify";
+import DestinationCard from "@/components/Share/cards/DestinationCard"; // <-- Add this import
 
-const SERVER_URL = "http://localhost:500";
+const SERVER_URL = "http://localhost:500"; // <-- Update this to your actual backend URL
 
 const WishlistPage = () => {
   const { user } = useAuth();
   const [wishlist, setWishlist] = useState([]);
+  const [recommendations, setRecommendations] = useState([]); // <-- New state for recommendations
   const [loading, setLoading] = useState(true);
 
-  const fetchWishlist = async () => {
+  const fetchData = async () => {
     if (!user?.email) return;
 
     try {
-      const res = await fetch(`${SERVER_URL}/wishlists/${user.email}`);
-      const data = await res.json();
-      setWishlist(data);
+      // Fetch Wishlist
+      const resWishlist = await fetch(`${SERVER_URL}/wishlists/${user.email}`);
+      const dataWishlist = await resWishlist.json();
+      setWishlist(dataWishlist);
+
+      // Fetch Recommendations based on wishlist
+      if (dataWishlist.length > 0) {
+        const resRecs = await fetch(`${SERVER_URL}/destinations/recommendations/${user.email}`);
+        const dataRecs = await resRecs.json();
+        setRecommendations(dataRecs);
+      }
     } catch (err) {
-      toast.error("Wishlist load failed");
+      toast.error("Failed to load data");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchWishlist();
+    fetchData();
   }, [user?.email]);
 
   const handleRemove = async (destination_id) => {
@@ -47,8 +58,9 @@ const WishlistPage = () => {
       setWishlist((prev) =>
         prev.filter((item) => item.destination_id !== destination_id)
       );
-
       toast.info("Removed from wishlist 💔");
+      
+      // Optional: You could re-fetch recommendations here if you want them to update immediately when an item is removed.
     } catch (err) {
       toast.error("Remove failed");
     }
@@ -57,13 +69,14 @@ const WishlistPage = () => {
   if (loading) return <p className="p-10">Loading wishlist...</p>;
 
   return (
-    <div className="min-h-screen p-8">
+    <div className="min-h-screen p-8 mt-20">
       <h1 className="text-3xl font-black mb-8">❤️ My Wishlist</h1>
 
       {wishlist.length === 0 && (
-        <p className="text-gray-500">No wishlist items yet.</p>
+        <p className="text-gray-500">No wishlist items yet. Start exploring!</p>
       )}
 
+      {/* WISHLIST GRID */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {wishlist.map((item) => (
           <Link
@@ -117,6 +130,25 @@ const WishlistPage = () => {
           </Link>
         ))}
       </div>
+
+      {/* RECOMMENDED FOR YOU SECTION */}
+      {recommendations.length > 0 && (
+        <div className="mt-20 pt-10 border-t border-gray-200">
+          <h2 className="text-3xl font-black mb-2 text-[var(--foreground)]">✨ Recommended For You</h2>
+          <p className="text-gray-500 mb-8 italic">Based on your wishlist preferences</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {recommendations.map((dest, idx) => (
+              <DestinationCard
+                key={dest._id}
+                destination={dest}
+                index={idx}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
