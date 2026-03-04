@@ -7,13 +7,13 @@ import html2canvas from "html2canvas";
 import Swal from "sweetalert2";
 import TripReviewForm from "../Reviews/TripReviewForm";
 import withReactContent from "sweetalert2-react-content";
+import Link from "next/link";
 
 export default function BookedTrips() {
   const { data: session } = useSession();
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const MySwal = withReactContent(Swal);
-  
 
   // Helper: Check if the trip is in the past
   const isTripOver = (endDate) => {
@@ -24,6 +24,7 @@ export default function BookedTrips() {
   // Function: Generate PDF Ticket
   const downloadTicket = async (tripId) => {
     const element = document.getElementById(`ticket-${tripId}`);
+    if (!element) return;
     const canvas = await html2canvas(element);
     const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF();
@@ -34,7 +35,7 @@ export default function BookedTrips() {
   useEffect(() => {
     if (session?.user?.email) {
       setLoading(true);
-      fetch(`https://travelee-server.vercel.app/my-trips?userEmail=${session.user.email}`)
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/my-trips?userEmail=${session.user.email}`)
         .then((res) => res.json())
         .then((response) => {
           const actualData = response.success ? response.data : response;
@@ -45,7 +46,6 @@ export default function BookedTrips() {
   }, [session]);
 
   if (loading) return <div className="p-10 text-center">Loading adventures...</div>;
-console.log(trips);
 
   return (
     <div className="max-w-4xl mx-auto p-4 lg:p-8">
@@ -58,21 +58,26 @@ console.log(trips);
         ) : (
           trips.map((trip) => {
             const expired = isTripOver(trip.endDate);
+            const destinationId = trip.destination_id || trip._id;
 
             return (
-              <div 
-                key={trip._id} 
+              <div
+                key={trip._id}
                 id={`ticket-${trip._id}`}
-                className="group bg-white border border-slate-100 p-6 rounded-[2.5rem] shadow-sm hover:shadow-md transition-all"
+                className="group relative bg-white border border-slate-100 p-6 rounded-[2.5rem] shadow-sm hover:shadow-md transition-all"
               >
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                  {/* Left: Info */}
-                  <div className="flex items-center gap-5">
+                  
+                  {/* LEFT: Info Section (Clickable Area) */}
+                  <Link 
+                    href={`/destinations/${destinationId}`} 
+                    className="flex items-center gap-5 flex-1 w-full hover:opacity-80 transition-opacity"
+                  >
                     <div className="relative w-20 h-20 shrink-0">
-                      <img 
-                        src={trip.image || trip.media?.cover_image || "https://placehold.co/400x400?text=Travel"} 
-                        className="w-full h-full rounded-3xl object-cover" 
-                        alt="" 
+                      <img
+                        src={trip.image || trip.media?.cover_image || "https://placehold.co/400x400?text=Travel"}
+                        className="w-full h-full rounded-3xl object-cover"
+                        alt={trip.destination || "Trip"}
                       />
                       <div className="absolute -top-2 -right-2 bg-[#0A1D1A] text-white p-1.5 rounded-xl">
                         <Ticket size={14} />
@@ -93,43 +98,53 @@ console.log(trips);
                         </span>
                       </div>
                     </div>
-                  </div>
+                  </Link>
 
-                  {/* Right: Dynamic Actions */}
-                  <div className="flex flex-wrap gap-3 w-full md:w-auto">
+                  {/* RIGHT: Dynamic Actions (Independent of Link) */}
+                  <div className="flex flex-wrap gap-3 w-full md:w-auto z-10">
                     {!expired ? (
-                      // ACTIONS FOR UPCOMING TRIPS
-                      <button 
-                        onClick={() => downloadTicket(trip._id)}
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          downloadTicket(trip._id);
+                        }}
                         className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-[#0A1D1A] text-white px-5 py-3 rounded-2xl text-xs font-black shadow-lg hover:scale-105 transition-all"
                       >
                         <Download size={16} /> Download Ticket
                       </button>
                     ) : (
-                      // ACTIONS FOR FINISHED TRIPS
                       <>
-                        <button 
+                        <button
                           className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-emerald-500 text-white px-5 py-3 rounded-2xl text-xs font-black shadow-lg hover:scale-105 transition-all"
-                          onClick={() => {
-    MySwal.fire({
-      title: <h2 className="text-xl font-black">Review your trip</h2>,
-      html: (
-        <TripReviewForm 
-          session={session}
-          tripId={trip.destination_id || trip._id} 
-          onReviewAdded={() => {
-            MySwal.close();
-            toast.success("Live review posted!");
-          }} 
-        />
-      ),
-      showConfirmButton: false,
-    });
-  }}> Write Review
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            MySwal.fire({
+                              title: <h2 className="text-xl font-black">Review your trip</h2>,
+                              html: (
+                                <TripReviewForm
+                                  session={session}
+                                  tripId={destinationId}
+                                  onReviewAdded={() => {
+                                    MySwal.close();
+                                    Swal.fire("Success", "Live review posted!", "success");
+                                  }}
+                                />
+                              ),
+                              showConfirmButton: false,
+                            });
+                          }}
+                        >
+                          Write Review
                         </button>
-                        <button 
+                        <button
                           className="p-3 bg-red-50 text-red-500 rounded-2xl hover:bg-red-100 transition-colors"
-                          onClick={() => Swal.fire("Delete", "Delete History", "warning")}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            Swal.fire("Delete", "Delete History", "warning");
+                          }}
                         >
                           <Trash2 size={18} />
                         </button>
