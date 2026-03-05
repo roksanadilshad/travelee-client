@@ -261,18 +261,39 @@ console.log(trip);
               <div className="relative space-y-4">
                 <div className="absolute left-6 top-4 bottom-4 w-0.5 bg-gray-200"></div>
 
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                  <SortableContext items={trip.days[selectedDayIdx]?.activities?.map(act => act.id) || []} strategy={verticalListSortingStrategy}>
-                    <AnimatePresence mode="popLayout">
-                      {trip.days[selectedDayIdx]?.activities?.map((act) => (
-                        <motion.div key={act.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, scale: 0.9 }}>
-                          <SortableActivity act={act} onDelete={handleDelete} />
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </SortableContext>
-                </DndContext>
-              </div>
+                {trip.days[selectedDayIdx].activities.length === 0 ? (
+                  <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
+                    <p className="text-gray-400 italic">No activities yet.</p>
+                  </div>
+                ) : (
+                  // FIX 4: Integrated DND Logic into the map
+                  <DndContext
+  sensors={sensors}
+  collisionDetection={closestCenter}
+  onDragEnd={handleDragEnd}
+>
+  <SortableContext
+    items={trip.days[selectedDayIdx]?.activities?.map(act => act.id) || []}
+    strategy={verticalListSortingStrategy}
+  >
+    <AnimatePresence mode="popLayout">
+      {trip.days[selectedDayIdx]?.activities?.map((act) => (
+        <motion.div
+          key={act.id}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+        >
+          <SortableActivity act={act} onDelete={handleDelete} />
+        </motion.div>
+      ))}
+    </AnimatePresence>
+  </SortableContext>
+</DndContext>
+                )
+              }
+                
+              </div> 
             </div>
           ) : (
             <div className="text-center py-20 bg-white rounded-3xl border border-gray-200">
