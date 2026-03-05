@@ -4,32 +4,32 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin, Star, Trash2, Heart, ChevronRight } from "lucide-react";
+import { MapPin, Star, Trash2, Heart, Sparkles, Navigation, Banknote } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "react-toastify";
 
-const SERVER_URL = "https://travelee-server.vercel.app";
+const SERVER_URL = `${process.env.NEXT_PUBLIC_API_URL}`;
 
 const WishlistPage = () => {
   const { user } = useAuth();
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchWishlist = async () => {
+  const fetchData = async () => {
     if (!user?.email) return;
     try {
-      const res = await fetch(`${SERVER_URL}/wishlists/${user.email}`);
-      const data = await res.json();
-      setWishlist(data);
+      const resWishlist = await fetch(`${SERVER_URL}/wishlists/${user.email}`);
+      const dataWishlist = await resWishlist.json();
+      setWishlist(dataWishlist);
     } catch (err) {
-      toast.error("Wishlist load failed");
+      toast.error("Failed to load wishlist");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchWishlist();
+    fetchData();
   }, [user?.email]);
 
   const handleRemove = async (destination_id) => {
@@ -43,118 +43,140 @@ const WishlistPage = () => {
         }),
       });
 
-      setWishlist((prev) =>
-        prev.filter((item) => item.destination_id !== destination_id)
-      );
-
-      toast.info("Removed from wishlist 💔");
+      setWishlist((prev) => prev.filter((item) => item.destination_id !== destination_id));
+      toast.info("Removed from your dream list 💔");
     } catch (err) {
       toast.error("Remove failed");
     }
   };
 
   if (loading) return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-pulse">
-      {[1, 2, 3].map((i) => (
-        <div key={i} className="h-80 bg-white rounded-[2.5rem] shadow-sm" />
-      ))}
+    <div className="min-h-screen p-4 sm:p-8 mt-20 max-w-7xl mx-auto space-y-10">
+      <div className="h-10 w-48 sm:w-64 bg-slate-100 rounded-2xl animate-pulse" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-[400px] sm:h-[500px] bg-slate-50 rounded-[2.5rem] sm:rounded-[3rem] animate-pulse" />
+        ))}
+      </div>
     </div>
   );
 
   return (
-    <div className="pb-12">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-red-50 text-red-500 rounded-xl">
-               <Heart size={20} fill="currentColor" />
+    <div className="min-h-screen bg-[#FDFDFD] max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-16 mt-16 sm:mt-20">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 sm:mb-16">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 sm:p-3 bg-red-50 rounded-xl sm:rounded-2xl">
+              <Heart className="text-red-500 fill-red-500 w-6 h-6 sm:w-7 sm:h-7" />
             </div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Saved Places</h1>
+            <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight italic">My Dreams</h1>
           </div>
-          <p className="text-sm text-slate-400 font-medium">Manage your dream destinations and upcoming trips</p>
+          <p className="text-slate-400 text-sm sm:text-base font-medium ml-1">
+            You have {wishlist.length} destinations waiting for you
+          </p>
         </div>
-        <div className="bg-white px-5 py-2.5 rounded-2xl shadow-sm border border-slate-50 text-xs font-bold text-slate-500">
-          {wishlist.length} Items Saved
-        </div>
+
+        {wishlist.length > 0 && (
+          <Link href="/destinations" className="flex items-center justify-center gap-2 px-5 py-3 bg-slate-900 text-white rounded-xl sm:rounded-2xl font-bold hover:bg-emerald-600 transition-all text-sm sm:text-base w-full sm:w-auto shadow-lg shadow-slate-200">
+            <Sparkles size={18} /> Add More
+          </Link>
+        )}
       </div>
 
       {wishlist.length === 0 ? (
-        <div className="bg-white rounded-[3rem] p-20 flex flex-col items-center text-center border border-slate-50 shadow-sm">
-          <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
-             <Heart size={32} className="text-slate-200" />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center py-20 sm:py-32 bg-white rounded-[2.5rem] sm:rounded-[4rem] border border-slate-100 shadow-2xl shadow-slate-200/50 px-4"
+        >
+          <div className="w-16 h-16 sm:w-24 sm:h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Navigation className="text-slate-300 w-8 h-8 sm:w-10 sm:h-10" />
           </div>
-          <h3 className="text-xl font-bold text-slate-900 mb-2">Your wishlist is empty</h3>
-          <p className="text-slate-400 max-w-xs mb-8">Start exploring the world and save your favorite places here.</p>
-          <Link href="/dashboard" className="bg-[#0A1D1A] text-white px-8 py-3.5 rounded-2xl font-bold shadow-lg shadow-emerald-900/20 hover:scale-[1.02] transition-all">
-             Explore Destinations
+          <p className="text-slate-400 text-lg sm:text-xl font-semibold">Your dream list is empty.</p>
+          <p className="text-slate-300 text-sm sm:text-base mb-8">Start adding places you want to visit!</p>
+          <Link href="/destinations" className="inline-block px-8 sm:px-10 py-3 sm:py-4 bg-emerald-500 text-white rounded-xl sm:rounded-2xl font-black hover:scale-105 transition-all shadow-xl shadow-emerald-500/30 text-sm sm:text-base">
+            Explore Destinations
           </Link>
-        </div>
+        </motion.div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <AnimatePresence>
-            {wishlist.map((item, index) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10 lg:gap-12">
+          <AnimatePresence mode="popLayout">
+            {wishlist.map((item, idx) => (
               <motion.div
                 key={item._id}
+                layout
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ delay: index * 0.1 }}
-                className="group relative bg-white rounded-[2.5rem] p-4 shadow-sm border border-slate-50 hover:shadow-xl hover:shadow-slate-200/50 transition-all"
+                transition={{ duration: 0.4, delay: idx * 0.05 }}
+                className="group h-full"
               >
-                {/* Image Container */}
-                <div className="relative h-56 rounded-[1.8rem] overflow-hidden mb-5">
-                  <Image
-                    src={item.media?.cover_image || "/default-placeholder.png"}
-                    alt={item.city}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-700"
-                  />
-                  
-                  {/* Rating Badge */}
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-xs font-black shadow-sm">
-                    <Star size={12} className="text-yellow-500 fill-yellow-500" />
-                    {item.popularityScore || "8.5"}
-                  </div>
+                <Link href={`/destinations/${item.destinationMongoId}`} className="h-full flex flex-col">
+                  <div className="bg-white rounded-[2rem] sm:rounded-[3rem] overflow-hidden border border-slate-50 shadow-sm group-hover:shadow-2xl group-hover:shadow-slate-200 transition-all duration-500 h-full flex flex-col p-3 sm:p-4 cursor-pointer relative">
+                    
+                    {/* Image Area */}
+                    <div className="relative aspect-[11/12] sm:aspect-[1.2/1] rounded-[1.5rem] sm:rounded-[2.5rem] overflow-hidden shrink-0">
+                      <Image
+                        src={item.media?.cover_image || "/default-placeholder.png"}
+                        alt={item.city}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-[1.2s] ease-out"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
+                      
+                      {/* Floating Rating Overlay */}
+                      <div className="absolute top-3 sm:top-5 left-3 sm:left-5 right-3 sm:right-5 flex justify-between items-center z-20">
+                        <div className="bg-white/90 backdrop-blur-md px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl flex items-center gap-1.5 sm:gap-2 shadow-lg border border-white/20">
+                          <Star className="text-amber-400 fill-amber-400 w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                          <span className="text-slate-900 font-black text-xs sm:text-sm">{item.popularityScore || "8.5"}</span>
+                        </div>
+                        
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleRemove(item.destination_id);
+                          }}
+                          className="p-2.5 sm:p-3 bg-white/90 backdrop-blur-md text-slate-400 hover:text-red-500 rounded-xl sm:rounded-2xl transition-all shadow-xl active:scale-90 z-30 border border-white/20"
+                        >
+                          <Trash2 className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                        </button>
+                      </div>
+                    </div>
 
-                  {/* Remove Button */}
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleRemove(item.destination_id);
-                    }}
-                    className="absolute top-4 right-4 bg-white/90 backdrop-blur-md p-2.5 rounded-xl text-slate-400 hover:text-red-500 hover:bg-white transition-all shadow-sm"
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                    {/* Content Area */}
+                    <div className="pt-5 sm:pt-6 pb-2 px-2 sm:px-4 flex-1 flex flex-col">
+                      <div className="flex items-center gap-2 text-emerald-600 mb-1.5 sm:mb-2">
+                        <MapPin size={14} className="sm:w-4 sm:h-4" strokeWidth={3} />
+                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] leading-none">{item.country}</span>
+                      </div>
+                      
+                      <h4 className="text-2xl sm:text-3xl font-black text-slate-900 mb-3 sm:mb-4 tracking-tight leading-tight group-hover:text-emerald-600 transition-colors">
+                        {item.city}
+                      </h4>
+                      
+                      <p className="text-slate-400 text-xs sm:text-sm font-medium line-clamp-2 sm:line-clamp-3 italic leading-relaxed mb-6">
+                        {item.description}
+                      </p>
 
-                  <div className="absolute bottom-4 left-4">
-                     <span className="bg-[#0A1D1A] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-lg">
-                        {item.avgBudget || "$$$"}
-                     </span>
+                      {/* Updated Budget Area - Bottom of description */}
+                      <div className="mt-auto pt-4 border-t border-slate-50 flex items-center justify-between">
+                        <div className="flex flex-col">
+                          <span className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-widest"> Budget</span>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-emerald-500 font-black text-lg sm:text-2xl">{item.avgBudget}</span>
+                             
+                          </div>
+                        </div>
+                        
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-emerald-50 transition-colors">
+                          <Navigation className="w-4 h-4 sm:w-5 sm:h-5 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-
-                {/* Content */}
-                <div className="px-2 pb-2">
-                  <div className="flex items-center gap-1.5 text-emerald-500 mb-1">
-                    <MapPin size={12} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">{item.country}</span>
-                  </div>
-                  
-                  <div className="flex justify-between items-start mb-3">
-                    <h3 className="text-xl font-black text-slate-900 tracking-tight">{item.city}</h3>
-                    <Link href={`/destinations/${item.destinationMongoId}`}>
-                      <button className="p-2 bg-slate-50 rounded-xl hover:bg-[#0A1D1A] hover:text-white transition-all">
-                        <ChevronRight size={16} />
-                      </button>
-                    </Link>
-                  </div>
-
-                  <p className="text-sm text-slate-400 font-medium line-clamp-2 leading-relaxed">
-                    {item.description}
-                  </p>
-                </div>
+                </Link>
               </motion.div>
             ))}
           </AnimatePresence>
