@@ -2,18 +2,9 @@
 
 import React from "react";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { 
-  Mail, 
-  MapPin, 
-  Phone, 
-  Calendar, 
-  Edit3, 
-  ShieldCheck, 
-  ExternalLink 
+  Mail, MapPin, Phone, Calendar, Edit3, 
+  ShieldCheck, Camera, Globe, Github, Twitter
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -26,140 +17,155 @@ const MyProfile = () => {
   
 
   // Professional Skeleton/Loading State
+import { useLanguage } from "@/context/LanguageContext";
+
+const MyProfile = () => {
+  const { data: session } = useSession();
+  const { t } = useLanguage();
+  const user = session?.user;
+
   if (!session) {
     return (
-      <div className="max-w-4xl mx-auto mt-10 space-y-4 animate-pulse">
-        <div className="h-40 bg-muted rounded-3xl w-full" />
-        <div className="h-20 bg-muted rounded-xl w-1/2" />
+      <div className="space-y-6 animate-pulse">
+        <div className="h-48 bg-white rounded-[2.5rem] w-full" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="h-32 bg-white rounded-3xl" />
+          <div className="h-32 bg-white rounded-3xl" />
+          <div className="h-32 bg-white rounded-3xl" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background/50 py-12 px-4">
-      <div className="max-w-4xl mx-auto space-y-6">
-        
-        {/* Main Profile Header Card */}
-        <Card className="overflow-hidden border-none shadow-2xl bg-card rounded-3xl">
-          {/* Banner with subtle pattern */}
-          <div className="h-48 bg-primary relative overflow-hidden">
-             <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
-             <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+    <div className="max-w-6xl mx-auto pb-20">
+      {/* 1. Hero Profile Header */}
+      <div className="relative mb-12">
+        {/* Banner */}
+        <div className="h-48 lg:h-64 rounded-[2.5rem] bg-gradient-to-r from-[#0A1D1A] to-[#1a3d38] overflow-hidden relative shadow-xl">
+           <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+        </div>
+
+        {/* Profile Info Overlay */}
+        <div className="px-8 lg:px-12 -mt-16 flex flex-col md:flex-row items-end gap-6 relative z-10">
+          <div className="relative group">
+            <div className="w-32 h-32 lg:w-40 lg:h-40 rounded-[2.5rem] border-[6px] border-[#F4F7FE] bg-white shadow-2xl overflow-hidden">
+               <img 
+                 src={user?.image || `https://ui-avatars.com/api/?name=${user?.name}&background=0A1D1A&color=fff`} 
+                 alt="profile" 
+                 className="w-full h-full object-cover" 
+               />
+            </div>
+            <button className="absolute bottom-2 right-2 p-2.5 bg-white text-slate-900 rounded-2xl shadow-xl hover:scale-110 transition-transform border border-slate-100">
+               <Camera size={18} />
+            </button>
           </div>
 
-          <CardContent className="relative pt-0 pb-8 px-8">
-            {/* Avatar positioning */}
-            <div className="absolute -top-16 left-8 flex items-end gap-6">
-              <div className="relative group">
-                <div className="w-32 h-32 rounded-2xl border-4 border-card bg-secondary flex items-center justify-center text-secondary-foreground text-4xl font-bold shadow-xl overflow-hidden">
-                  {user?.image ? (
-                    <img src={user.image} alt={user.name || "User"} className="object-cover w-full h-full" />
-                  ) : (
-                    <span>{user?.name?.charAt(0)}</span>
-                  )}
-                </div>
-                <button className="absolute bottom-2 right-2 p-1.5 bg-primary text-primary-foreground rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Edit3 size={14} />
-                </button>
-              </div>
+          <div className="flex-1 pb-2">
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
+                {user?.name}
+              </h1>
+              <span className="flex items-center gap-1 bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+                <ShieldCheck size={12} /> {user?.role || "Explorer"}
+              </span>
             </div>
+            <p className="text-slate-400 font-medium mt-1 flex items-center gap-2">
+              <Globe size={14} /> Based in Bangladesh • Travel Enthusiast
+            </p>
+          </div>
 
-            {/* Action Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between pt-20 gap-4">
-              <div>
-                <div className="flex items-center gap-3">
-                  <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
-                    {user?.name}
-                  </h2>
-                  <Badge variant="secondary" className="rounded-full px-3 py-1 bg-primary/10 text-primary border-none">
-                    <ShieldCheck className="w-3 h-3 mr-1" />
-                    {user?.role || "Member"}
-                  </Badge>
-                </div>
-                <p className="text-muted-foreground flex items-center gap-2 mt-1">
-                  <Mail className="w-4 h-4" /> {user?.email}
+          <div className="pb-2">
+            <button className="bg-[#0A1D1A] text-white px-8 py-3.5 rounded-2xl font-bold shadow-lg shadow-emerald-900/20 hover:scale-[1.02] transition-all flex items-center gap-2">
+               <Edit3 size={18} /> Edit Profile
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        {/* Left Column: Stats & Socials */}
+        <div className="space-y-8">
+          <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-50">
+             <h3 className="font-black text-slate-900 mb-6 uppercase text-xs tracking-[0.2em]">Profile Strength</h3>
+             <div className="w-full bg-slate-100 h-2 rounded-full mb-4">
+                <div className="bg-emerald-500 w-[85%] h-full rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+             </div>
+             <p className="text-xs font-bold text-slate-400 leading-relaxed">
+               Your profile is almost complete! Add a phone number to reach 100%.
+             </p>
+          </div>
+
+          <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-50">
+             <h3 className="font-black text-slate-900 mb-6 uppercase text-xs tracking-[0.2em]">Social Links</h3>
+             <div className="space-y-4">
+                <SocialLink icon={<Twitter size={18}/>} label="Twitter" handle="@madison_travels" />
+                <SocialLink icon={<Github size={18}/>} label="Github" handle="madison_dev" />
+             </div>
+          </div>
+        </div>
+
+        {/* Right Column: Detailed Info */}
+        <div className="lg:col-span-2 space-y-8">
+           <div className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-50">
+              <h3 className="font-black text-slate-900 mb-8 uppercase text-xs tracking-[0.2em]">Personal Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-12">
+                 <InfoBlock icon={<Mail />} label="Email Address" value={user?.email} />
+                 <InfoBlock icon={<Phone />} label="Phone Number" value={user?.phone || "+880 1XXX-XXXXXX"} />
+                 <InfoBlock icon={<MapPin />} label="Location" value="Dhaka, Bangladesh" />
+                 <InfoBlock icon={<Calendar />} label="Joined Date" value="March 2026" />
+              </div>
+           </div>
+
+           <div className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-slate-50 relative overflow-hidden">
+              <div className="relative z-10">
+                <h3 className="font-black text-slate-900 mb-4 uppercase text-xs tracking-[0.2em]">Bio</h3>
+                <p className="text-slate-500 font-medium leading-loose">
+                  Passionate traveler and photographer exploring the hidden gems of the world. 
+                  Focused on sustainable travel and documenting cultural heritage. 
+                  Always looking for the next mountain to climb or ocean to explore.
                 </p>
               </div>
-
-              <div className="flex gap-3">
-                <Button variant="outline" className="rounded-xl">
-                  View Public Profile
-                </Button>
-                <Button className="rounded-xl shadow-lg shadow-primary/20">
-                  <Edit3 className="w-4 h-4 mr-2" /> Edit Profile
-                </Button>
+              <div className="absolute top-0 right-0 p-4 opacity-5">
+                 <Compass size={120} />
               </div>
-            </div>
-
-            <Separator className="my-8 opacity-50" />
-
-            {/* Information Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div className="space-y-6">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                  Contact Information
-                </h3>
-                <div className="space-y-4">
-                  <InfoRow icon={<Phone />} label="Phone" value={user?.phone || "Not provided"} />
-                  <InfoRow icon={<MapPin />} label="Location" value="Bangladesh" />
-                  <InfoRow icon={<Calendar />} label="Joined" value="January 2026" />
-                </div>
-              </div>
-
-              {/* <div className="space-y-6">
-                <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                  Account Statistics
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <StatCard label="Visited Destinations" value="12" />
-                  <StatCard label="Completed" value="98%" />
-                </div>
-              </div> */}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Security / Settings Quick Access */}
-        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <QuickLink title="Security Settings" description="Update your password" />
-          <QuickLink title="Notification Prefs" description="Manage alerts" />
-          <QuickLink title="Linked Accounts" description="Manage OAuth" />
-        </div> */}
+           </div>
+        </div>
       </div>
     </div>
   );
 };
 
-/* Helper Components to keep code clean */
-/* Helper Components converted to plain JavaScript */
-const InfoRow = ({ icon, label, value }) => (
-  <div className="flex items-center gap-4 group">
-    <div className="p-2 rounded-lg bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-      {React.cloneElement(icon, { size: 18 })}
+/* Helper Components */
+const InfoBlock = ({ icon, label, value }) => (
+  <div className="flex gap-4">
+    <div className="w-12 h-12 bg-[#F4F7FE] rounded-2xl flex items-center justify-center text-slate-400 group-hover:text-[#0A1D1A] transition-colors">
+       {React.cloneElement(icon, { size: 20 })}
     </div>
     <div>
-      <p className="text-[10px] uppercase font-bold text-muted-foreground/60 leading-none mb-1">{label}</p>
-      <p className="text-sm font-medium">{value}</p>
+       <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-1">{label}</p>
+       <p className="text-slate-700 font-bold">{value || "Not Set"}</p>
     </div>
   </div>
 );
 
-const StatCard = ({ label, value }) => (
-  <div className="p-4 rounded-2xl bg-muted/30 border border-border/50">
-    <p className="text-2xl font-bold">{value}</p>
-    <p className="text-xs text-muted-foreground uppercase font-semibold mt-1">{label}</p>
+const SocialLink = ({ icon, label, handle }) => (
+  <div className="flex items-center justify-between p-4 rounded-2xl border border-slate-50 hover:bg-slate-50 transition-all cursor-pointer group">
+    <div className="flex items-center gap-3">
+      <span className="text-slate-400 group-hover:text-emerald-500 transition-colors">{icon}</span>
+      <div className="flex flex-col">
+        <span className="text-[10px] font-black text-slate-300 uppercase">{label}</span>
+        <span className="text-sm font-bold text-slate-700">{handle}</span>
+      </div>
+    </div>
+    <Edit3 size={14} className="text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
   </div>
 );
 
-// const QuickLink = ({ title, description }) => (
-//   <Card className="p-4 cursor-pointer hover:bg-muted/50 transition-colors border-dashed border-2 flex items-center justify-between group">
-//     <div>
-//       <h4 className="text-sm font-semibold">{title}</h4>
-//       <p className="text-xs text-muted-foreground">{description}</p>
-//     </div>
-//     <ExternalLink size={16} className="text-muted-foreground group-hover:text-primary transition-colors" />
-//   </Card>
-
-// );
+const Compass = ({ size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+);
 
 export default MyProfile;

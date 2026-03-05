@@ -85,7 +85,7 @@ const TraveleeLogo = ({ variant = "nav" }) => {
                         repeatDelay: 0.5
                     } }
                 >
-                    <svg width="22" height="22" viewBox="0 0 24 24" className="text-[#FF6B6B] drop-shadow-[0_0_10px_#FF6B6B]">
+                    <svg width="22" height="22" viewBox="0 0 24 24" className="text-accent drop-shadow-[0_0_10px_#FF6B6B]">
                         <path fill="currentColor" d="M21,16 L21,14 L13,9 L13,3.5 C13,2.67 12.33,2 11.5,2 C10.67,2 10,2.67 10,3.5 L10,9 L2,14 L2,16 L10,13.5 L10,19 L8,20.5 L8,22 L11.5,21 L15,22 L15,20.5 L13,19 L13,13.5 L21,16 Z" />
                     </svg>
                 </motion.div>
@@ -108,7 +108,7 @@ const TraveleeLogo = ({ variant = "nav" }) => {
             - bg-[length:200%_200%]: makes the gradient larger than the text for movement
             - animate-[gradient-move_3s_ease_infinite]: applies our custom keyframes
         */}
-        <span className="bg-gradient-to-r from-[#0EA5A4] via-[#FF6B6B] to-[#0EA5A4] bg-[length:200%_auto] bg-clip-text text-transparent animate-[gradient-move_3s_ease_infinite]">
+        <span className="bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] bg-clip-text text-transparent animate-[gradient-move_3s_ease_infinite]">
             TRAVELEE
         </span>
         
@@ -120,7 +120,7 @@ const TraveleeLogo = ({ variant = "nav" }) => {
     </h1>
 
     <div className="flex items-center gap-2 mt-1">
-        <div className="h-[2px] w-5 bg-gradient-to-r from-[#FF6B6B] to-transparent" />
+        <div className="h-[2px] w-5 bg-gradient-to-r from-accent to-transparent" />
         <span className={`text-[10px] font-black uppercase tracking-[0.5em] ${subTextColor}`}>
             Intelligence Unit
         </span>
