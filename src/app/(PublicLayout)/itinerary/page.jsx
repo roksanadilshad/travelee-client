@@ -36,6 +36,7 @@ import {
   arrayMove 
 } from "@dnd-kit/sortable";
 import { SortableActivity } from "@/components/Itinerary/SortableActivity";
+import { useAuth } from "@/hooks/useAuth";
 
 function ItinerarySearchHandler() {
   const dispatch = useDispatch();
@@ -78,6 +79,7 @@ export default function ProfessionalItinerary() {
   const trip = useSelector((state) => state.itinerary.currentTrip);
   const activityTotal = useSelector(selectTotalCost);
   const { data: session } = useSession();
+  const {token} = useAuth()
   
   const totalCost = (Number(trip.basePrice) || 0) + activityTotal; 
   

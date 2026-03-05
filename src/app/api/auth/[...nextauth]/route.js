@@ -9,6 +9,7 @@ import GitHubProvider from "next-auth/providers/github";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://travelee-server.vercel.app";
 
 export const authOptions = {
+  
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -36,11 +37,12 @@ export const authOptions = {
         }
 
         try {
-          const response = await axios.get(
-            `https://travelee-server.vercel.app/user/email?email=${email}`,
+          const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL}/user/email`,{ email }
           );
 
           const user = response.data.data;
+          const backendToken = response.data.token;
 
           if (!user) {
             throw new Error("No user found with this username/email");
@@ -61,6 +63,7 @@ export const authOptions = {
             name: user.fullName,
             email: user.email,
             image: user.image || null,
+            accessToken: backendToken,
           };
         } catch (err) {
           console.error("Login Error:", err);
@@ -96,8 +99,8 @@ export const authOptions = {
       }
 
       try {
-        const response = await axios.get(
-          `${API_BASE_URL}/user/email?email=${encodeURIComponent(email)}`,
+        const response = await axios.post(
+          `${API_BASE_URL}/user/email`,{email, password}
         );
 
         const currentUser = response.data?.data;
@@ -128,12 +131,14 @@ export const authOptions = {
       if (session?.user) {
         session.user.email = token.email;
         session.user.provider = token.provider;
+        session.accessToken = token.accessToken;
       }
       return session;
     },
 
     async jwt({ token, user, account }) {
       if (user) {
+         token.accessToken = user.accessToken;
         token.email = user.email || token.email;
       }
       if (account?.provider) {

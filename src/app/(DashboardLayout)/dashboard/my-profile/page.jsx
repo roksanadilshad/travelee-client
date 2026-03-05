@@ -15,10 +15,15 @@ import {
   ShieldCheck, 
   ExternalLink 
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const MyProfile = () => {
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
+  const { session, token } = useAuth();
   const user = session?.user;
+
+  console.log("Frontend Token: ", token);
+  
 
   // Professional Skeleton/Loading State
   if (!session) {
