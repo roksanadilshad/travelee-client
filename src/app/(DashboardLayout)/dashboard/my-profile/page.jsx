@@ -6,6 +6,17 @@ import {
   Mail, MapPin, Phone, Calendar, Edit3, 
   ShieldCheck, Camera, Globe, Github, Twitter
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+
+const MyProfile = () => {
+  // const { data: session } = useSession();
+  const { session, token } = useAuth();
+  const user = session?.user;
+
+  console.log("Frontend Token: ", token);
+  
+
+  // Professional Skeleton/Loading State
 import { useLanguage } from "@/context/LanguageContext";
 
 const MyProfile = () => {
