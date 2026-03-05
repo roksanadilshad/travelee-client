@@ -267,33 +267,33 @@ console.log(trip);
                   </div>
                 ) : (
                   // FIX 4: Integrated DND Logic into the map
-                  <DndContext 
-                    sensors={sensors} 
-                    collisionDetection={closestCenter} 
-                    onDragEnd={handleDragEnd}
-                  >
-                    <SortableContext 
-                      items={trip.days[selectedDayIdx].activities.map(act => act.id)} 
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {trip.days[selectedDayIdx].activities.map((act, index) => (
-                        <SortableActivity 
-                          key={`${act.id}-${index}`} 
-                          act={act} 
-                          onDelete={handleDelete} 
-                        />
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                  <SortableContext items={trip.days[selectedDayIdx]?.activities?.map(act => act.id) || []} strategy={verticalListSortingStrategy}>
-                    <AnimatePresence mode="popLayout">
-                      {trip.days[selectedDayIdx]?.activities?.map((act) => (
-                        <motion.div key={act.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, scale: 0.9 }}>
-                          <SortableActivity act={act} onDelete={handleDelete} />
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </SortableContext>
-                </DndContext>
-              </div>
+                  <DndContext
+  sensors={sensors}
+  collisionDetection={closestCenter}
+  onDragEnd={handleDragEnd}
+>
+  <SortableContext
+    items={trip.days[selectedDayIdx]?.activities?.map(act => act.id) || []}
+    strategy={verticalListSortingStrategy}
+  >
+    <AnimatePresence mode="popLayout">
+      {trip.days[selectedDayIdx]?.activities?.map((act) => (
+        <motion.div
+          key={act.id}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+        >
+          <SortableActivity act={act} onDelete={handleDelete} />
+        </motion.div>
+      ))}
+    </AnimatePresence>
+  </SortableContext>
+</DndContext>
+                )
+              }
+                
+              </div> 
             </div>
           ) : (
             <div className="text-center py-20 bg-white rounded-3xl border border-gray-200">
