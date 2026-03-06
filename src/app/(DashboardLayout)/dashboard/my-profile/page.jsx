@@ -1,18 +1,18 @@
 "use client";
 
 import React from "react";
-import { useSession } from "next-auth/react";
 import { 
   Mail, MapPin, Phone, Calendar, Edit3, 
   ShieldCheck, Camera, Globe, Github, Twitter
 } from "lucide-react";
-import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
 
 const MyProfile = () => {
-  const { data: session } = useSession();
-  const { t } = useLanguage();
+  const { session } = useAuth();
   const user = session?.user;
+  
 
+  // Professional Skeleton/Loading State
   if (!session) {
     return (
       <div className="space-y-6 animate-pulse">
