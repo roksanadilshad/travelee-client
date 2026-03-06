@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { useSession } from "next-auth/react";
 import { 
   Mail, MapPin, Phone, Calendar, Edit3, 
   ShieldCheck, Camera, Globe, Github, Twitter
@@ -9,21 +8,11 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 
 const MyProfile = () => {
-  // const { data: session } = useSession();
-  const { session, token } = useAuth();
+  const { session } = useAuth();
   const user = session?.user;
-
-  console.log("Frontend Token: ", token);
   
 
   // Professional Skeleton/Loading State
-import { useLanguage } from "@/context/LanguageContext";
-
-const MyProfile = () => {
-  const { data: session } = useSession();
-  const { t } = useLanguage();
-  const user = session?.user;
-
   if (!session) {
     return (
       <div className="space-y-6 animate-pulse">
