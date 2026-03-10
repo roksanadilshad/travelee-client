@@ -8,12 +8,14 @@ import Swal from "sweetalert2";
 import TripReviewForm from "../Reviews/TripReviewForm";
 import withReactContent from "sweetalert2-react-content";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function BookedTrips() {
   const { data: session } = useSession();
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const MySwal = withReactContent(Swal);
+   const { user, token } = useAuth();
 
   // Helper: Check if the trip is in the past
   const isTripOver = (endDate) => {
@@ -35,7 +37,10 @@ export default function BookedTrips() {
   useEffect(() => {
     if (session?.user?.email) {
       setLoading(true);
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/my-trips?userEmail=${session.user.email}`)
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/my-trips?userEmail=${user.email}`, {
+        method:"GET",
+        headers:{ "Content-Type": "application/json","auth-token": token}
+      })
         .then((res) => res.json())
         .then((response) => {
           const actualData = response.success ? response.data : response;
@@ -45,7 +50,7 @@ export default function BookedTrips() {
     }
   }, [session]);
 
-  if (loading) return <div className="p-10 text-center">Loading adventures...</div>;
+  if (loading) return <div className="p-10 text-center">Loading adventures...</div>;  
 
   return (
     <div className="max-w-4xl mx-auto p-4 lg:p-8">
