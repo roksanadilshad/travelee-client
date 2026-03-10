@@ -7,24 +7,37 @@ export default function TripDetails() {
   const { id } = useParams(); // Get the ID from the URL
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [weather, setWeather] = useState([]);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://travelee-server.vercel.app";
+useEffect(() => {
+  if (!id) return;
 
-  useEffect(() => {
-    const fetchTripDetails = async () => {
-      try {
-        const res = await fetch(`${API_URL}/itineraries/${id}`);
-        const data = await res.json();
-        setTrip(data);
-      } catch (error) {
-        console.error("Error fetching trip:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchTripDetails = async () => {
+    try {
+      const res = await fetch(`${API_URL}/itineraries/${id}`);
+      const data = await res.json();
+      setTrip(data);
+    } catch (error) {
+      console.error("Error fetching trip:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    if (id) fetchTripDetails();
-  }, [id]);
+  const fetchWeather = async () => {
+    try {
+      const res = await fetch(`${API_URL}/itineraries/${id}/weather`);
+      const data = await res.json();
+      setWeather(data.weatherSummary || []);
+    } catch (error) {
+      console.error("Error fetching weather:", error);
+    }
+  };
+
+  fetchTripDetails();
+  fetchWeather();
+}, [id, API_URL]);
 
   if (loading) return <div className="p-20 text-center">Loading your plan...</div>;
   if (!trip) return <div className="p-20 text-center">Trip not found.</div>;
@@ -47,6 +60,42 @@ export default function TripDetails() {
             </div>
           </div>
         </div>
+
+<div className="mb-8">
+  <h2 className="text-2xl font-bold text-gray-900 mb-4 border-b pb-2 border-gray-200">
+    🌦 Weather Adaptive Plan
+  </h2>
+
+  <div className="grid gap-4 md:grid-cols-3">
+    {weather.map((day) => (
+      <div
+        key={day.day}
+        className="bg-blue-50 p-4 rounded-2xl shadow-md border border-blue-200 hover:shadow-lg transition-shadow"
+      >
+        <div className="flex justify-between items-center mb-2">
+          <p className="font-semibold text-blue-700">Day {day.day}</p>
+          <p className="text-sm text-gray-500">{day.date}</p>
+        </div>
+
+        <div className="flex items-center gap-2 mb-2">
+          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-sm font-medium">
+            {day.tag}
+          </span>
+        </div>
+
+        {day.activitySwap?.swapRecommended ? (
+          <div className="mt-2 bg-red-50 border border-red-200 p-2 rounded-lg text-red-700 text-sm">
+            🔄 Suggested Activity: {day.activitySwap.suggestedActivity}
+          </div>
+        ) : (
+          <div className="mt-2 bg-green-50 border border-green-200 p-2 rounded-lg text-green-700 text-sm">
+            ✅ Activity is suitable for this weather
+          </div>
+        )}
+      </div>
+    ))}
+  </div>
+</div>
 
         {/* Itinerary Timeline */}
         <div className="space-y-8">

@@ -44,35 +44,48 @@ function ItinerarySearchHandler() {
   
   const destName = searchParams.get("name");
   const destPrice = searchParams.get("price");
+  const destStartDate = searchParams.get("startDate");
+  const destEndDate = searchParams.get("endDate");
+  console.log(destStartDate,destEndDate);
 
-  useEffect(() => {
-    if (destName && trip.destination !== decodeURIComponent(destName)) {
-      const name = decodeURIComponent(destName);
-      const price = destPrice ? parseFloat(destPrice) : 0;
-      dispatch(setTripDetails({ destination: name, basePrice: price }));
+useEffect(() => {
+  if (!destName) return;
+  const name = decodeURIComponent(destName);
+  const price = destPrice ? parseFloat(destPrice) : 0;
+    // ✅ FIX 1: Safely handle optional startDate and endDate
+  const startDateISO = destStartDate ? new Date(destStartDate).toISOString() : null;
+  const endDateISO = destEndDate ? new Date(destEndDate).toISOString() : null;
+  dispatch(
+    setTripDetails({
+      destination: name,
+      basePrice: price,
+      startDate: startDateISO,
+      endDate: endDateISO,
+    })
+  );
+  // Only add default day if no day exists initially
+ if (trip.days.length === 0) {
+    dispatch(addDay());
 
-      if (trip.days.length === 0) {
-        dispatch(addDay()); 
-        const starterActivities = [
-          { task: "Arrival & Hotel Check-in", time: "10:00 AM", cost: 0 },
-          { task: "Lunch at Local Restaurant", time: "01:00 PM", cost: 20 },
-          { task: "Afternoon Sightseeing", time: "03:00 PM", cost: 0 },
-          { task: "Dinner", time: "07:00 PM", cost: 25 },
-        ];
+    const starterActivities = [
+      { task: "Arrival & Hotel Check-in", time: "10:00 AM", cost: 0 },
+      { task: "Lunch at Local Restaurant", time: "01:00 PM", cost: 20 },
+      { task: "Afternoon Sightseeing", time: "03:00 PM", cost: 0 },
+      { task: "Dinner", time: "07:00 PM", cost: 25 },
+    ];
 
-        starterActivities.forEach((act, index) => {
-          dispatch(addActivity({
-            dayIndex: 0,
-            activity: { ...act, id: Date.now() + index }
-          }));
-        });
-      }
-    }
-  }, [destName, destPrice, dispatch, trip.destination, trip.days.length]);
-
+    starterActivities.forEach((act, index) => {
+      dispatch(
+        addActivity({
+          dayIndex: 0,
+          activity: { ...act, id: Date.now() + index },
+        })
+      );
+    });
+  }
+}, [destName, destPrice, destStartDate, destEndDate, trip.days.length, dispatch]);
   return null;
 }
-
 export default function ProfessionalItinerary() {
   const dispatch = useDispatch();
   const trip = useSelector((state) => state.itinerary.currentTrip);
@@ -122,6 +135,7 @@ export default function ProfessionalItinerary() {
       userEmail: session?.user?.email,
       basePrice: Number(trip.basePrice) || 0,
       totalCost: Number(totalCost) || 0,
+      startDate: trip.startDate, 
       status: 'saved',
       days: trip.days.map(day => ({
         id: day.id,
@@ -241,7 +255,7 @@ export default function ProfessionalItinerary() {
                       items={trip.days[selectedDayIdx].activities.map(act => act.id)} 
                       strategy={verticalListSortingStrategy}
                     >
-                      {trip.days[selectedDayIdx].activities.map((act) => (
+                      {trip.days[selectedDayIdx].activities.map((act,index) => (
                         <SortableActivity 
                           key={`${act.id}-${index}`} 
                           act={act} 
