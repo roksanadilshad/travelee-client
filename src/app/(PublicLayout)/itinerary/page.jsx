@@ -96,10 +96,11 @@ export default function ProfessionalItinerary() {
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
   );
 
-  // সকেট কানেকশন ও প্রেজেন্স লজিক
   useEffect(() => {
     if (!session?.user || !socket || !tripId || tripId === "temp-id") return;
 
@@ -112,8 +113,13 @@ export default function ProfessionalItinerary() {
       },
     });
 
-    socket.on("user-presence", (users) => setActiveUsers(users));
-    return () => { socket.off("user-presence"); };
+    socket.on("user-presence", (users) => {
+      setActiveUsers(users);
+    });
+
+    return () => {
+      socket.off("user-presence");
+    };
   }, [session?.user, socket, tripId]);
 
   const handleDragEnd = (event) => {
@@ -134,6 +140,14 @@ export default function ProfessionalItinerary() {
       Swal.fire({ icon: "warning", title: "Destination required" });
       return null;
     }
+    if (!session?.user?.email) {
+      Swal.fire({
+        icon: "error",
+        title: "Login Required",
+        text: "Please log in to save your trip.",
+      });
+      return null;
+    }
 
     const tripToSave = {
       destination: trip.destination,
@@ -141,37 +155,58 @@ export default function ProfessionalItinerary() {
       basePrice: Number(trip.basePrice) || 0,
       totalCost: Number(totalCost) || 0,
       status: "saved",
-      days: trip.days.map((day) => ({
-        id: day.id,
-        activities: day.activities.map((act) => ({
-          id: Number(act.id),
-          time: act.time,
-          task: act.task,
-          cost: Number(act.cost) || 0,
+      days: trip.days
+        .filter((day) => day.activities && day.activities.length > 0)
+        .map((day, dayIndex) => ({
+    id: day.id || `day-${Date.now()}-${dayIndex}-${Math.random()}`,
+    activities: (day.activities || []).map((act, actIndex) => ({
+        
+        id: act.id && !isNaN(act.id) ? Number(act.id) : Number(`${Date.now()}${dayIndex}${actIndex}`),
+        time: act.time || "10:00 AM",
+        task: act.task || "Planned Activity",
+        cost: Number(act.cost) || 0,
+          })),
         })),
-      })),
     };
 
+    console.log("📤 Sending Data to Backend:", tripToSave);
+
     try {
-      const response = await fetch("https://travelee-server.vercel.app/itineraries", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(tripToSave),
-      });
+      const response = await fetch(
+        "https://travelee-server.vercel.app/itineraries",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(tripToSave),
+        },
+      );
 
       const result = await response.json();
-      if (response.ok) {
-        const newId = result.insertedId || result._id || result.id;
-        if (newId) {
-          setTripId(newId);
-          Swal.fire({ title: "Saved!", icon: "success", timer: 1000, showConfirmButton: false });
-          return newId; // This is crucial for InviteFriend
-        }
+
+      if (!response.ok) {
+        console.error("❌ Server Error Details:", result);
+        throw new Error(result.message || "Bad Request");
+      }
+
+      const newId = result.insertedId || result._id || result.id;
+      if (newId) {
+        setTripId(newId);
+        Swal.fire({
+          title: "Saved!",
+          icon: "success",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        return newId;
       }
       return null;
     } catch (error) {
       console.error("Save error:", error);
-      Swal.fire({ icon: "error", title: "Error", text: "Could not save trip" });
+      Swal.fire({
+        icon: "error",
+        title: "Save Failed",
+        text: error.message || "Could not save trip",
+      });
       return null;
     }
   };
@@ -183,40 +218,47 @@ export default function ProfessionalItinerary() {
     });
   };
 
-  const allActivities = trip?.days?.flatMap((day) => day.activities || []) || [];
+  const allActivities =
+    trip?.days?.flatMap((day) => day.activities || []) || [];
 
   return (
     <div className="min-h-screen mt-16 bg-[#F8FAFC] pb-40 lg:pb-32">
-      <Suspense fallback={<div className="text-center mt-10">Loading Itinerary...</div>}>
+      <Suspense
+        fallback={<div className="text-center mt-10">Loading Itinerary...</div>}
+      >
         <ItinerarySearchHandler />
       </Suspense>
 
-      {/* Header - Fixed & Responsive */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40 px-4 lg:px-8 py-3 lg:py-4 shadow-sm">
-        <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
-          <div className="flex items-center gap-3 lg:gap-4">
-            <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="lg:hidden text-gray-600 p-2">
-              <FaBars size={20} />
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          {/* Left Side */}
+          <div className="flex items-center gap-2 lg:gap-4 overflow-hidden">
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="lg:hidden text-gray-600 p-2 shrink-0"
+            >
+              <FaBars size={18} />
             </button>
-            <div className="bg-white p-2 lg:p-3 rounded-xl text-primary shadow-lg shadow-blue-100 hidden sm:block">
+            <div className="bg-white p-2 rounded-xl text-primary shadow-lg shadow-blue-100 hidden sm:block shrink-0">
               <FaSuitcaseRolling size={20} />
             </div>
-            <div>
+            <div className="min-w-0">
               <input
-                className="text-lg lg:text-xl font-bold text-gray-900 bg-transparent outline-none border-b border-transparent focus:border-blue-500 transition-all w-full max-w-[150px] sm:max-w-full"
+                className="text-base lg:text-xl font-bold text-gray-900 bg-transparent outline-none border-b border-transparent focus:border-blue-500 transition-all w-full truncate"
                 placeholder="Adventure Name..."
                 value={trip.destination || ""}
-                onChange={(e) => dispatch(setTripDetails({ destination: e.target.value }))}
+                onChange={(e) =>
+                  dispatch(setTripDetails({ destination: e.target.value }))
+                }
               />
-              <p className="hidden sm:block text-[10px] text-gray-400 font-medium uppercase tracking-widest mt-1">
-                Travel Itinerary Builder
-              </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 lg:gap-6">
-            <PresenceBar activeUsers={activeUsers} />
-            <div className="hidden md:block">
+          <div className="flex items-center gap-2 lg:gap-6 shrink-0">
+            <div className="shrink-0 scale-75 lg:scale-100">
+              <PresenceBar activeUsers={activeUsers} />
+            </div>
+            <div className="hidden sm:block shrink-0">
               <InviteFriend
                 tripId={tripId}
                 tripTitle={trip.destination}
@@ -227,7 +269,7 @@ export default function ProfessionalItinerary() {
             </div>
             <button
               onClick={handleSaveTrip}
-              className="bg-gray-900 text-white px-4 lg:px-6 py-2 rounded-full text-sm font-semibold hover:bg-black transition-all"
+              className="bg-gray-900 text-white px-3 lg:px-6 py-2 rounded-full text-xs lg:text-sm font-semibold hover:bg-black transition-all shrink-0"
             >
               Save
             </button>
@@ -237,30 +279,42 @@ export default function ProfessionalItinerary() {
 
       {/* Main Container */}
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row px-4 lg:px-8 py-6 lg:py-10 gap-8">
-        
-        {/* Mobile Invite Section */}
-        <div className="md:hidden w-full">
-            <InviteFriend
-                tripId={tripId}
-                tripTitle={trip.destination}
-                currentUser={session?.user}
-                socket={socket}
-                onAutoSave={handleSaveTrip}
-              />
+        <div className="sm:hidden w-full bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+          <p className="text-[10px] font-bold text-gray-400 uppercase mb-2">
+            Collab with friends
+          </p>
+          <InviteFriend
+            tripId={tripId}
+            tripTitle={trip.destination}
+            currentUser={session?.user}
+            socket={socket}
+            onAutoSave={handleSaveTrip}
+          />
         </div>
 
-        {/* Sidebar - Collapsible on Mobile */}
-        <aside className={`${isSidebarOpen ? "block" : "hidden"} lg:block w-full lg:w-64`}>
-          <h3 className="text-xs font-bold text-gray-400 uppercase mb-4 px-2 tracking-widest">Trip Timeline</h3>
-          <nav className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
+        {/* Sidebar */}
+        <aside
+          className={`${isSidebarOpen ? "block" : "hidden"} lg:block w-full lg:w-64`}
+        >
+          <h3 className="text-xs font-bold text-gray-400 uppercase mb-4 px-2 tracking-widest">
+            Trip Timeline
+          </h3>
+          <nav className="flex flex-row lg:flex-col gap-2 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0 no-scrollbar">
             {trip.days.map((day, idx) => (
               <button
                 key={day.id}
-                onClick={() => { setSelectedDayIdx(idx); setIsSidebarOpen(false); }}
+                onClick={() => {
+                  setSelectedDayIdx(idx);
+                  setIsSidebarOpen(false);
+                }}
                 className={`flex-shrink-0 lg:w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${selectedDayIdx === idx ? "bg-white shadow-md border border-gray-100 text-primary" : "text-gray-500 hover:bg-gray-100"}`}
               >
-                <span className="font-bold text-sm whitespace-nowrap">Day {idx + 1}</span>
-                {day.activities?.length > 0 && <FaCheckCircle className="ml-2 text-green-500" size={12} />}
+                <span className="font-bold text-sm whitespace-nowrap">
+                  Day {idx + 1}
+                </span>
+                {day.activities?.length > 0 && (
+                  <FaCheckCircle className="ml-2 text-green-500" size={12} />
+                )}
               </button>
             ))}
             <button
@@ -278,14 +332,19 @@ export default function ProfessionalItinerary() {
             <div className="space-y-6">
               <div className="flex justify-between items-center mb-6 lg:mb-8">
                 <div>
-                  <h2 className="text-3xl lg:text-4xl font-black text-gray-900">Day {selectedDayIdx + 1}</h2>
-                  <p className="text-sm text-gray-500 mt-1">{trip.days[selectedDayIdx]?.activities?.length || 0} activities planned</p>
+                  <h2 className="text-3xl lg:text-4xl font-black text-gray-900">
+                    Day {selectedDayIdx + 1}
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {trip.days[selectedDayIdx]?.activities?.length || 0}{" "}
+                    activities planned
+                  </p>
                 </div>
                 <button
                   onClick={() => setActiveDay(selectedDayIdx)}
                   className="bg-primary text-white flex items-center gap-2 px-4 lg:px-5 py-2 lg:py-2.5 rounded-xl font-bold shadow-lg shadow-blue-100 hover:scale-105 transition-transform text-sm lg:text-base"
                 >
-                  <FaPlus size={12} /> <span className="hidden sm:inline">Add Activity</span><span className="sm:hidden">Add</span>
+                  <FaPlus size={12} /> <span>Add</span>
                 </button>
               </div>
 
@@ -293,15 +352,36 @@ export default function ProfessionalItinerary() {
                 <div className="absolute left-6 top-4 bottom-4 w-0.5 bg-gray-200"></div>
                 {trip.days[selectedDayIdx].activities.length === 0 ? (
                   <div className="bg-white rounded-2xl p-8 lg:p-12 text-center border border-gray-100 shadow-sm">
-                    <p className="text-gray-400 italic text-sm">No activities yet. Start adding your plans!</p>
+                    <p className="text-gray-400 italic text-sm">
+                      No activities yet.
+                    </p>
                   </div>
                 ) : (
-                  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                    <SortableContext items={trip.days[selectedDayIdx]?.activities?.map((act) => act.id) || []} strategy={verticalListSortingStrategy}>
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={
+                        trip.days[selectedDayIdx]?.activities?.map(
+                          (act) => act.id,
+                        ) || []
+                      }
+                      strategy={verticalListSortingStrategy}
+                    >
                       <AnimatePresence mode="popLayout">
                         {trip.days[selectedDayIdx]?.activities?.map((act) => (
-                          <motion.div key={act.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}>
-                            <SortableActivity act={act} onDelete={handleDelete} />
+                          <motion.div
+                            key={act.id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                          >
+                            <SortableActivity
+                              act={act}
+                              onDelete={handleDelete}
+                            />
                           </motion.div>
                         ))}
                       </AnimatePresence>
@@ -312,7 +392,10 @@ export default function ProfessionalItinerary() {
             </div>
           ) : (
             <div className="text-center py-16 bg-white rounded-3xl border border-gray-200">
-              <button onClick={() => dispatch(addDay())} className="text-primary font-bold hover:underline underline-offset-4">
+              <button
+                onClick={() => dispatch(addDay())}
+                className="text-primary font-bold hover:underline underline-offset-4"
+              >
                 Click here to start Day 1
               </button>
             </div>
@@ -336,22 +419,30 @@ export default function ProfessionalItinerary() {
         </div>
       </div>
 
-      {/* Floating Price Bar - Mobile Optimized */}
+      {/* Floating Price Bar */}
       <div className="fixed bottom-4 lg:bottom-6 left-1/2 -translate-x-1/2 w-[92%] sm:w-auto bg-gray-900 text-white px-4 lg:px-8 py-3 lg:py-4 rounded-2xl lg:rounded-full shadow-2xl z-50 flex flex-row items-center justify-between lg:justify-start gap-4 lg:gap-6 border border-gray-700">
-        <div className="flex gap-3 lg:gap-4 overflow-hidden">
+        <div className="flex gap-3 lg:gap-4">
           <div className="flex flex-col border-r border-gray-700 pr-3 lg:pr-4">
-            <span className="text-[8px] lg:text-[9px] text-gray-400 uppercase font-bold tracking-tighter">Base</span>
-            <span className="text-xs lg:text-sm font-bold text-white">${trip.basePrice || 0}</span>
+            <span className="text-[8px] lg:text-[9px] text-gray-400 uppercase font-bold">
+              Base
+            </span>
+            <span className="text-xs lg:text-sm font-bold">
+              ${trip.basePrice || 0}
+            </span>
           </div>
-          <div className="flex flex-col min-w-[70px]">
-            <span className="text-[8px] lg:text-[9px] text-gray-400 uppercase font-bold tracking-tighter">Total</span>
-            <span className="text-lg lg:text-xl font-black text-green-400 leading-none">${totalCost}</span>
+          <div className="flex flex-col min-w-[60px]">
+            <span className="text-[8px] lg:text-[9px] text-gray-400 uppercase font-bold">
+              Total
+            </span>
+            <span className="text-lg lg:text-xl font-black text-green-400">
+              ${totalCost}
+            </span>
           </div>
         </div>
         <div className="hidden sm:block h-8 w-[1px] bg-gray-700"></div>
         <button
           onClick={handleSaveTrip}
-          className="bg-primary hover:bg-blue-700 px-4 lg:px-6 py-2 rounded-lg lg:rounded-xl text-xs lg:text-sm font-bold transition-colors whitespace-nowrap"
+          className="bg-primary hover:bg-blue-700 px-4 lg:px-6 py-2 rounded-lg lg:rounded-xl text-xs lg:text-sm font-bold transition-colors"
         >
           Confirm Plan
         </button>

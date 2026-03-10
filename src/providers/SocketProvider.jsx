@@ -1,8 +1,14 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState, useRef } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+} from "react";
 import { io } from "socket.io-client";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 
 const SocketContext = createContext(null);
@@ -12,11 +18,12 @@ export const SocketProvider = ({ children }) => {
   const [socket, setSocketState] = useState(null);
   const socketRef = useRef(null);
   const { data: session } = useSession();
-  const router = useRouter(); 
+  const router = useRouter();
 
   useEffect(() => {
     if (!socketRef.current) {
-      const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const SOCKET_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
       const newSocket = io(SOCKET_URL, {
         transports: ["websocket"],
         withCredentials: true,
@@ -47,16 +54,33 @@ export const SocketProvider = ({ children }) => {
       const handleReceiveInvite = (data) => {
         Swal.fire({
           title: "New Trip Invitation!",
-          text: `${data.senderName} invited you to join "${data.tripTitle}"`,
+
+          html: `
+    <div style="font-size: 16px; line-height: 1.6; color: #374151;">
+      <b style="color: #2563eb; font-size: 18px; text-transform: uppercase;">${data.senderName}</b> 
+      <br/> 
+      has invited you to join 
+      <br/>
+      <b style="color: #059669; font-size: 19px;">"${data.tripTitle}"</b>
+    </div>
+  `,
           icon: "info",
           showCancelButton: true,
-          confirmButtonColor: "#3085d6",
-          cancelButtonColor: "#d33",
-          confirmButtonText: "Go to Dashboard",
+          confirmButtonColor: "#2563eb",
+          cancelButtonColor: "#64748b",
+          confirmButtonText: "Accept & View",
+          cancelButtonText: "Decline",
+          reverseButtons: true,
+          showClass: {
+            popup: "animate__animated animate__backInDown animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__fadeOutUp animate__faster",
+          },
         }).then((result) => {
           if (result.isConfirmed) {
-          
             router.push("/dashboard/my-trips");
+           
           }
         });
       };
