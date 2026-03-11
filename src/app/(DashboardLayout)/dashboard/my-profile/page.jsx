@@ -8,9 +8,10 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 
 const MyProfile = () => {
-  const { session } = useAuth();
+  const { session, token } = useAuth();
   const user = session?.user;
   
+console.log("Token", token);
 
   // Professional Skeleton/Loading State
   if (!session) {
