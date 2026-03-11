@@ -10,6 +10,7 @@ import withReactContent from "sweetalert2-react-content";
 import TripReviewForm from "../Reviews/TripReviewForm";
 import axios from "axios";
 import { Button } from "../ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function BookedTrips() {
   const { data: session } = useSession();
@@ -189,7 +190,8 @@ export default function BookedTrips() {
   )}
 </div>
                     </div>
-                  </Link>
+                   
+                 </div>
 
                   <div className="flex flex-wrap gap-3 w-full md:w-auto">
                     {!expired ? (
