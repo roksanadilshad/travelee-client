@@ -14,7 +14,7 @@ import TripRoomPreview from "@/components/Home/TripRoomPreview";
 import LanguageToggle from "@/components/Home/LanguageToggle";
 import { Suspense } from "react";
 import TacticalLoader from "../loading";
-import DestinationMap from "@/components/destination-map/DestinationMap";
+import DestinationMapWrapper from "@/components/destination-map/DestinationMapWrapper";
 
 
 export default function Home() {
@@ -27,7 +27,8 @@ export default function Home() {
 
     <CategorizedExploration/>
     </Suspense>
-    <DestinationMap></DestinationMap>
+    {/* <DestinationMap></DestinationMap> */}
+    <DestinationMapWrapper></DestinationMapWrapper>
     <BudgetEstimator/>
     <ReviewFeed/>
     <WeatherBlock/>
