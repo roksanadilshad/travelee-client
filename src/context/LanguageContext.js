@@ -31,6 +31,7 @@ const translations = {
     "sort.safety": "Safety Index",
     "sort.price": "Budget",
     "sort.temp": "Climate",
+    "save_trip_title": "Book Your Trip",
 
     // Destination Card Tactical Metrics
     "card.safety_label": "Safety",
@@ -311,6 +312,7 @@ const translations = {
     "review.badge": "সংগৃহীত বুদ্ধিমত্তা",
     "room.badge_mockup": "সহযোগিতামূলক ওয়ার-রুম",
   "room.expedition": "অভিযান",
+  "save_trip_title":"এই ট্যুরটি বুক করুন", 
   "room.status_label": "অবস্থা",
   "room.sync": "সুসংগত (লাইভ)",
   "room.density": "ভ্রমণসূচীর ঘনত্ব",
