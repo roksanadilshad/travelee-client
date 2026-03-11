@@ -172,14 +172,11 @@ export default function ProfessionalItinerary() {
     console.log("📤 Sending Data to Backend:", tripToSave);
 
     try {
-      const response = await fetch(
-        "https://travelee-server.vercel.app/itineraries",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(tripToSave),
-        },
-      );
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/itineraries`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(tripToSave),
+      });
 
       const result = await response.json();
 
