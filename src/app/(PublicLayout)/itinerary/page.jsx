@@ -56,7 +56,7 @@ useEffect(() => {
   if (!destName) return;
   const name = decodeURIComponent(destName);
   const price = destPrice ? parseFloat(destPrice) : 0;
-    // ✅ FIX 1: Safely handle optional startDate and endDate
+   
   const startDateISO = destStartDate ? new Date(destStartDate).toISOString() : null;
   const endDateISO = destEndDate ? new Date(destEndDate).toISOString() : null;
   dispatch(
@@ -275,7 +275,7 @@ export default function ProfessionalItinerary() {
             </div>
             <button
               onClick={handleSaveTrip}
-              className="bg-gray-900 text-white px-3 lg:px-6 py-2 rounded-full text-xs lg:text-sm font-semibold hover:bg-black transition-all shrink-0"
+              className="bg-primary text-white px-3 lg:px-6 py-2 rounded-full text-xs lg:text-sm font-semibold hover:scale-105 transition-all shrink-0"
             >
               Save
             </button>
