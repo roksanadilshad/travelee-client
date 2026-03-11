@@ -34,7 +34,9 @@ const data = await response.json();
 console.log(data);
 
 const filtered = data.data.filter(item =>
-  item.city.toLowerCase().includes(query.toLowerCase())
+  item.city?.toLowerCase().includes(query.toLowerCase()) ||
+  item.country?.toLowerCase().includes(query.toLowerCase()) ||
+  item.region?.toLowerCase().includes(query.toLowerCase())
 );
 
         setResult(filtered);
@@ -150,13 +152,13 @@ const filtered = data.data.filter(item =>
                         <li
                           key={item._id}
                           onMouseDown={() => handleSelect(item.city)}
-                          className={`px-4  py-2 cursor-pointer ${
+                          className={`px-4   py-2 cursor-pointer ${
                             cursor === index
-                              ? "bg-gray-200"
-                              : "hover:bg-gray-100"
+                              ? "bg-amber-200 rounded-lg"
+                              : "hover:bg-amber-100 rounded-lg"
                           }`}
                         >
-                          {getHighlightText(item.city, query)}
+                          {getHighlightText(item.city + ", " + item.country, query)}
                         </li>
                       ))
                     ) : (

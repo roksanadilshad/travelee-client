@@ -16,6 +16,7 @@ export default function BookedTrips() {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const MySwal = withReactContent(Swal);
+   const { user, token } = useAuth();
 
   const isTripOver = (endDate) => {
     if (!endDate) return false;
@@ -35,7 +36,10 @@ export default function BookedTrips() {
   useEffect(() => {
     if (session?.user?.email) {
       setLoading(true);
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/my-trips?userEmail=${session.user.email}`)
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/my-trips?userEmail=${user.email}`, {
+        method:"GET",
+        headers:{ "Content-Type": "application/json","auth-token": token}
+      })
         .then((res) => res.json())
         .then((response) => {
           const actualData = response.success ? response.data : response;
@@ -45,7 +49,7 @@ export default function BookedTrips() {
     }
   }, [session]);
 
-  if (loading) return <div className="p-10 text-center">Loading adventures...</div>;
+  if (loading) return <div className="p-10 text-center">Loading adventures...</div>;  
 
   // Weather Modal Component
   const WeatherButtonModalButton = ({ tripId }) => {

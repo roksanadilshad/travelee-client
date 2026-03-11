@@ -8,6 +8,7 @@ import FilterAndSearch from "@/components/Share/FilterAndSearch";
 import { useLanguage } from "@/context/LanguageContext";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import Search from "@/components/Share/Search";
 
 export default function DestinationsPage() {
   const { t } = useLanguage();
@@ -98,8 +99,9 @@ export default function DestinationsPage() {
           {data.destinations.length} {t("dest.found_count")}
         </div>
       </div>
-
+      <Search></Search>
       <main className="grid grid-cols-1 md:grid-cols-12 gap-8 p-3">
+        
         
         {/* FILTER */}
         <aside className="col-span-1 md:col-span-3 lg:col-span-2">
