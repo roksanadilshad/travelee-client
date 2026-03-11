@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import { useState } from "react";
 import NextAuthProvider from "./NextAuthProvider";
+import { SocketProvider } from "./SocketProvider";
 
 export default function Providers({ children }) {
   const [queryClient] = useState(() => new QueryClient());
@@ -12,7 +13,7 @@ export default function Providers({ children }) {
   return (
     <QueryClientProvider client={queryClient}>
       <NextAuthProvider>
-        {children}
+        <SocketProvider>{children}</SocketProvider>
         <ToastContainer position="top-right" autoClose={5000} theme="light" />
       </NextAuthProvider>
     </QueryClientProvider>
