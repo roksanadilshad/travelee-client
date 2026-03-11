@@ -26,7 +26,7 @@ const ResetPassword = () => {
 
     try {
       const res = await axios.post(
-        "https://travelee-server.vercel.app/user/reset-password",
+        `${process.env.NEXT_PUBLIC_API_URL}/user/reset-password`,
         {
           token,
           newPassword: password,
