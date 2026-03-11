@@ -48,37 +48,48 @@ function ItinerarySearchHandler() {
 
   const destName = searchParams.get("name");
   const destPrice = searchParams.get("price");
+  const destStartDate = searchParams.get("startDate");
+  const destEndDate = searchParams.get("endDate");
+  console.log(destStartDate,destEndDate);
 
-  useEffect(() => {
-    if (destName && trip.destination !== decodeURIComponent(destName)) {
-      const name = decodeURIComponent(destName);
-      const price = destPrice ? parseFloat(destPrice) : 0;
-      dispatch(setTripDetails({ destination: name, basePrice: price }));
+useEffect(() => {
+  if (!destName) return;
+  const name = decodeURIComponent(destName);
+  const price = destPrice ? parseFloat(destPrice) : 0;
+    // ✅ FIX 1: Safely handle optional startDate and endDate
+  const startDateISO = destStartDate ? new Date(destStartDate).toISOString() : null;
+  const endDateISO = destEndDate ? new Date(destEndDate).toISOString() : null;
+  dispatch(
+    setTripDetails({
+      destination: name,
+      basePrice: price,
+      startDate: startDateISO,
+      endDate: endDateISO,
+    })
+  );
+  // Only add default day if no day exists initially
+ if (trip.days.length === 0) {
+    dispatch(addDay());
 
-      if (trip.days.length === 0) {
-        dispatch(addDay());
-        const starterActivities = [
-          { task: "Arrival & Hotel Check-in", time: "10:00 AM", cost: 0 },
-          { task: "Lunch at Local Restaurant", time: "01:00 PM", cost: 20 },
-          { task: "Afternoon Sightseeing", time: "03:00 PM", cost: 0 },
-          { task: "Dinner", time: "07:00 PM", cost: 25 },
-        ];
+    const starterActivities = [
+      { task: "Arrival & Hotel Check-in", time: "10:00 AM", cost: 0 },
+      { task: "Lunch at Local Restaurant", time: "01:00 PM", cost: 20 },
+      { task: "Afternoon Sightseeing", time: "03:00 PM", cost: 0 },
+      { task: "Dinner", time: "07:00 PM", cost: 25 },
+    ];
 
-        starterActivities.forEach((act, index) => {
-          dispatch(
-            addActivity({
-              dayIndex: 0,
-              activity: { ...act, id: Date.now() + index },
-            }),
-          );
-        });
-      }
-    }
-  }, [destName, destPrice, dispatch, trip.destination, trip.days.length]);
-
+    starterActivities.forEach((act, index) => {
+      dispatch(
+        addActivity({
+          dayIndex: 0,
+          activity: { ...act, id: Date.now() + index },
+        })
+      );
+    });
+  }
+}, [destName, destPrice, destStartDate, destEndDate, trip.days.length, dispatch]);
   return null;
 }
-
 export default function ProfessionalItinerary() {
   const dispatch = useDispatch();
   const trip = useSelector((state) => state.itinerary.currentTrip);
@@ -154,19 +165,17 @@ export default function ProfessionalItinerary() {
       userEmail: session?.user?.email,
       basePrice: Number(trip.basePrice) || 0,
       totalCost: Number(totalCost) || 0,
-      status: "saved",
-      days: trip.days
-        .filter((day) => day.activities && day.activities.length > 0)
-        .map((day, dayIndex) => ({
-    id: day.id || `day-${Date.now()}-${dayIndex}-${Math.random()}`,
-    activities: (day.activities || []).map((act, actIndex) => ({
-        
-        id: act.id && !isNaN(act.id) ? Number(act.id) : Number(`${Date.now()}${dayIndex}${actIndex}`),
-        time: act.time || "10:00 AM",
-        task: act.task || "Planned Activity",
-        cost: Number(act.cost) || 0,
-          })),
-        })),
+      startDate: trip.startDate, 
+      status: 'saved',
+      days: trip.days.map(day => ({
+        id: day.id,
+        activities: day.activities.map(act => ({
+          id: Number(act.id),
+          time: act.time,
+          task: act.task,
+          cost: Number(act.cost) || 0
+        }))
+      }))
     };
 
     console.log("📤 Sending Data to Backend:", tripToSave);
@@ -367,21 +376,13 @@ export default function ProfessionalItinerary() {
                       }
                       strategy={verticalListSortingStrategy}
                     >
-                      <AnimatePresence mode="popLayout">
-                        {trip.days[selectedDayIdx]?.activities?.map((act) => (
-                          <motion.div
-                            key={act.id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                          >
-                            <SortableActivity
-                              act={act}
-                              onDelete={handleDelete}
-                            />
-                          </motion.div>
-                        ))}
-                      </AnimatePresence>
+                      {trip.days[selectedDayIdx].activities.map((act,index) => (
+                        <SortableActivity 
+                          key={`${act.id}-${index}`} 
+                          act={act} 
+                          onDelete={handleDelete} 
+                        />
+                      ))}
                     </SortableContext>
                   </DndContext>
                 )}
