@@ -1,7 +1,7 @@
 "use client";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { FaMapMarkerAlt, FaCalendarDay, FaClock, FaDollarSign } from "react-icons/fa";
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+import useAxiosSecure from "@/hooks/useAxiosSecure";
 
 export default function TripDetails() {
   const { id } = useParams(); // Get the ID from the URL
@@ -39,8 +39,34 @@ useEffect(() => {
   fetchWeather();
 }, [id, API_URL]);
 
-  if (loading) return <div className="p-20 text-center">Loading your plan...</div>;
-  if (!trip) return <div className="p-20 text-center">Trip not found.</div>;
+      if (res.data.success) {
+        if (socket) {
+          socket.emit("send-invite", {
+            friendId: res.data.friendId,
+            senderName: session.user?.name || session.user?.email,
+            tripId: currentTripId,
+            tripTitle: tripTitle,
+          });
+        }
+        alert(`Invitation sent successfully to ${email}!`);
+        setEmail("");
+      }
+    } catch (err) {
+      console.error("Invite Error:", err);
+      
+      if (err.response?.status === 401) {
+        alert(
+          "Session expired or unauthorized. Please log out and log in again.",
+        );
+      } else {
+        alert(
+          err.response?.data?.message || err.message || "Something went wrong.",
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 pt-24 py-20 px-6">

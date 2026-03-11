@@ -24,6 +24,7 @@ export default function BookedTrips() {
 
   const downloadTicket = async (tripId) => {
     const element = document.getElementById(`ticket-${tripId}`);
+    if (!element) return;
     const canvas = await html2canvas(element);
     const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF();
@@ -34,7 +35,7 @@ export default function BookedTrips() {
   useEffect(() => {
     if (session?.user?.email) {
       setLoading(true);
-      fetch(`https://travelee-server.vercel.app/my-trips?userEmail=${session.user.email}`)
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/my-trips?userEmail=${session.user.email}`)
         .then((res) => res.json())
         .then((response) => {
           const actualData = response.success ? response.data : response;
@@ -142,20 +143,21 @@ export default function BookedTrips() {
         ) : (
           trips.map((trip) => {
             const expired = isTripOver(trip.endDate);
+            const destinationId = trip.destination_id || trip._id;
 
             return (
-              <div 
-                key={trip._id} 
+              <div
+                key={trip._id}
                 id={`ticket-${trip._id}`}
-                className="group bg-white border border-slate-100 p-6 rounded-[2.5rem] shadow-sm hover:shadow-md transition-all"
+                className="group relative bg-white border border-slate-100 p-6 rounded-[2.5rem] shadow-sm hover:shadow-md transition-all"
               >
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                   <div className="flex items-center gap-5">
                     <div className="relative w-20 h-20 shrink-0">
-                      <img 
-                        src={trip.image || trip.media?.cover_image || "https://placehold.co/400x400?text=Travel"} 
-                        className="w-full h-full rounded-3xl object-cover" 
-                        alt="" 
+                      <img
+                        src={trip.image || trip.media?.cover_image || "https://placehold.co/400x400?text=Travel"}
+                        className="w-full h-full rounded-3xl object-cover"
+                        alt={trip.destination || "Trip"}
                       />
                       <div className="absolute -top-2 -right-2 bg-[#0A1D1A] text-white p-1.5 rounded-xl">
                         <Ticket size={14} />
@@ -183,7 +185,7 @@ export default function BookedTrips() {
   )}
 </div>
                     </div>
-                  </div>
+                  </Link>
 
                   <div className="flex flex-wrap gap-3 w-full md:w-auto">
                     {!expired ? (
@@ -195,7 +197,7 @@ export default function BookedTrips() {
                       </button>
                     ) : (
                       <>
-                        <button 
+                        <button
                           className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-emerald-500 text-white px-5 py-3 rounded-2xl text-xs font-black shadow-lg hover:scale-105 transition-all"
                           onClick={() => {
                             MySwal.fire({
@@ -212,9 +214,13 @@ export default function BookedTrips() {
                         >
                           Write Review
                         </button>
-                        <button 
+                        <button
                           className="p-3 bg-red-50 text-red-500 rounded-2xl hover:bg-red-100 transition-colors"
-                          onClick={() => Swal.fire("Delete", "Delete History", "warning")}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            Swal.fire("Delete", "Delete History", "warning");
+                          }}
                         >
                           <Trash2 size={18} />
                         </button>

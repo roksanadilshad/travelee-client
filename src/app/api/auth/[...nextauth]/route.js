@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -6,65 +5,47 @@ import bcrypt from "bcrypt";
 import GoogleProvider from "next-auth/providers/google";
 import GitHubProvider from "next-auth/providers/github";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://travelee-server.vercel.app";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://travelee-server.vercel.app";
 
 export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
-
       credentials: {
-        email: {
-          label: "Email",
-          type: "text",
-          placeholder: "Enter email..",
-        },
-        password: {
-          label: "Password",
-          type: "password",
-          placeholder: "Enter password..",
-        },
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
       },
-
       async authorize(credentials) {
-        if (!credentials) return null;
-
-        const { email, password } = credentials;
-
-        if (!email || !password) {
-          throw new Error("Please enter your username/email and password");
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password are required");
         }
 
         try {
-          const response = await axios.get(
-            `https://travelee-server.vercel.app/user/email?email=${email}`,
-          );
+          const response = await axios.post(`${API_BASE_URL}/user/email`, {
+            email: credentials.email,
+          });
 
           const user = response.data.data;
+          const backendToken = response.data.token;
 
-          if (!user) {
-            throw new Error("No user found with this username/email");
-          }
+          if (!user) throw new Error("No user found");
 
           const isPasswordCorrect = await bcrypt.compare(
-            password,
-            user?.password,
+            credentials.password,
+            user.password,
           );
+          if (!isPasswordCorrect) throw new Error("Incorrect password");
 
-          if (!isPasswordCorrect) {
-            throw new Error("Incorrect password");
-          }
-
-          // Password correct
           return {
             id: user._id.toString(),
             name: user.fullName,
             email: user.email,
             image: user.image || null,
+            accessToken: backendToken,
           };
         } catch (err) {
-          console.error("Login Error:", err);
-          // If backend fails (404, 500, etc.), return null instead of throwing
+          console.error("Login Error:", err.message);
           return null;
         }
       },
@@ -76,77 +57,63 @@ export const authOptions = {
     GitHubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
-      authorization: { params: { scope: "read:user user:email" } },
     }),
   ],
   callbacks: {
     async signIn({ user, account }) {
-      if (!account) return true;
       if (account.provider === "credentials") return true;
 
-      const fallbackGithubEmail =
-        account.provider === "github" && account.providerAccountId
-          ? `${account.providerAccountId}@users.noreply.github.com`
-          : null;
-      const email = user?.email || fallbackGithubEmail;
-
-      if (!email) {
-        console.warn("OAuth sign-in: missing user email, skipping DB sync.");
-        return true;
-      }
+      const email = user?.email;
+      if (!email) return false;
 
       try {
-        const response = await axios.get(
-          `${API_BASE_URL}/user/email?email=${encodeURIComponent(email)}`,
-        );
+        const response = await axios.post(`${API_BASE_URL}/user/email`, {
+          email,
+        });
 
-        const currentUser = response.data?.data;
-
-        if (currentUser) {
+        if (response.data?.data) {
+          user.accessToken = response.data.token;
           return true;
         }
 
-        await axios.post(`${API_BASE_URL}/user`, {
+        const createRes = await axios.post(`${API_BASE_URL}/user`, {
           fullName: user?.name || "OAuth User",
           email,
           provider: account.provider,
           image: user?.image || null,
         });
 
+        user.accessToken = createRes.data.token;
         return true;
       } catch (error) {
-        console.error(
-          "Error saving user (OAuth sync):",
-          error.response?.data || error.message,
-        );
-        // OAuth login should not be denied because of DB sync failure.
+        console.error("OAuth Sync Error:", error.message);
         return true;
       }
-    },
-
-    async session({ session, token }) {
-      if (session?.user) {
-        session.user.email = token.email;
-        session.user.provider = token.provider;
-      }
-      return session;
     },
 
     async jwt({ token, user, account }) {
       if (user) {
-        token.email = user.email || token.email;
-      }
-      if (account?.provider) {
-        token.provider = account.provider;
+        token.accessToken = user.accessToken;
+        token.email = user.email;
+        token.provider = account?.provider;
       }
       return token;
+    },
+
+    async session({ session, token }) {
+      if (session?.user) {
+        session.accessToken = token.accessToken;
+        session.user.provider = token.provider;
+        session.user.email = token.email;
+      }
+      return session;
     },
   },
   pages: {
     signIn: "/login",
   },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };
