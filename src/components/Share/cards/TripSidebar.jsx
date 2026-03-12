@@ -76,7 +76,7 @@ export const TripSidebar = ({ destination, startDate, setStartDate, endDate, set
     });
     router.push(`/itinerary?${params.toString()}`);
   }}
-  className="w-full bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+  className="w-full bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-accent transition-colors"
 >
   Start Planning This Trip
 </button>

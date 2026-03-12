@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function InviteFriend({
   tripId,
@@ -15,6 +16,7 @@ export default function InviteFriend({
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const axiosSecure = useAxiosSecure();
+  const {token} = useAuth()
 
   const senderDisplayName =
     currentUser?.name || currentUser?.email?.split("@")[0] || "A friend";
@@ -99,7 +101,7 @@ export default function InviteFriend({
 
   return (
     <div className="flex flex-col gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100 shadow-sm w-full">
-      <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">
+      <p className="text-[10px] font-bold text-primary uppercase tracking-wider">
         Invite Collaborator
       </p>
       <div className="flex gap-2">
@@ -113,7 +115,7 @@ export default function InviteFriend({
         <button
           onClick={handleInvite}
           disabled={loading}
-          className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-5 py-2 rounded-lg disabled:bg-blue-300 font-bold transition-colors shrink-0"
+          className="bg-primary hover:scale-105 text-white text-sm px-5 py-2 rounded-lg disabled:bg-blue-300 font-bold transition-colors shrink-0"
         >
           {loading ? "..." : "Invite"}
         </button>

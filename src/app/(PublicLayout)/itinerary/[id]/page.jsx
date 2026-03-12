@@ -63,7 +63,7 @@ export default function TripDetails() {
               </h1>
 
               <p className="text-gray-500 mt-2 flex items-center gap-2">
-                <FaCalendarDay /> {trip.days?.length} Day Trip
+                <FaCalendarDay /> {trip.days?.length || 0} Day Trip
               </p>
             </div>
 
