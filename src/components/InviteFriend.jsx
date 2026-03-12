@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function InviteFriend({
   tripId,
@@ -15,6 +16,7 @@ export default function InviteFriend({
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const axiosSecure = useAxiosSecure();
+  const {token} = useAuth()
 
   const senderDisplayName =
     currentUser?.name || currentUser?.email?.split("@")[0] || "A friend";
