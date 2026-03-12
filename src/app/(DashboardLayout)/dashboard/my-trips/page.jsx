@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import Swal from "sweetalert2";
 import BookingsList from "@/components/MyTrips/BookingsList";
-import { useAuth } from "@/hooks/useAuth";
 
 export default function MyTripsPage() {
   const { data: session } = useSession();
@@ -14,7 +13,6 @@ export default function MyTripsPage() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q")?.toLowerCase() || "";
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://travelee-server.vercel.app";
-  const {token} = useAuth()
 
   useEffect(() => {
     if (session?.user?.email) {
