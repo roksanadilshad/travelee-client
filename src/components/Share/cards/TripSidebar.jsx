@@ -48,7 +48,7 @@ export const TripSidebar = ({ destination, startDate, setStartDate, endDate, set
           </div>
 
           {/* 2. Fixed Button: Added type="button" to prevent form submission */}
-          <button 
+          {/* <button 
             type="button" 
   onClick={() => {
     const params = new URLSearchParams({
@@ -62,7 +62,24 @@ export const TripSidebar = ({ destination, startDate, setStartDate, endDate, set
   }}
   className="w-full bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
             Start Planning This Trip
-          </button>
+          </button> */}
+
+          <button 
+  type="button" 
+  onClick={() => {
+    const params = new URLSearchParams({
+      name: destination.city,
+      price: numericPriceForURL,
+      id: destination._id,
+      startDate: startDate,
+      endDate: endDate
+    });
+    router.push(`/itinerary?${params.toString()}`);
+  }}
+  className="w-full bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-accent transition-colors"
+>
+  Start Planning This Trip
+</button>
           
           <button 
             type="submit" 

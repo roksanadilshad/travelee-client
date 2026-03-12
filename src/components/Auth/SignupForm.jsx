@@ -22,7 +22,7 @@ export function SignupForm({ className, ...props }) {
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
-  
+
   const params = useSearchParams();
 
   const {
@@ -56,7 +56,7 @@ export function SignupForm({ className, ...props }) {
     try {
       const API_KEY = process.env.NEXT_PUBLIC_API_IMAGEBB;
       const res = await axios.post(`https://api.imgbb.com/1/upload?key=${API_KEY}`, formData);
-      
+
       if (res.data.success) {
         setValue("image", res.data.data.url);
         toast.success("Profile picture uploaded!");
@@ -92,7 +92,7 @@ export function SignupForm({ className, ...props }) {
       };
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://travelee-server.vercel.app";
-      
+
       await axios.post(`${apiUrl}/user`, userData);
       toast.success("Registration Successful!");
 
@@ -102,7 +102,7 @@ export function SignupForm({ className, ...props }) {
         redirect: true,
         callbackUrl: params.get("callbackUrl") || "/",
       });
-      
+
     } catch (err) {
       const errorMessage = err.response?.data?.message || err.message || "Something went wrong";
       toast.error(errorMessage);
@@ -141,10 +141,10 @@ export function SignupForm({ className, ...props }) {
                 </div>
               )}
             </div>
-            <input 
-              type="file" 
-              accept="image/*" 
-              className="absolute inset-0 opacity-0 cursor-pointer" 
+            <input
+              type="file"
+              accept="image/*"
+              className="absolute inset-0 opacity-0 cursor-pointer"
               onChange={handleImageChange}
               disabled={isUploading}
             />
@@ -166,11 +166,11 @@ export function SignupForm({ className, ...props }) {
               <option value="+880">+880 (BD)</option>
               <option value="+1">+1 (US)</option>
             </select>
-            <Input 
-              {...register("phone", { required: "Phone number is required" })} 
-              id="phone" 
-              type="tel" 
-              placeholder="017XXXXXXXX" 
+            <Input
+              {...register("phone", { required: "Phone number is required" })}
+              id="phone"
+              type="tel"
+              placeholder="017XXXXXXXX"
               className="flex-1"
             />
           </div>
@@ -209,29 +209,30 @@ export function SignupForm({ className, ...props }) {
         </Field>
 
         <Field className="pt-2">
-          <Button type="submit" className="w-full font-bold h-11" disabled={loading || isUploading}>
+          <Button type="submit" className="cursor-pointer" disabled={loading || isUploading}>
             {loading ? "Creating Account..." : "Create Account"}
           </Button>
         </Field>
 
         <FieldSeparator>Or continue with</FieldSeparator>
 
-        <div className="grid grid-cols-2 gap-4">
-          <Button variant="outline" onClick={handleGoogleSignUp} type="button" className="gap-2">
+        <div className="">
+          <Button variant="outline" onClick={handleGoogleSignUp} type="button"
+            className="cursor-pointer hover:bg-muted-foreground flex items-center gap-2 w-full">
             <svg viewBox="0 0 48 48" width="18" height="18">
-               <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 3l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5 12.9 4.5 4 13.4 4 24.5S12.9 44.5 24 44.5 44 35.6 44 24.5c0-1.3-.1-2.7-.4-4z" />
-               <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16.1 18.9 13 24 13c3 0 5.7 1.1 7.8 3l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5c-7.7 0-14.3 4.4-17.7 10.2z" />
-               <path fill="#4CAF50" d="M24 44.5c5.2 0 9.9-2 13.5-5.4l-6.2-5.1C29.2 35.5 26.7 36 24 36c-5.3 0-9.7-3.1-11.3-7.6l-6.5 5C9.6 40 16.3 44.5 24 44.5z" />
-               <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1.1 3-3.5 5.5-6.8 6.9l6.2 5.1C38.9 36.5 44 30.9 44 24.5c0-1.3-.1-2.7-.4-4z" />
+              <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.7 1.1 7.8 3l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5 12.9 4.5 4 13.4 4 24.5S12.9 44.5 24 44.5 44 35.6 44 24.5c0-1.3-.1-2.7-.4-4z" />
+              <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16.1 18.9 13 24 13c3 0 5.7 1.1 7.8 3l5.7-5.7C33.9 6.5 29.2 4.5 24 4.5c-7.7 0-14.3 4.4-17.7 10.2z" />
+              <path fill="#4CAF50" d="M24 44.5c5.2 0 9.9-2 13.5-5.4l-6.2-5.1C29.2 35.5 26.7 36 24 36c-5.3 0-9.7-3.1-11.3-7.6l-6.5 5C9.6 40 16.3 44.5 24 44.5z" />
+              <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-1.1 3-3.5 5.5-6.8 6.9l6.2 5.1C38.9 36.5 44 30.9 44 24.5c0-1.3-.1-2.7-.4-4z" />
             </svg>
             Google
           </Button>
-          <Button variant="outline" onClick={handleGithubSignIn} type="button" className="gap-2">
+          {/* <Button variant="outline" onClick={handleGithubSignIn} type="button" className="gap-2">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
               <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.1 3.29 9.42 7.86 10.96.57.1.78-.25.78-.56v-2.17c-3.2.7-3.88-1.38-3.88-1.38-.52-1.32-1.27-1.67-1.27-1.67-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.67 1.24 3.32.95.1-.74.4-1.24.73-1.53-2.55-.29-5.23-1.27-5.23-5.66 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.47.11-3.06 0 0 .96-.31 3.15 1.17a10.9 10.9 0 0 1 5.73 0c2.18-1.48 3.14-1.17 3.14-1.17.62 1.59.23 2.77.11 3.06.73.8 1.18 1.82 1.18 3.07 0 4.4-2.69 5.37-5.25 5.65.41.36.78 1.09.78 2.2v3.26c0 .31.2.67.79.56A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z" />
             </svg>
             GitHub
-          </Button>
+          </Button> */}
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-4">
