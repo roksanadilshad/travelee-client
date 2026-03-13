@@ -24,26 +24,27 @@ export default function SignupPage() {
         {/* Center Content Area */}
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-[420px] space-y-8">
-           
-            <Suspense 
+            <Suspense
               fallback={
                 <div className="flex flex-col items-center justify-center h-64 border border-dashed rounded-2xl bg-muted/10 animate-pulse">
                   <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4" />
-                  <p className="text-sm text-muted-foreground">Preparing your workspace...</p>
+                  <p className="text-sm text-muted-foreground">
+                    Preparing your workspace...
+                  </p>
                 </div>
               }
             >
               <div className="bg-card">
-                 <SignupForm />
+                <SignupForm />
               </div>
             </Suspense>
 
-            <p className="text-center text-sm text-muted-foreground">
+            {/* <p className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
               <Link href="/login" className="font-semibold text-primary hover:underline underline-offset-4">
                 Sign in
               </Link>
-            </p>
+            </p> */}
           </div>
         </div>
 
