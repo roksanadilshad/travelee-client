@@ -22,8 +22,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (!socketRef.current) {
-      const SOCKET_URL =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
       const newSocket = io(SOCKET_URL, {
         transports: ["websocket"],
         withCredentials: true,
@@ -49,38 +48,31 @@ export const SocketProvider = ({ children }) => {
     const currentSocket = socketRef.current;
 
     if (currentSocket && session?.user?.email) {
-      currentSocket.emit("join-personal-room", session.user.email);
+     
+      currentSocket.emit("join-self", session.user.email); 
 
       const handleReceiveInvite = (data) => {
         Swal.fire({
-          title: "New Trip Invitation!",
-
+          title: "New Trip Invitation! ✈️",
           html: `
-    <div style="font-size: 16px; line-height: 1.6; color: #374151;">
-      <b style="color: #2563eb; font-size: 18px; text-transform: uppercase;">${data.senderName}</b> 
-      <br/> 
-      has invited you to join 
-      <br/>
-      <b style="color: #059669; font-size: 19px;">"${data.tripTitle}"</b>
-    </div>
-  `,
+            <div style="font-size: 16px; line-height: 1.6; color: #374151;">
+              <b style="color: #0EA5A4; font-size: 18px; text-transform: uppercase;">${data.senderName}</b> 
+              <br/> 
+              has invited you to join 
+              <br/>
+              <b style="color: #1f2937; font-size: 19px;">"${data.tripTitle}"</b>
+            </div>
+          `,
           icon: "info",
           showCancelButton: true,
-          confirmButtonColor: "#2563eb",
+          confirmButtonColor: "#0EA5A4",
           cancelButtonColor: "#64748b",
           confirmButtonText: "Accept & View",
           cancelButtonText: "Decline",
           reverseButtons: true,
-          showClass: {
-            popup: "animate__animated animate__backInDown animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutUp animate__faster",
-          },
         }).then((result) => {
           if (result.isConfirmed) {
             router.push("/dashboard/my-trips");
-           
           }
         });
       };

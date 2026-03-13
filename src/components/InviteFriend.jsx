@@ -16,7 +16,7 @@ export default function InviteFriend({
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const axiosSecure = useAxiosSecure();
-  const {token} = useAuth()
+  const { token } = useAuth();
 
   const senderDisplayName =
     currentUser?.name || currentUser?.email?.split("@")[0] || "A friend";
@@ -27,15 +27,21 @@ export default function InviteFriend({
         icon: "warning",
         title: "Missing Email",
         text: "Please enter a valid email address.",
-        confirmButtonColor: "#2563eb",
+        confirmButtonColor: "#0EA5A4", 
       });
     }
 
     setLoading(true);
     try {
+      
       let currentId = tripId || params?.id;
-      if (!currentId || currentId === "temp-id") {
-        if (onAutoSave) currentId = await onAutoSave();
+      
+      
+      if (!currentId || currentId === "temp-id" || typeof currentId === 'undefined') {
+        if (onAutoSave) {
+            const savedId = await onAutoSave();
+            currentId = savedId;
+        }
       }
 
       if (!currentId) {
@@ -44,21 +50,22 @@ export default function InviteFriend({
           icon: "error",
           title: "Save Required",
           text: "Please save the trip before inviting!",
-          confirmButtonColor: "#2563eb",
+          confirmButtonColor: "#0EA5A4", 
         });
       }
 
-      const res = await axiosSecure.post("/my-trips/invite", {
+      const res = await axiosSecure.post("/my-trips/invite-hybrid", {
         tripId: currentId,
         friendEmail: email,
+        senderName: senderDisplayName,
+        tripTitle: tripTitle || "Our Trip",
+        friendId: email, 
       });
 
-      console.log("Server Response:", res.data);
-
-      if (res.status === 200 || res.status === 201 || res.data.success) {
+      if (res.data.success) {
         if (socket) {
           socket.emit("send-invite", {
-            friendId: res.data.friendId || res.data._id || email,
+            friendId: email,
             senderName: senderDisplayName,
             tripId: currentId,
             tripTitle: tripTitle || "this trip",
@@ -66,17 +73,13 @@ export default function InviteFriend({
         }
 
         Swal.fire({
-          title: "Success!",
-          html: `Invitation sent successfully to <b class="text-blue-600">${email}</b>`,
+          title: "Invited!",
+          html: `Invitation sent via <b>Email</b> and <b>Real-time</b> to <br/> <span style="color: #0EA5A4; font-weight: bold;">${email}</span>`,
           icon: "success",
-          draggable: true,
-          confirmButtonColor: "#2563eb",
+          confirmButtonColor: "#0EA5A4",
           confirmButtonText: "Done!",
           showClass: {
             popup: "animate__animated animate__fadeInUp animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutDown animate__faster",
           },
         });
 
@@ -84,9 +87,7 @@ export default function InviteFriend({
       }
     } catch (err) {
       console.error("Invite Error Detail:", err);
-
-      const errorMsg =
-        err.response?.data?.message || err.message || "Something went wrong!";
+      const errorMsg = err.response?.data?.message || err.message || "Something went wrong!";
 
       Swal.fire({
         icon: "error",
@@ -100,14 +101,14 @@ export default function InviteFriend({
   };
 
   return (
-    <div className="flex flex-col gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100 shadow-sm w-full">
-      <p className="text-[10px] font-bold text-primary uppercase tracking-wider">
-        Invite Collaborator
+    <div className="flex flex-col gap-2 p-3 bg-[#0EA5A4]/10 rounded-xl border border-[#0EA5A4]/20 shadow-sm w-full">
+      <p className="text-[10px] font-bold text-[#0EA5A4] uppercase tracking-wider">
+        Invite Collaborator 
       </p>
       <div className="flex gap-2">
         <input
           type="email"
-          className="flex-1 border border-blue-200 p-2 rounded-lg text-sm text-black outline-none focus:ring-2 focus:ring-blue-400 transition-all"
+          className="flex-1 border border-[#0EA5A4]/30 p-2 rounded-lg text-sm text-black outline-none focus:ring-2 focus:ring-[#0EA5A4] transition-all"
           placeholder="friend@email.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -115,7 +116,7 @@ export default function InviteFriend({
         <button
           onClick={handleInvite}
           disabled={loading}
-          className="bg-primary hover:scale-105 text-white text-sm px-5 py-2 rounded-lg disabled:bg-blue-300 font-bold transition-colors shrink-0"
+          className="bg-[#0EA5A4] text-white text-sm px-5 py-2 rounded-lg disabled:bg-gray-300 font-bold transition-all shrink-0"
         >
           {loading ? "..." : "Invite"}
         </button>

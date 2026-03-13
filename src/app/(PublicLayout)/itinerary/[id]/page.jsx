@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { FaCalendarDay, FaClock } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 export default function TripDetails() {
   const { id } = useParams();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
   const [weather, setWeather] = useState([]);
@@ -13,6 +17,40 @@ export default function TripDetails() {
   const API_URL =
     process.env.NEXT_PUBLIC_API_URL || "https://travelee-server.vercel.app";
 
+  // --- Invitation Modal Logic ---
+  useEffect(() => {
+    const isInvited = searchParams.get("invited");
+    
+    if (isInvited === "true") {
+      Swal.fire({
+        title: "Trip Invitation!",
+        html: "You have been invited to <b>collaborate</b> on this trip. Start planning together!",
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonText: "Accept & Join",
+        cancelButtonText: "Later",
+        confirmButtonColor: "#0EA5A4",
+        cancelButtonColor: "#6b7280",
+        allowOutsideClick: false,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Joined!",
+            text: "You are now a collaborator on this trip.",
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: false
+          });
+        }
+        
+        // Cleanup URL: removes ?invited=true after modal closes
+        const newPath = window.location.pathname;
+        router.replace(newPath);
+      });
+    }
+  }, [searchParams, router]);
+
+  // --- Fetch Data Logic ---
   useEffect(() => {
     if (!id) return;
 
@@ -79,7 +117,7 @@ export default function TripDetails() {
           </div>
         </div>
 
-        {/* Weather */}
+        {/* Weather Section */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4 border-b pb-2 border-gray-200">
             🌦 Weather Adaptive Plan
@@ -104,8 +142,7 @@ export default function TripDetails() {
 
                 {day.activitySwap?.swapRecommended ? (
                   <div className="mt-2 bg-red-50 border border-red-200 p-2 rounded-lg text-red-700 text-sm">
-                    🔄 Suggested Activity:{" "}
-                    {day.activitySwap.suggestedActivity}
+                    🔄 Suggested Activity: {day.activitySwap.suggestedActivity}
                   </div>
                 ) : (
                   <div className="mt-2 bg-green-50 border border-green-200 p-2 rounded-lg text-green-700 text-sm">
@@ -117,14 +154,14 @@ export default function TripDetails() {
           </div>
         </div>
 
-        {/* Itinerary */}
+        {/* Itinerary Section */}
         <div className="space-y-8">
           {trip.days?.map((day, index) => (
             <div
               key={day.id || index}
               className="relative pl-8 border-l-2 border-blue-200"
             >
-              <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-primary border-4 border-white"></div>
+              <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-blue-600 border-4 border-white"></div>
 
               <h2 className="text-xl font-bold text-gray-800 mb-4">
                 Day {index + 1}
@@ -137,7 +174,7 @@ export default function TripDetails() {
                     className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="bg-blue-50 p-3 rounded-lg text-primary">
+                      <div className="bg-blue-50 p-3 rounded-lg text-blue-600">
                         <FaClock />
                       </div>
 
@@ -145,7 +182,6 @@ export default function TripDetails() {
                         <p className="text-xs font-bold text-blue-500 uppercase">
                           {activity.time}
                         </p>
-
                         <h3 className="font-bold text-gray-800">
                           {activity.task}
                         </h3>
@@ -158,7 +194,6 @@ export default function TripDetails() {
                   </div>
                 ))}
               </div>
-
             </div>
           ))}
         </div>

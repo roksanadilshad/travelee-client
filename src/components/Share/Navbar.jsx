@@ -85,7 +85,7 @@ export default function Navbar() {
       : `${
           scrolled
             ? "text-foreground hover:text-primary"
-            : "text-gray-400 hover:text-gray-200"
+            : "text-gray-400 hover:text-secondary"
         } hover:bg-background/50`
   }`}
 >
