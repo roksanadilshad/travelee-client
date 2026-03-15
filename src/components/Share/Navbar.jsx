@@ -85,7 +85,7 @@ export default function Navbar() {
       : `${
           scrolled
             ? "text-foreground hover:text-primary"
-            : "text-gray-400 hover:text-gray-200"
+            : "text-gray-400 hover:text-secondary"
         } hover:bg-background/50`
   }`}
 >
@@ -211,7 +211,7 @@ export default function Navbar() {
                             ) : (
                                 <Button 
                                     variant="destructive" 
-                                    className="w-full rounded-2xl py-6 text-white font-bold"
+                                    className="w-full rounded-2xl py-6 text-secondary font-bold"
                                     onClick={() => { logout(); setIsOpen(false); }}
                                 >
                                     <LogOut className="mr-2 h-4 w-4" /> Logout
