@@ -4,7 +4,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useCallback } from "react";
 
 export function useAuth() {
-  const { data: session, status } = useSession();
+  const { data: session, status , update} = useSession();
 
   const logout = useCallback(() => {
     signOut();
@@ -14,6 +14,7 @@ export function useAuth() {
     user: session?.user ?? null,
     token: session?.accessToken ?? null,
     session,
+    update,
     isAuthenticated: status === "authenticated",
     isLoading: status === "loading",
     logout,
