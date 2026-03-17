@@ -22,7 +22,9 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (!socketRef.current) {
-      const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const SOCKET_URL =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      
       const newSocket = io(SOCKET_URL, {
         transports: ["websocket"],
         withCredentials: true,
@@ -49,9 +51,15 @@ export const SocketProvider = ({ children }) => {
 
     if (currentSocket && session?.user?.email) {
      
-      currentSocket.emit("join-self", session.user.email); 
+      currentSocket.emit("join-self", session.user.email);
 
       const handleReceiveInvite = (data) => {
+        
+        if (data.senderEmail === session?.user?.email) {
+          console.log("Self-invite ignored");
+          return;
+        }
+
         Swal.fire({
           title: "New Trip Invitation! ✈️",
           html: `
@@ -72,7 +80,7 @@ export const SocketProvider = ({ children }) => {
           reverseButtons: true,
         }).then((result) => {
           if (result.isConfirmed) {
-            router.push("/dashboard/my-trips");
+            router.push(`/destinations/${data.tripId}?invited=true`);
           }
         });
       };
@@ -83,8 +91,7 @@ export const SocketProvider = ({ children }) => {
         currentSocket.off("receive-invite", handleReceiveInvite);
       };
     }
-  }, [socket, session, router]);
-
+  }, [socket, session?.user?.email, router]); 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
   );

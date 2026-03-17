@@ -4,6 +4,9 @@ import { useLanguage } from "@/context/LanguageContext";
 export const TourQuickInfo = ({ destination }) => {
   const { t } = useLanguage();
 
+
+  if (!destination) return null;
+
   return (
     <div className="space-y-6">
       {/* Quick Info */}
@@ -12,26 +15,30 @@ export const TourQuickInfo = ({ destination }) => {
           {t("tour_info")}
         </h4>
         <div className="space-y-3">
-          <InfoRow label={t("duration")} value={destination.duration} />
-          <InfoRow label={t("best_time")} value={destination.best_time_to_visit} />
+          <InfoRow label={t("duration")} value={destination?.duration || "N/A"} />
+          <InfoRow label={t("best_time")} value={destination?.best_time_to_visit || "N/A"} />
           <InfoRow label={t("group_size")} value={`2-10 ${t("people")}`} />
-          <InfoRow label={t("currency")} value={destination.currency} />
-          <InfoRow label={t("safety_rating")} value={`${destination.safety_index}/10`} />
+          <InfoRow label={t("currency")} value={destination?.currency || "USD"} />
+          <InfoRow label={t("safety_rating")} value={`${destination?.safety_index || "8"}/10`} />
         </div>
       </div>
 
-      {/* Languages */}
+     
       <div className="mt-6 pt-6 border-t border-gray-200">
         <h4 className="font-semibold text-gray-900 mb-3">{t("languages")}</h4>
         <div className="flex flex-wrap gap-2">
-          {destination.languages_spoken.map((lang, idx) => (
-            <span
-              key={idx}
-              className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-xs font-medium"
-            >
-              {lang}
-            </span>
-          ))}
+          {destination?.languages_spoken?.length > 0 ? (
+            destination.languages_spoken.map((lang, idx) => (
+              <span
+                key={idx}
+                className="bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-xs font-medium"
+              >
+                {lang}
+              </span>
+            ))
+          ) : (
+            <span className="text-xs text-gray-500 italic">English (Default)</span>
+          )}
         </div>
       </div>
 
@@ -52,7 +59,7 @@ export const TourQuickInfo = ({ destination }) => {
   );
 };
 
-// Small helper component for the rows
+
 const InfoRow = ({ label, value }) => (
   <div className="flex justify-between text-sm">
     <span className="text-gray-600">{label}</span>
