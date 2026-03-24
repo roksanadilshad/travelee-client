@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import useAxiosSecure from "@/hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 import { useAuth } from "@/hooks/useAuth";
@@ -13,6 +13,7 @@ export default function InviteFriend({
   currentUser,
 }) {
   const params = useParams();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const axiosSecure = useAxiosSecure();
@@ -27,20 +28,22 @@ export default function InviteFriend({
         icon: "warning",
         title: "Missing Email",
         text: "Please enter a valid email address.",
-        confirmButtonColor: "#0EA5A4", 
+        confirmButtonColor: "#0EA5A4",
       });
     }
 
     setLoading(true);
     try {
-      
-      let currentId = tripId || params?.id;
-      
-      
-      if (!currentId || currentId === "temp-id" || typeof currentId === 'undefined') {
+      let currentId = tripId || searchParams.get("id") || params?.id;
+
+      if (
+        !currentId ||
+        currentId === "temp-id" ||
+        typeof currentId === "undefined"
+      ) {
         if (onAutoSave) {
-            const savedId = await onAutoSave();
-            currentId = savedId;
+          const savedId = await onAutoSave();
+          currentId = savedId;
         }
       }
 
@@ -50,7 +53,7 @@ export default function InviteFriend({
           icon: "error",
           title: "Save Required",
           text: "Please save the trip before inviting!",
-          confirmButtonColor: "#0EA5A4", 
+          confirmButtonColor: "#0EA5A4",
         });
       }
 
@@ -58,8 +61,9 @@ export default function InviteFriend({
         tripId: currentId,
         friendEmail: email,
         senderName: senderDisplayName,
+        senderEmail: currentUser?.email,
         tripTitle: tripTitle || "Our Trip",
-        friendId: email, 
+        friendId: email,
       });
 
       if (res.data.success) {
@@ -67,6 +71,7 @@ export default function InviteFriend({
           socket.emit("send-invite", {
             friendId: email,
             senderName: senderDisplayName,
+            senderEmail: currentUser?.email,
             tripId: currentId,
             tripTitle: tripTitle || "this trip",
           });
@@ -87,7 +92,8 @@ export default function InviteFriend({
       }
     } catch (err) {
       console.error("Invite Error Detail:", err);
-      const errorMsg = err.response?.data?.message || err.message || "Something went wrong!";
+      const errorMsg =
+        err.response?.data?.message || err.message || "Something went wrong!";
 
       Swal.fire({
         icon: "error",
@@ -103,7 +109,7 @@ export default function InviteFriend({
   return (
     <div className="flex flex-col gap-2 p-3 bg-[#0EA5A4]/10 rounded-xl border border-[#0EA5A4]/20 shadow-sm w-full">
       <p className="text-[10px] font-bold text-[#0EA5A4] uppercase tracking-wider">
-        Invite Collaborator 
+        Invite Collaborator
       </p>
       <div className="flex gap-2">
         <input
