@@ -59,7 +59,7 @@ export default function DashboardLayout({ children }) {
   const filteredMenu = useMemo(() => {
     const menuConfig = [
       { name: "Browse", href: "/dashboard/browse", icon: Compass, roles: ["user", "admin"] },
-      { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, roles: ["admin"] },
+      // { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, roles: ["admin"] },
       { name: "All Users", href: "/dashboard/users", icon: Users, roles: ["admin"] },
       { name: "Add Destinations", href: "/dashboard/destinations", icon: MapPin, roles: ["admin"] },
       { name: "My Tickets", href: "/dashboard/my-trips", icon: Briefcase, roles: ["user"] },
@@ -79,6 +79,23 @@ export default function DashboardLayout({ children }) {
     router.replace(`${pathname}?${params.toString()}`);
   };
 
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const { scrollLeft, clientWidth } = scrollRef.current;
+      const scrollTo = direction === 'left' ? scrollLeft - 200 : scrollLeft + 200;
+      scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+    }
+  };
+
+  const menuConfig = [
+    { name: "Browse", href: "/dashboard/browse", icon: Compass },
+    { name: "Tickets", href: "/dashboard/my-trips", icon: Briefcase },
+    { name: "Schedule Planning", href: "/dashboard/schedule", icon: CalendarDays },
+    // { name: "Messages", href: "/dashboard/messages", icon: MessageSquare },
+    { name: "Saved Places", href: "/dashboard/wishlist", icon: Heart },
+    { name: "Profile", href: "/dashboard/my-profile", icon: User },
+  ];
+
  
   if (status === "loading" || loading) {
     return (
@@ -92,6 +109,13 @@ export default function DashboardLayout({ children }) {
   return (
     <div className="min-h-screen bg-[#F4F7FE] flex font-sans overflow-hidden">
       <ToastContainer position="bottom-right" />
+
+      <button 
+        onClick={() => setIsSidebarOpen(true)}
+        className="fixed top-6 left-6 z-[60] lg:hidden bg-white p-3 rounded-2xl shadow-md border border-slate-100"
+      >
+        <Menu size={20} />
+      </button>
 
       {/* Sidebar */}
       <aside className={`
