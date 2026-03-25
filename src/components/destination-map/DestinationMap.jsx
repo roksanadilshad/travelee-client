@@ -43,7 +43,7 @@ const DestinationMap = () => {
     const router = useRouter();
 
     useEffect(() => {
-        fetch("http://localhost:500/destinations?limit=100")
+        fetch("https://travelee-server.vercel.app/destinations?limit=100")
             .then((res) => res.json())
             .then((data) => setDestinations(data.data));
     }, []);
