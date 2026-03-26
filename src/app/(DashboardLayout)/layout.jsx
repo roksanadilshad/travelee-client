@@ -49,14 +49,19 @@ export default function DashboardLayout({ children }) {
     fetchUserDetails();
   }, [fetchUserDetails]);
 
-  const userRole = userData?.role || "user";
+  // Role normalization
+  const userRole = useMemo(() => {
+    if (session?.user?.email === "roky18bd@gmail.com") return "admin";
+    return userData?.role?.toLowerCase() || "user";
+  }, [userData, session]);
+
   const isAdmin = userRole === "admin";
 
   // Sidebar Menu Configuration
   const menuConfig = useMemo(() => [
     { name: "Browse", href: "/dashboard/browse", icon: Compass, roles: ["user", "admin"], category: "main" },
-    { name: "My Tickets", href: "/dashboard/my-trips", icon: Briefcase, roles: ["user"], category: "main" },
-    { name: "Saved Places", href: "/dashboard/wishlist", icon: Heart, roles: ["user"], category: "main" },
+    { name: "My Tickets", href: "/dashboard/my-trips", icon: Briefcase, roles: ["user", "admin"], category: "main" },
+    { name: "Saved Places", href: "/dashboard/wishlist", icon: Heart, roles: ["user", "admin"], category: "main" },
     { name: "Schedule", href: "/dashboard/schedule", icon: CalendarDays, roles: ["user", "admin"], category: "main" },
     { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, roles: ["admin"], category: "admin" },
     { name: "All Users", href: "/dashboard/users", icon: Users, roles: ["admin"], category: "admin" },
@@ -64,6 +69,7 @@ export default function DashboardLayout({ children }) {
     { name: "Profile", href: "/dashboard/my-profile", icon: User, roles: ["user", "admin"], category: "settings" },
   ], []);
 
+  // Filter logic
   const filteredMenu = useMemo(() => 
     menuConfig.filter(item => item.roles.includes(userRole)), 
   [userRole, menuConfig]);
@@ -169,7 +175,7 @@ export default function DashboardLayout({ children }) {
             <div>
               <h1 className="text-xl lg:text-2xl font-black text-slate-900 tracking-tight">
                 {userData?.fullName ? userData.fullName.split(' ')[0] : "Traveler"}
-                {isAdmin && <span className="ml-2 text-[9px] bg-emerald-500 text-white px-2 py-0.5 rounded uppercase">Pro</span>}
+                {isAdmin && <span className="ml-2 text-[9px] bg-emerald-500 text-white px-2 py-0.5 rounded uppercase">Admin</span>}
               </h1>
               <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider hidden sm:block">
                 {isAdmin ? "Administrator Dashboard" : "Travel Enthusiast"}
@@ -205,7 +211,6 @@ export default function DashboardLayout({ children }) {
             </div>
           </main>
 
-          {/* Right Sidebar - Only for non-admins */}
           {!isAdmin && (
             <aside className="hidden 2xl:flex flex-col w-[380px] bg-white m-6 mt-0 rounded-[2.5rem] p-8 overflow-y-auto shadow-sm border border-slate-50">
               <RightSidebar/>
