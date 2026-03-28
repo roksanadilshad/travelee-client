@@ -65,7 +65,8 @@ export default function DashboardLayout({ children }) {
     { name: "Schedule", href: "/dashboard/schedule", icon: CalendarDays, roles: ["user", "admin"], category: "main" },
     { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, roles: ["admin"], category: "admin" },
     { name: "All Users", href: "/dashboard/users", icon: Users, roles: ["admin"], category: "admin" },
-    { name: "Destinations", href: "/dashboard/destinations", icon: MapPin, roles: ["admin"], category: "admin" },
+    { name: "Add Destinations", href: "/dashboard/add-destination", icon: MapPin, roles: ["admin"], category: "admin" },
+     { name: "All Destinations", href: "/dashboard/all-destination", icon: MapPin, roles: ["admin"], category: "admin" },
     { name: "Profile", href: "/dashboard/my-profile", icon: User, roles: ["user", "admin"], category: "settings" },
   ], []);
 
