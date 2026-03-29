@@ -6,7 +6,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { 
   Bell, Search, CalendarDays, Heart, Settings, LogOut, X, 
   Menu, PlaneTakeoff, Map, Briefcase, Utensils, Hotel, Compass, 
-  MoreHorizontal, User, BarChart3, Users, MapPin, CreditCard, Loader2 
+  MoreHorizontal, User, BarChart3, Users, MapPin, CreditCard, Loader2, 
+  Home
 } from "lucide-react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -24,42 +25,49 @@ export default function DashboardLayout({ children }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
-  const scrollRef = useRef(null);
 
+  // API URL from env
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchUserDetails = useCallback(async () => {
+    // Only fetch if we have a session email and haven't loaded data yet
     if (!session?.user?.email) return;
+    
     try {
       setLoading(true);
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/email`, {
+      const res = await fetch(`${API_URL}/user/email`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: session.user.email })
       });
+      
       const result = await res.json();
       if (result.success) {
         setUserData(result.data);
       }
     } catch (error) {
-      console.error("Error fetching user role:", error);
+      console.error("Error fetching user details:", error);
     } finally {
       setLoading(false);
     }
-  }, [session?.user?.email]);
+  }, [session?.user?.email, API_URL]);
 
   useEffect(() => {
-    fetchUserDetails();
-  }, [fetchUserDetails]);
-
+    if (status === "authenticated") {
+      fetchUserDetails();
+    } else if (status === "unauthenticated") {
+      setLoading(false);
+      // Optional: router.push('/login') 
+    }
+  }, [status, fetchUserDetails]);
 
   const userRole = userData?.role || "user";
   const isAdmin = userRole === "admin";
 
- 
   const filteredMenu = useMemo(() => {
     const menuConfig = [
+      { name: "Home", href: "/", icon: Home, roles: ["user", "admin"] },
       { name: "Browse", href: "/dashboard/browse", icon: Compass, roles: ["user", "admin"] },
-      // { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, roles: ["admin"] },
       { name: "All Users", href: "/dashboard/users", icon: Users, roles: ["admin"] },
       { name: "Add Destinations", href: "/dashboard/destinations", icon: MapPin, roles: ["admin"] },
       { name: "My Tickets", href: "/dashboard/my-trips", icon: Briefcase, roles: ["user"] },
@@ -79,25 +87,8 @@ export default function DashboardLayout({ children }) {
     router.replace(`${pathname}?${params.toString()}`);
   };
 
-  const scroll = (direction) => {
-    if (scrollRef.current) {
-      const { scrollLeft, clientWidth } = scrollRef.current;
-      const scrollTo = direction === 'left' ? scrollLeft - 200 : scrollLeft + 200;
-      scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
-    }
-  };
-
-  const menuConfig = [
-    { name: "Browse", href: "/dashboard/browse", icon: Compass },
-    { name: "Tickets", href: "/dashboard/my-trips", icon: Briefcase },
-    { name: "Schedule Planning", href: "/dashboard/schedule", icon: CalendarDays },
-    // { name: "Messages", href: "/dashboard/messages", icon: MessageSquare },
-    { name: "Saved Places", href: "/dashboard/wishlist", icon: Heart },
-    { name: "Profile", href: "/dashboard/my-profile", icon: User },
-  ];
-
- 
-  if (status === "loading" || loading) {
+  // Prevent flicker during session check
+  if (status === "loading" || (status === "authenticated" && loading)) {
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-[#F4F7FE]">
         <Loader2 className="w-10 h-10 text-emerald-500 animate-spin mb-4" />
@@ -109,6 +100,14 @@ export default function DashboardLayout({ children }) {
   return (
     <div className="min-h-screen bg-[#F4F7FE] flex font-sans overflow-hidden">
       <ToastContainer position="bottom-right" />
+
+      {/* Mobile Menu Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[45] lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
 
       <button 
         onClick={() => setIsSidebarOpen(true)}
@@ -130,11 +129,12 @@ export default function DashboardLayout({ children }) {
           </button>
         </div>
 
-        <nav className="flex-1 px-6 space-y-1">
+        <nav className="flex-1 px-6 space-y-1 overflow-y-auto">
           {filteredMenu.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link key={item.name} href={item.href}
+                onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center gap-4 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                   isActive ? "bg-[#0A1D1A] text-white shadow-lg" : "text-slate-400 hover:text-slate-900"
                 }`}
@@ -147,7 +147,7 @@ export default function DashboardLayout({ children }) {
 
         <div className="p-6 border-t border-slate-50">
           <button 
-            onClick={() => signOut()}
+            onClick={() => signOut({ callbackUrl: '/' })}
             className="flex w-full items-center gap-4 px-4 py-3 text-sm font-semibold text-slate-400 hover:text-red-500 transition-all"
           >
             <LogOut size={20} /> Logout
@@ -182,7 +182,7 @@ export default function DashboardLayout({ children }) {
               />
             </div>
             <img 
-              src={userData?.image || `https://ui-avatars.com/api/?name=${userData?.fullName}`} 
+              src={userData?.image || `https://ui-avatars.com/api/?name=${userData?.fullName || 'User'}`} 
               alt="user" 
               className="h-12 w-12 rounded-2xl object-cover border-2 border-white shadow-sm" 
             />
@@ -207,6 +207,7 @@ export default function DashboardLayout({ children }) {
             </div>
           </main>
 
+          {/* Sidebar for regular users only */}
           {!isAdmin && (
             <aside className="hidden 2xl:flex flex-col w-[380px] bg-white m-6 mt-0 rounded-[2.5rem] p-8 overflow-y-auto shadow-sm border border-slate-50">
               <RightSidebar/>
