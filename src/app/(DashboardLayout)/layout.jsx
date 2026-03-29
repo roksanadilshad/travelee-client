@@ -1,14 +1,13 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { 
   Bell, Search, CalendarDays, Heart, Settings, LogOut, X, 
   Menu, PlaneTakeoff, Map, Briefcase, Utensils, Hotel, Compass, 
   MoreHorizontal, User, BarChart3, Users, MapPin, CreditCard, Loader2, 
-  Home,
-  ChevronRight
+  Home
 } from "lucide-react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -30,7 +29,6 @@ export default function DashboardLayout({ children }) {
   // API URL from env
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-  // Fetch User Details from MongoDB
   const fetchUserDetails = useCallback(async () => {
     // Only fetch if we have a session email and haven't loaded data yet
     if (!session?.user?.email) return;
@@ -63,12 +61,14 @@ export default function DashboardLayout({ children }) {
     }
   }, [status, fetchUserDetails]);
 
+  const userRole = userData?.role || "user";
   const isAdmin = userRole === "admin";
 
   const filteredMenu = useMemo(() => {
     const menuConfig = [
       { name: "Home", href: "/", icon: Home, roles: ["user", "admin"] },
-      { name: "Browse", href: "/dashboard/browse", icon: Compass, roles: ["user", "admin"] },
+      { name: "Browse", href: "/dashboard/browse", icon: Compass, roles: ["user"] },
+      { name: "Browse", href: "/dashboard/adminbrowse", icon: Compass, roles: ["admin"] },
       { name: "All Users", href: "/dashboard/users", icon: Users, roles: ["admin"] },
       { name: "Add Destinations", href: "/dashboard/destinations", icon: MapPin, roles: ["admin"] },
       { name: "My Tickets", href: "/dashboard/my-trips", icon: Briefcase, roles: ["user"] },
@@ -119,13 +119,13 @@ export default function DashboardLayout({ children }) {
 
       {/* Sidebar */}
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-72 bg-white transform transition-transform duration-300 ease-in-out flex flex-col
+        fixed inset-y-0 left-0 z-50 w-64 bg-white transform transition-transform duration-300 ease-in-out flex flex-col
         ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-        lg:relative lg:translate-x-0 border-r border-slate-100
+        lg:relative lg:translate-x-0 border-r border-slate-50
       `}>
         <div className="h-24 flex items-center justify-between px-8">
           <Link href="/"><TraveleeLogo /></Link>
-          <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-slate-400 p-2 rounded-lg">
+          <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-slate-400">
             <X size={20}/>
           </button>
         </div>
@@ -146,59 +146,42 @@ export default function DashboardLayout({ children }) {
           })}
         </nav>
 
-        {/* User Profile Footer */}
-        <div className="p-6 border-t border-slate-50 bg-slate-50/50">
-          <div className="flex items-center gap-3 mb-4 px-2">
-            <img 
-              src={userData?.image || `https://ui-avatars.com/api/?name=${userData?.fullName}`} 
-              className="h-10 w-10 rounded-xl object-cover shadow-sm"
-              alt="Profile"
-            />
-            <div className="overflow-hidden">
-              <p className="text-sm font-bold text-slate-900 truncate">{userData?.fullName || "User"}</p>
-              <p className="text-[10px] font-medium text-emerald-600 uppercase tracking-wider">{userRole}</p>
-            </div>
-          </div>
+        <div className="p-6 border-t border-slate-50">
           <button 
             onClick={() => signOut({ callbackUrl: '/' })}
             className="flex w-full items-center gap-4 px-4 py-3 text-sm font-semibold text-slate-400 hover:text-red-500 transition-all"
           >
-            <LogOut size={18} /> Sign Out
+            <LogOut size={20} /> Logout
           </button>
         </div>
       </aside>
 
-      {/* Main Content Area */}
+      {/* Main Container */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <header className="h-20 flex items-center justify-between px-8 lg:px-12 bg-[#F4F7FE]/70 backdrop-blur-md sticky top-0 z-30">
-          <div className="flex items-center gap-4">
-            <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden p-2 bg-white rounded-xl shadow-sm">
-              <Menu size={20}/>
-            </button>
-            <div>
-              <h1 className="text-xl lg:text-2xl font-black text-slate-900 tracking-tight">
-                {userData?.fullName ? userData.fullName.split(' ')[0] : "Traveler"}
-                {isAdmin && <span className="ml-2 text-[9px] bg-emerald-500 text-white px-2 py-0.5 rounded uppercase">Admin</span>}
-              </h1>
-              <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wider hidden sm:block">
-                {isAdmin ? "Administrator Dashboard" : "Travel Enthusiast"}
-              </p>
-            </div>
+        <header className="h-24 flex items-center justify-between px-8 lg:px-12 bg-[#F4F7FE]/80 backdrop-blur-sm sticky top-0 z-30">
+          <div className="ml-14 lg:ml-0">
+            <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight">
+              Hello, {userData?.fullName?.split(' ')[0] || "User"}
+              {isAdmin && (
+                <span className="ml-3 text-[10px] bg-emerald-100 text-emerald-600 px-2 py-1 rounded-lg uppercase font-black">
+                  Admin Panel
+                </span>
+              )}
+            </h1>
+            <p className="text-xs text-slate-400 font-medium">
+              {isAdmin ? "System Overview & Management" : "Explore your next adventure!"}
+            </p>
           </div>
 
-          <div className="flex items-center gap-3 lg:gap-6">
-            <div className="hidden md:flex items-center bg-white/50 rounded-2xl px-4 py-2 w-64 border border-slate-100 transition-all">
-              <Search size={16} className="text-slate-400 mr-2" />
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex items-center bg-white rounded-2xl px-4 py-2.5 w-72 shadow-sm border border-white">
+              <Search size={18} className="text-slate-300 mr-2" />
               <input 
-                type="text" placeholder="Search data..." 
-                className="bg-transparent border-none text-xs w-full outline-none font-medium"
+                type="text" placeholder="Search..." 
+                className="bg-transparent border-none text-sm w-full outline-none"
                 value={searchTerm} onChange={handleSearch}
               />
             </div>
-            <button className="relative p-2.5 bg-white rounded-xl shadow-sm text-slate-400">
-              <Bell size={20} />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
             <img 
               src={userData?.image || `https://ui-avatars.com/api/?name=${userData?.fullName || 'User'}`} 
               alt="user" 
@@ -208,8 +191,19 @@ export default function DashboardLayout({ children }) {
         </header>
 
         <div className="flex-1 flex overflow-hidden">
-          <main className="flex-1 overflow-y-auto px-6 lg:px-12 pb-12 custom-scrollbar">
-            <div className="max-w-7xl animate-in fade-in slide-in-from-bottom-4 duration-700 mt-6">
+          <main className="flex-1 overflow-y-auto px-6 lg:px-12 pb-10">
+            
+            {/* Admin Only Stats */}
+            {isAdmin && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 mt-4">
+                <StatCard icon={<Users size={24}/>} label="Total Users" count="1,284" color="bg-blue-500" />
+                <StatCard icon={<MapPin size={24}/>} label="Destinations" count="452" color="bg-emerald-500" />
+                <StatCard icon={<Briefcase size={24}/>} label="Active Trips" count="85" color="bg-orange-500" />
+                <StatCard icon={<CreditCard size={24}/>} label="Total Revenue" count="$12.5k" color="bg-purple-500" />
+              </div>
+            )}
+
+            <div className="max-w-6xl">
               {children}
             </div>
           </main>
@@ -226,18 +220,12 @@ export default function DashboardLayout({ children }) {
   );
 }
 
-const SidebarItem = ({ item, isActive }) => (
-  <Link href={item.href}
-    className={`group flex items-center justify-between px-4 py-3.5 rounded-2xl text-[13px] font-bold transition-all duration-300 ${
-      isActive 
-      ? "bg-[#0A1D1A] text-white shadow-lg translate-x-1" 
-      : "text-slate-400 hover:text-slate-900 hover:bg-slate-50"
-    }`}
-  >
-    <div className="flex items-center gap-4">
-      <item.icon size={19} className={`${isActive ? "text-emerald-400" : "text-slate-400 group-hover:text-emerald-500"}`} /> 
-      {item.name}
+const StatCard = ({ icon, label, count, color }) => (
+  <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-50 flex items-center gap-5 hover:shadow-md transition-all">
+    <div className={`${color} p-4 rounded-2xl text-white shadow-lg`}>{icon}</div>
+    <div>
+      <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">{label}</p>
+      <h3 className="text-2xl font-black text-slate-900">{count}</h3>
     </div>
-    {isActive && <ChevronRight size={14} className="text-emerald-400" />}
-  </Link>
+  </div>
 );
