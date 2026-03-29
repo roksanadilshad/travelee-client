@@ -56,8 +56,13 @@ export default function DestinationsPage() {
 
         const json = await res.json();
 
+        
+        const visibleDestinations = (json.data || []).filter(
+          (destination) => destination.isVisible !== false
+        );
+
         setData({
-          destinations: json.data || [],
+          destinations: visibleDestinations,
           totalPages: json.totalPages || 1,
           loading: false
         });
