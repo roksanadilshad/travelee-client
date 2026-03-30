@@ -3,57 +3,65 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  Clock3,
-  MapPin,
-  Tag,
-  Star,
-  Heart,
-} from "lucide-react";
+import { Clock3, MapPin, Tag, Star, Heart, CheckCircle2, Info, XCircle } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
-const SERVER_URL = "https://travelee-server.vercel.app";
+// Backend URL configuration
+const SERVER_URL = process.env.NEXT_PUBLIC_API_URL || "https://travelee-server.vercel.app";
 
 const DestinationCard = ({ destination }) => {
   const { t } = useLanguage();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const [liked, setLiked] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // 🔄 Load wishlist state
+  // ✨ Professional Alert Helper Function
+  const showAlert = {
+    success: (msg) => toast.success(msg, {
+      icon: <CheckCircle2 className="text-emerald-500" size={20} />,
+      className: "rounded-2xl border border-emerald-100 bg-white/90 backdrop-blur-lg shadow-xl font-bold text-slate-800",
+      progressClassName: "bg-emerald-500",
+    }),
+    info: (msg) => toast.info(msg, {
+      icon: <Heart className="text-rose-500 fill-rose-500" size={20} />,
+      className: "rounded-2xl border border-rose-100 bg-white/90 backdrop-blur-lg shadow-xl font-bold text-slate-800",
+      progressClassName: "bg-rose-500",
+    }),
+    error: (msg) => toast.error(msg, {
+      icon: <XCircle className="text-red-500" size={20} />,
+      className: "rounded-2xl border border-red-100 bg-white/90 backdrop-blur-lg shadow-xl font-bold text-slate-800",
+      progressClassName: "bg-red-500",
+    })
+  };
+
   useEffect(() => {
     const checkWishlist = async () => {
       if (!user?.email || !destination?.destination_id) return;
-
       try {
-        const res = await fetch(`${SERVER_URL}/wishlists/${user.email}`);
+        const res = await fetch(`${SERVER_URL}/api/wishlist/${user.email}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
         if (!res.ok) return;
         const data = await res.json();
-
-        const found = data.find(
-          (item) => item.destination_id === destination.destination_id
-        );
-
+        const found = data.find((item) => item.destination_id === destination.destination_id);
         if (found) setLiked(true);
       } catch (err) {
         console.error("Wishlist fetch error:", err);
       }
     };
-
     checkWishlist();
-  }, [user?.email, destination?.destination_id]);
+  }, [user?.email, destination?.destination_id, token]);
 
-  // ❤️ Toggle wishlist
   const handleWishlist = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     if (!user?.email) {
-      return toast.info("Please login to use wishlist ❤️");
+      return showAlert.info("Login to save your dream! ❤️");
     }
 
     if (loading) return;
@@ -73,38 +81,41 @@ const DestinationCard = ({ destination }) => {
           best_time_to_visit: destination.best_time_to_visit,
           avgBudget: destination.avgBudget,
           popularityScore: destination.popularityScore,
-          userName: user?.displayName || user?.name || "Guest",
+          userName: user?.displayName || user?.name || "Explorer",
           userEmail: user.email,
         };
 
-        const res = await fetch(`${SERVER_URL}/wishlists`, {
+        const res = await fetch(`${SERVER_URL}/api/wishlist`, {
           method: "POST",
-          headers: { "content-type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          },
           body: JSON.stringify(payload),
         });
 
-        if (!res.ok) throw new Error("Add failed");
-
+        if (!res.ok) throw new Error();
         setLiked(true);
-        toast.success("Added to wishlist ❤️");
+        showAlert.success(`Saved ${destination.city} to vault! `);
       } else {
-        const res = await fetch(`${SERVER_URL}/wishlists`, {
+        const res = await fetch(`${SERVER_URL}/api/wishlist`, {
           method: "DELETE",
-          headers: { "content-type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+          },
           body: JSON.stringify({
             destination_id: destination.destination_id,
             userEmail: user.email,
           }),
         });
 
-        if (!res.ok) throw new Error("Delete failed");
-
+        if (!res.ok) throw new Error();
         setLiked(false);
-        toast.info("Removed from wishlist 💔");
+        showAlert.info("Removed from your dreams ");
       }
     } catch (err) {
-      console.error(err);
-      toast.error("Wishlist action failed");
+      showAlert.error("Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -118,7 +129,6 @@ const DestinationCard = ({ destination }) => {
       >
         {/* Visual Header */}
         <div className="relative w-full h-64 overflow-hidden">
-          {/* ⭐ Rating */}
           <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full flex items-center gap-1 border border-[#CBD5E1]">
             <Star className="w-3.5 h-3.5 text-[#FF6B6B] fill-[#FF6B6B]" />
             <span className="text-[10px] font-black text-[#1E293B]">
@@ -126,14 +136,13 @@ const DestinationCard = ({ destination }) => {
             </span>
           </div>
 
-          {/* ❤️ Wishlist */}
           <button
             onClick={handleWishlist}
-            className="absolute top-4 right-4 z-10 bg-white/90 backdrop-blur-md p-2 rounded-full border border-[#CBD5E1] hover:scale-110 transition"
-            aria-label="Add to wishlist"
+            className="absolute top-4 right-4 z-20 bg-white/90 backdrop-blur-md p-2 rounded-full border border-[#CBD5E1] hover:scale-110 transition active:scale-95"
+            disabled={loading}
           >
             <Heart
-              className={`w-4 h-4 transition ${
+              className={`w-4 h-4 transition-colors duration-300 ${
                 liked ? "text-red-500 fill-red-500" : "text-gray-400"
               }`}
             />
@@ -157,7 +166,7 @@ const DestinationCard = ({ destination }) => {
           </div>
         </div>
 
-        {/* Intel Grid */}
+        {/* Content Info */}
         <div className="p-5 flex flex-col flex-1 space-y-4">
           <p className="text-gray-500 text-xs font-medium leading-relaxed line-clamp-2 italic">
             {destination.description}
@@ -166,25 +175,19 @@ const DestinationCard = ({ destination }) => {
           <div className="grid grid-cols-2 gap-y-1 gap-x-2 border-y border-[#E2E8F0] py-3">
             <div className="space-y-1">
               <span className="text-[9px] font-black uppercase text-[#64748B] flex items-center gap-1">
-                <Clock3 className="w-3 h-3 text-[#0EA5A4]" />{" "}
-                {t("card.duration_label")}
+                <Clock3 className="w-3 h-3 text-[#0EA5A4]" /> {t("card.duration_label")}
               </span>
-              <p className="text-xs font-bold text-gray-500">
-                {destination.duration}
-              </p>
+              <p className="text-xs font-bold text-gray-500">{destination.duration}</p>
             </div>
 
             <div className="space-y-1">
               <span className="text-[9px] font-black uppercase text-[#64748B] flex items-center gap-1">
                 <Tag className="w-3 h-3 text-[#0EA5A4]" /> {t("card.best_time")}
               </span>
-              <p className="text-[9px] font-bold text-[#FF6B6B] uppercase">
-                {destination.best_time_to_visit}
-              </p>
+              <p className="text-[9px] font-bold text-[#FF6B6B] uppercase">{destination.best_time_to_visit}</p>
             </div>
           </div>
 
-          {/* Footer */}
           <div className="flex items-center justify-between mt-auto">
             <div>
               <span className="text-[8px] font-black uppercase text-[#64748B] block">
