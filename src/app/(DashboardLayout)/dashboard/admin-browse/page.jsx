@@ -180,7 +180,7 @@ const AdminBrowse = () => {
         const token = localStorage.getItem('token');
         const baseUrl = process.env.NEXT_PUBLIC_API_URL;
         
-        // URL-এ ডাবল স্ল্যাশ এরর ফিক্স করা হয়েছে
+    
         const cleanUrl = `${baseUrl}/api/trip`.replace(/([^:]\/)\/+/g, "$1");
 
         const res = await fetch(cleanUrl, {
@@ -197,15 +197,15 @@ const AdminBrowse = () => {
           const allTrips = result.data;
           setTotalTrips(allTrips.length);
 
-          // ইউনিক কাস্টমার বের করা
+          
           const emails = allTrips.map(trip => trip.userEmail).filter(Boolean);
           setUniqueCustomers(new Set(emails).size);
 
-          // পটেনশিয়াল আর্নিং (আপনার লজিক অনুযায়ী)
+          
           const earnings = allTrips.reduce((sum, item) => sum + (item.avgBudget ? 200 : 50), 0);
           setTotalEarnings(earnings);
 
-          // উইকলি চার্ট ডাটা প্রসেসিং
+          
           const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
           const formattedChart = days.map((day, idx) => {
             const count = allTrips.filter(t => new Date(t.createdAt).getDay() === idx).length;
@@ -213,7 +213,7 @@ const AdminBrowse = () => {
           });
           setChartData(formattedChart);
 
-          // পাই চার্ট ডাটা (টপ ১০ কান্ট্রি)
+         
           const countryCounts = {};
           allTrips.forEach(t => {
             if (t.country) countryCounts[t.country] = (countryCounts[t.country] || 0) + 1;
