@@ -87,7 +87,7 @@ export default function AnalyticsPage() {
         <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <h3 className="font-bold text-lg">Revenue Overview</h3>
-            <select className="text-sm border-none bg-blue-50 text-blue-600 rounded-lg px-3 py-1 outline-none">
+            <select className="text-sm border-none bg-blue-50 text-[#0EA5A4] rounded-lg px-3 py-1 outline-none">
               <option>Weekly</option>
             </select>
           </div>
@@ -96,31 +96,31 @@ export default function AnalyticsPage() {
               <AreaChart data={revenueData}>
                 <defs>
                   <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1} />
-                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#0EA5A4" stopOpacity={0.1} />
+                    <stop offset="95%" stopColor="#0EA5A4" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#F3F4F6"
+                  stroke="#0EA5A4"
                 />
                 <XAxis
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#9CA3AF", fontSize: 12 }}
+                  tick={{ fill: "#0EA5A4", fontSize: 12 }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "#9CA3AF", fontSize: 12 }}
+                  tick={{ fill: "#0EA5A4", fontSize: 12 }}
                 />
                 <Tooltip />
                 <Area
                   type="monotone"
                   dataKey="revenue"
-                  stroke="#3B82F6"
+                  stroke="#0EA5A4"
                   strokeWidth={3}
                   fillOpacity={1}
                   fill="url(#colorRev)"
@@ -130,75 +130,109 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        {/* Top Destinations */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <h3 className="font-bold text-lg mb-6">Top Destinations</h3>
-          <div className="h-[250px] relative">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={destinationData}
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {destinationData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="mt-4 space-y-3">
-            {destinationData.map((item) => (
-              <div
-                key={item.name}
-                className="flex justify-between items-center text-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-3 h-3 rounded-sm"
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <span className="text-gray-600">{item.name}</span>
-                </div>
-                <span className="font-bold">{item.value}%</span>
-              </div>
-            ))}
-          </div>
+       {/* Top Destinations */}
+<div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+  <h3 className="font-bold text-lg mb-6 text-[#0A1D1A]">Top Destinations</h3>
+  <div className="h-[250px] relative">
+    <ResponsiveContainer width="100%" height="100%">
+      <PieChart>
+        <Pie
+          data={destinationData}
+          innerRadius={70} 
+          outerRadius={90}
+          paddingAngle={8} 
+          dataKey="value"
+          stroke="none" 
+        >
+          {destinationData.map((entry, index) => (
+            <Cell 
+              key={`cell-${index}`} 
+              
+              fill={[
+                "#0EA5A4",    
+                "#14B8B6",    
+                "#2DD4BF",    
+                "#99F6E4"     
+              ][index % 4]} 
+            />
+          ))}
+        </Pie>
+        <Tooltip 
+          contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+        />
+      </PieChart>
+    </ResponsiveContainer>
+  
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Total</p>
+      <p className="text-xl font-black text-slate-800">100%</p>
+    </div>
+  </div>
+
+  <div className="mt-6 space-y-3">
+    {destinationData.map((item, index) => (
+      <div
+        key={item.name}
+        className="flex justify-between items-center text-sm p-2 hover:bg-slate-50 rounded-xl transition-all"
+      >
+        <div className="flex items-center gap-3">
+          <div
+            className="w-3 h-3 rounded-full" 
+            style={{ 
+              backgroundColor: [
+                "#0EA5A4", 
+                "#14B8B6", 
+                "#2DD4BF", 
+                "#99F6E4"
+              ][index % 4] 
+            }}
+          />
+          <span className="text-slate-600 font-medium">{item.name}</span>
         </div>
+        <span className="font-bold text-slate-900">{item.value}%</span>
+      </div>
+    ))}
+  </div>
+</div>
       </div>
 
       {/* Bottom Progress Bar Section */}
-      <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="p-3 bg-blue-50 rounded-xl text-blue-500">
-            <PlaneTakeoff />
-          </div>
-          <div>
-            <p className="text-sm text-gray-500 font-medium">Total Trips</p>
-            <h4 className="text-xl font-bold">1,200</h4>
-          </div>
-        </div>
-        <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden flex">
-          <div className="bg-blue-500 h-full" style={{ width: "50%" }} />
-          <div className="bg-blue-300 h-full" style={{ width: "35%" }} />
-          <div className="bg-blue-100 h-full" style={{ width: "15%" }} />
-        </div>
-        <div className="flex gap-6 mt-4 text-xs font-medium text-gray-500">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-blue-500" /> Done: 620
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-blue-300" /> Booked: 465
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full bg-blue-100" /> Canceled: 115
-          </div>
-        </div>
-      </div>
+     <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm">
+  <div className="flex items-center gap-4 mb-6">
+    <div className="p-4 bg-[#0EA5A4]/10 rounded-2xl text-[#0EA5A4]">
+      <PlaneTakeoff size={24} />
+    </div>
+    <div>
+      <p className="text-[11px] text-slate-400 font-black uppercase tracking-widest">Total Trips</p>
+      <h4 className="text-2xl font-black text-slate-800">1,200</h4>
+    </div>
+  </div>
+
+  
+  <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden flex shadow-inner">
+    
+    <div className="bg-[#0EA5A4] h-full" style={{ width: "50%" }} />
+   
+    <div className="bg-[#34D399] h-full" style={{ width: "35%" }} /> 
+   
+    <div className="bg-[#82e9d3] h-full" style={{ width: "15%" }} />
+  </div>
+
+  <div className="flex flex-wrap gap-x-6 gap-y-2 mt-6 text-[11px] font-bold text-slate-500 uppercase tracking-tight">
+    <div className="flex items-center gap-2">
+      <div className="w-2.5 h-2.5 rounded-full bg-[#0EA5A4]" /> 
+      <span>Done: <span className="text-slate-900">620</span></span>
+    </div>
+    <div className="flex items-center gap-2">
+      <div className="w-2.5 h-2.5 rounded-full bg-[#34D399]" /> 
+      <span>Booked: <span className="text-slate-900">465</span></span>
+    </div>
+    <div className="flex items-center gap-2">
+      <div className="w-2.5 h-2.5 rounded-full bg-[#82e9d3]" /> 
+      <span>Canceled: <span className="text-slate-900">115</span></span>
+    </div>
+  </div>
+</div>
     </div>
   );
 }
