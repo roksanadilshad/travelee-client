@@ -158,7 +158,25 @@ const BrowsePage = () => {
            </div>
         </div>
 
-        
+        {lastMinuteDeal && (
+          <div className="bg-[#0A1D1A] rounded-[2.5rem] p-8 text-white relative overflow-hidden flex flex-col justify-between shadow-xl min-h-[350px]">
+             <div className="relative z-10">
+                <Clock className="text-emerald-400 mb-4" size={24} />
+                <h3 className="text-2xl font-bold mb-2 leading-tight">Deal in {lastMinuteDeal.city}!</h3>
+                <p className="text-xs text-slate-400 leading-relaxed mb-4">
+                  Exclusive price for {lastMinuteDeal.country}. Valid for the next 24 hours.
+                </p>
+                <div className="text-3xl font-black text-emerald-400">{lastMinuteDeal.avgBudget}</div>
+             </div>
+             <Link 
+                href={`/destinations/${lastMinuteDeal._id}`}
+                className="relative z-10 w-full bg-emerald-500 text-white text-center font-black py-4 rounded-2xl mt-6 hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/20"
+             >
+                Claim {lastMinuteDeal.city} Deal
+             </Link>
+             <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-2xl" />
+          </div>
+        )}
       </div>
     </div>
   );
