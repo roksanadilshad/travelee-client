@@ -7,7 +7,7 @@ import {
   Bell, Search, CalendarDays, Heart, Settings, LogOut, X, 
   Menu, PlaneTakeoff, Map, Briefcase, Utensils, Hotel, Compass, 
   MoreHorizontal, User, BarChart3, Users, MapPin, CreditCard, Loader2, 
-  Home
+  Home, ChevronRight
 } from "lucide-react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -54,15 +54,13 @@ export default function DashboardLayout({ children }) {
   }, [session?.user?.email, API_URL]);
 
   useEffect(() => {
-    if (status === "authenticated") {
-      fetchUserDetails();
-    } else if (status === "unauthenticated") {
-      setLoading(false);
-      // Optional: router.push('/login') 
-    }
-  }, [status, fetchUserDetails]);
+  if (status === "authenticated") {
     fetchUserDetails();
-  }, [fetchUserDetails]);
+  } else if (status === "unauthenticated") {
+    setLoading(false);
+    // Optional: router.push('/login') 
+  }
+}, [status, fetchUserDetails]);
 
   // Role normalization
   const userRole = useMemo(() => {
