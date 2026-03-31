@@ -31,6 +31,11 @@ export const authOptions = {
 
           if (!user) throw new Error("No user found");
 
+          // 1. LOGIN TIME STATUS CHECK
+          if (user.status === "blocked") {
+            throw new Error("Your account has been blocked. Please contact support.");
+          }
+
           const isPasswordCorrect = await bcrypt.compare(
             credentials.password,
             user.password,
@@ -43,10 +48,12 @@ export const authOptions = {
             email: user.email,
             image: user.image || null,
             accessToken: backendToken,
+            status: user.status, // Passing status to JWT
           };
         } catch (err) {
-          console.error("Login Error:", err.message);
-          return null;
+          // 2. ERROR HANDLING (Toast e message dekhanor jonno eta must)
+          const message = err.response?.data?.message || err.message || "Login failed";
+          throw new Error(message);
         }
       },
     }),
@@ -72,7 +79,12 @@ export const authOptions = {
         });
 
         if (response.data?.data) {
+          // OAuth (Google/GitHub) er jonno block check
+          if (response.data.data.status === "blocked") {
+            throw new Error("Your account has been blocked. Please contact support.");
+          }
           user.accessToken = response.data.token;
+          user.status = response.data.data.status;
           return true;
         }
 
@@ -84,10 +96,10 @@ export const authOptions = {
         });
 
         user.accessToken = createRes.data.token;
+        user.status = "active";
         return true;
       } catch (error) {
-        console.error("OAuth Sync Error:", error.message);
-        return true;
+        throw new Error(error.response?.data?.message || "OAuth Login Failed");
       }
     },
 
@@ -96,6 +108,7 @@ export const authOptions = {
         token.accessToken = user.accessToken;
         token.email = user.email;
         token.provider = account?.provider;
+        token.status = user.status; // status token e rakha holo
       }
       return token;
     },
@@ -105,6 +118,7 @@ export const authOptions = {
         session.accessToken = token.accessToken;
         session.user.provider = token.provider;
         session.user.email = token.email;
+        session.user.status = token.status; // status session e pathano holo
       }
       return session;
     },
