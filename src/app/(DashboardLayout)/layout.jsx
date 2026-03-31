@@ -65,11 +65,11 @@ export default function DashboardLayout({ children }) {
 
   // Sidebar Menu Configuration
   const menuConfig = useMemo(() => [
-    { name: "Browse", href: "/dashboard/browse", icon: Compass, roles: ["user", "admin"], category: "main" },
+    { name: "Browse", href: "/dashboard/browse", icon: Compass, roles: ["user"], category: "main" },
     { name: "Admin Browse", href: "/dashboard/admin-browse", icon: LayoutGrid, roles: ["admin"], category: "main" },
-    { name: "My Tickets", href: "/dashboard/my-trips", icon: Briefcase, roles: ["user", "admin"], category: "main" },
-    { name: "Saved Places", href: "/dashboard/wishlist", icon: Heart, roles: ["user", "admin"], category: "main" },
-    { name: "Schedule", href: "/dashboard/schedule", icon: CalendarDays, roles: ["user", "admin"], category: "main" },
+    { name: "My Tickets", href: "/dashboard/my-trips", icon: Briefcase, roles: ["user"], category: "main" },
+    { name: "Saved Places", href: "/dashboard/wishlist", icon: Heart, roles: ["user"], category: "main" },
+    { name: "Schedule", href: "/dashboard/schedule", icon: CalendarDays, roles: ["user"], category: "main" },
     { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, roles: ["admin"], category: "admin" },
     { name: "All Users", href: "/dashboard/users", icon: Users, roles: ["admin"], category: "admin" },
     { name: "Add Destinations", href: "/dashboard/add-destination", icon: MapPin, roles: ["admin"], category: "admin" },
@@ -174,22 +174,6 @@ export default function DashboardLayout({ children }) {
             <p className="text-xs text-slate-400 font-medium">
               {isAdmin ? "System Overview & Management" : "Explore your next adventure!"}
             </p>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center bg-white rounded-2xl px-4 py-2.5 w-72 shadow-sm border border-white">
-              <Search size={18} className="text-slate-300 mr-2" />
-              <input 
-                type="text" placeholder="Search..." 
-                className="bg-transparent border-none text-sm w-full outline-none"
-                value={searchTerm} onChange={handleSearch}
-              />
-            </div>
-            <img 
-              src={userData?.image || `https://ui-avatars.com/api/?name=${userData?.fullName || 'User'}`} 
-              alt="user" 
-              className="h-12 w-12 rounded-2xl object-cover border-2 border-white shadow-sm" 
-            />
           </div>
         </header>
 
