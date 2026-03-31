@@ -60,11 +60,11 @@ export default function DashboardLayout({ children }) {
 
   // Sidebar Menu Configuration
   const menuConfig = useMemo(() => [
-    { name: "Browse", href: "/dashboard/browse", icon: Compass, roles: ["user", "admin"], category: "main" },
+    { name: "Browse", href: "/dashboard/browse", icon: Compass, roles: ["user"], category: "main" },
     { name: "Admin Browse", href: "/dashboard/admin-browse", icon: LayoutGrid, roles: ["admin"], category: "main" },
-    { name: "My Tickets", href: "/dashboard/my-trips", icon: Briefcase, roles: ["user", "admin"], category: "main" },
-    { name: "Saved Places", href: "/dashboard/wishlist", icon: Heart, roles: ["user", "admin"], category: "main" },
-    { name: "Schedule", href: "/dashboard/schedule", icon: CalendarDays, roles: ["user", "admin"], category: "main" },
+    { name: "My Tickets", href: "/dashboard/my-trips", icon: Briefcase, roles: ["user"], category: "main" },
+    { name: "Saved Places", href: "/dashboard/wishlist", icon: Heart, roles: ["user"], category: "main" },
+    { name: "Schedule", href: "/dashboard/schedule", icon: CalendarDays, roles: ["user"], category: "main" },
     { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, roles: ["admin"], category: "admin" },
     { name: "All Users", href: "/dashboard/users", icon: Users, roles: ["admin"], category: "admin" },
     { name: "Add Destinations", href: "/dashboard/add-destination", icon: MapPin, roles: ["admin"], category: "admin" },
@@ -184,26 +184,6 @@ export default function DashboardLayout({ children }) {
                 {isAdmin ? "Administrator Dashboard" : "Travel Enthusiast"}
               </p>
             </div>
-          </div>
-
-          <div className="flex items-center gap-3 lg:gap-6">
-            <div className="hidden md:flex items-center bg-white/50 rounded-2xl px-4 py-2 w-64 border border-slate-100 transition-all">
-              <Search size={16} className="text-slate-400 mr-2" />
-              <input 
-                type="text" placeholder="Search data..." 
-                className="bg-transparent border-none text-xs w-full outline-none font-medium"
-                value={searchTerm} onChange={handleSearch}
-              />
-            </div>
-            <button className="relative p-2.5 bg-white rounded-xl shadow-sm text-slate-400">
-              <Bell size={20} />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-            </button>
-            <img 
-              src={userData?.image || `https://ui-avatars.com/api/?name=${userData?.fullName}`} 
-              className="h-10 w-10 lg:h-11 lg:w-11 rounded-2xl object-cover ring-4 ring-white shadow-md cursor-pointer" 
-              alt="Avatar"
-            />
           </div>
         </header>
 

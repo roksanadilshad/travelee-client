@@ -5,7 +5,24 @@ import Swal from 'sweetalert2';
 
 const AddDestination = () => {
     const [loading, setLoading] = useState(false);
+    // নতুন স্টেট: ইমেজ প্রিভিউ এবং ফাইল কাউন্ট রাখার জন্য
+    const [coverPreview, setCoverPreview] = useState(null);
+    const [fileCount, setFileCount] = useState(0);
+
     const IMGBB_API_KEY = process.env.NEXT_PUBLIC_API_IMAGEBB;
+
+    // ইমেজ সিলেক্ট করলে এই ফাংশনটি কল হবে
+    const handleImageChange = (e) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+            setFileCount(files.length);
+            // প্রথম ছবিটিকে Cover Image প্রিভিউ হিসেবে সেট করা
+            setCoverPreview(URL.createObjectURL(files[0]));
+        } else {
+            setCoverPreview(null);
+            setFileCount(0);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -13,7 +30,6 @@ const AddDestination = () => {
         const form = e.target;
 
         try {
-            // ১. ইমেজ হ্যান্ডলিং
             const imageFiles = Array.from(form.images.files);
             if (imageFiles.length === 0) {
                 throw new Error("Please select at least one image.");
@@ -54,8 +70,9 @@ const AddDestination = () => {
                     rainy_months: form.rainyMonths.value ? form.rainyMonths.value.split(',').map(m => m.trim()) : []
                 },
                 media: {
-                    cover_image: imageUrls[0] || "",
-                    gallery: imageUrls,
+                    // imageUrls কে রিভার্স করে প্রথম এলিমেন্টটি নেওয়া হচ্ছে
+                    cover_image: [...imageUrls].reverse()[0] || "",
+                    gallery: [...imageUrls].reverse(), // গ্যালারিও রিভার্সড অর্ডারে থাকবে
                 },
             };
 
@@ -70,17 +87,20 @@ const AddDestination = () => {
                     title: 'Success!',
                     text: 'Destination has been added to the map.',
                     icon: 'success',
-                    confirmButtonColor: '#0EA5A4', // Your Primary Teal
+                    confirmButtonColor: '#0EA5A4',
                     borderRadius: '1.25rem'
                 });
                 form.reset();
+                // ফর্ম রিসেট হওয়ার পর প্রিভিউ ক্লিয়ার করা
+                setCoverPreview(null);
+                setFileCount(0);
             }
         } catch (error) {
             Swal.fire({
                 title: 'Error!',
                 text: error.message || 'Something went wrong',
                 icon: 'error',
-                confirmButtonColor: '#FF6B6B', // Your Accent Coral
+                confirmButtonColor: '#FF6B6B',
             });
         } finally {
             setLoading(false);
@@ -179,7 +199,7 @@ const AddDestination = () => {
                         <div>
                             <label className={labelStyle}>Climate (Temp & Rainy Months)</label>
                             <div className="grid grid-cols-2 gap-3">
-                                <input name="avgTemp" type="number" placeholder="27°C" className={inputStyle} required />
+                                <input name="avgTemp" type="number" placeholder="27" className={inputStyle} required />
                                 <input name="rainyMonths" placeholder="June, July" className={inputStyle} required />
                             </div>
                         </div>
@@ -195,12 +215,45 @@ const AddDestination = () => {
                             <textarea name="description" placeholder="Describe the beauty of this place..." className={`${inputStyle} h-32 resize-none`} required ></textarea>
                         </div>
 
+                        {/* Updated Image Upload Section */}
                         <div className="p-6 border-2 border-dashed border-muted rounded-[1.25rem] bg-slate-50 hover:bg-slate-100/50 transition-colors">
                             <label className="block text-center cursor-pointer">
-                                <span className="text-primary font-bold">Click to upload images</span>
-                                <span className="block text-xs text-muted-foreground mt-1">First image will be set as Cover Image</span>
-                                <input name="images" type="file" multiple className="hidden" accept="image/*" required />
+                                <div className="mb-2">
+                                    <span className="text-primary font-bold text-lg">Click to upload images</span>
+                                </div>
+                                <span className="block text-sm text-muted-foreground mt-1">First image will be set as Cover Image</span>
+                                <input
+                                    name="images"
+                                    type="file"
+                                    multiple
+                                    className="hidden"
+                                    accept="image/*"
+                                    required
+                                    onChange={handleImageChange} // <-- ইভেন্ট যুক্ত করা হয়েছে
+                                />
                             </label>
+
+                            {/* Image Preview Area */}
+                            {coverPreview && (
+                                <div className="mt-6 p-4 bg-white rounded-xl border border-border shadow-sm">
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                        <div className="w-32 h-24 shrink-0 rounded-lg overflow-hidden border-2 border-primary/20 relative">
+                                            <span className="absolute top-0 left-0 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded-br-lg z-10">
+                                                COVER
+                                            </span>
+                                            <img src={coverPreview} alt="Cover Preview" className="w-full h-full object-cover" />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold text-foreground">Selected Cover Image</h4>
+                                            <p className="text-sm text-muted-foreground mt-1">
+                                                {fileCount > 1
+                                                    ? `+ ${fileCount - 1} more image(s) ready to upload`
+                                                    : "Only cover image selected"}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -208,8 +261,8 @@ const AddDestination = () => {
                         <button
                             disabled={loading}
                             className={`w-full py-4 rounded-2xl text-white font-bold text-lg shadow-lg transition-all transform active:scale-[0.98] ${loading
-                                    ? "bg-muted text-muted-foreground cursor-not-allowed"
-                                    : "bg-primary hover:bg-primary/90 hover:shadow-primary/20 shadow-xl"
+                                ? "bg-muted text-muted-foreground cursor-not-allowed"
+                                : "bg-primary hover:bg-primary/90 hover:shadow-primary/20 shadow-xl"
                                 }`}
                         >
                             {loading ? (
