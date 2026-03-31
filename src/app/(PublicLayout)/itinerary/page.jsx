@@ -249,7 +249,7 @@ export default function ProfessionalItinerary() {
         <ItinerarySearchHandler />
       </Suspense>
 
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40 px-4 lg:px-8 py-3 lg:py-4 shadow-sm">
+      <header className="bg-white md:mt-20  sticky top-0 z-40 shadow-sm ">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-2 lg:gap-4 overflow-hidden">
             <button
@@ -269,7 +269,7 @@ export default function ProfessionalItinerary() {
               }
             />
           </div>
-          <div className="flex flex-col md:flex-row items-center gap-2 lg:gap-6 shrink-0">
+          <div className="flex flex-row  items-center gap-2 lg:gap-6 shrink-0">
             <PresenceBar activeUsers={activeUsers} />
             {console.log(
               "Current ID being passed to Invite:",
@@ -282,12 +282,12 @@ export default function ProfessionalItinerary() {
               socket={socket}
               onAutoSave={handleSaveTrip}
             />
-            <button
+            {/* <button
               onClick={handleSaveTrip}
               className="bg-[#0EA5A4] text-white px-4 lg:px-6 py-2 rounded-full text-sm font-semibold transition-all"
             >
               Save
-            </button>
+            </button> */}
           </div>
         </div>
       </header>
