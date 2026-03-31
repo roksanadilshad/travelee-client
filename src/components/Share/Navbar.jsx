@@ -3,24 +3,24 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, LogOut, User, Compass, Briefcase, Phone, Info } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
-import { 
-  Sheet, 
-  SheetContent, 
-  SheetTrigger, 
-  SheetTitle, 
-  SheetDescription 
-} from "@/components/ui/sheet"; // Fixed Import
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+  SheetDescription
+} from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -34,6 +34,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [userRole, setUserRole] = useState("user");
   const { user, logout } = useAuth();
 
   useEffect(() => {
@@ -42,32 +43,74 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = [
-    { name: "Home", href: "/", icon: <Compass className="w-4 h-4" /> },
-    { name: "Destinations", href: "/destinations", icon: <Compass className="w-4 h-4" /> },
-    ...(user?.email ? [{ name: "Dashboard", href: "/dashboard/browse" }] : []),
-    ...(user?.email ? [{ name: "Itinerary", href: "/itinerary" }] : []),
-    ...(user?.email ? [{ name: "Bookings", href: "/dashboard/my-trips" }] : []),
-    { name: "About", href: "/about", icon: <Info className="w-4 h-4" /> },
-    { name: "Contact", href: "/contact", icon: <Phone className="w-4 h-4" /> },
-  ];
+  // Fetch User Role logic
+  useEffect(() => {
+    const fetchRole = async () => {
+      if (!user?.email) return;
+
+      // Specially check for the hardcoded admin email
+      if (user.email === "roky18bd@gmail.com") {
+        setUserRole("admin");
+        return;
+      }
+
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/email`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: user.email })
+        });
+        const result = await res.json();
+        if (result.success && result.data?.role) {
+          setUserRole(result.data.role.toLowerCase());
+        }
+      } catch (error) {
+        console.error("Error fetching role in Navbar:", error);
+      }
+    };
+
+    fetchRole();
+  }, [user?.email]);
+
+  // Role-Based Dynamic navLinks using useMemo for performance
+  const navLinks = useMemo(() => {
+    const links = [
+      { name: "Home", href: "/", icon: <Compass className="w-4 h-4" /> },
+      { name: "Destinations", href: "/destinations", icon: <Compass className="w-4 h-4" /> },
+    ];
+
+    if (user?.email) {
+      const isAdmin = userRole === "admin";
+      links.push({
+        name: "Dashboard",
+        href: isAdmin ? "/dashboard/admin-browse" : "/dashboard/browse",
+        icon: <Compass className="w-4 h-4" />
+      });
+      links.push({ name: "Itinerary", href: "/itinerary" });
+      links.push({ name: "Bookings", href: "/dashboard/my-trips" });
+    }
+
+    links.push({ name: "About", href: "/about", icon: <Info className="w-4 h-4" /> });
+    links.push({ name: "Contact", href: "/contact", icon: <Phone className="w-4 h-4" /> });
+
+    return links;
+  }, [user?.email, userRole]);
 
   const isActive = (href) => href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <header 
-      className={`fixed top-0 z-50 w-full transition-all duration-300 border-b ${
-        scrolled 
-          ? "border-border/60 bg-background/80 backdrop-blur-xl py-2 shadow-sm" 
-          : "border-transparent bg-transparent py-4"
-      }`}
+    <header
+      className={`fixed top-0 z-50 w-full transition-all duration-300 border-b ${scrolled
+        ? "border-border/60 bg-background/80 backdrop-blur-xl py-2 shadow-sm"
+        : "border-transparent bg-transparent py-4"
+        }`}
     >
       <div className="container mx-auto flex items-center justify-between px-6 ">
-        
+
         {/* Logo Section */}
         <div className="flex-shrink-0 transition-transform duration-300 hover:scale-105">
           <Link href='/'>
-            <Logo variant="nav"/>
+            <Logo variant="nav" />
           </Link>
         </div>
 
@@ -77,26 +120,24 @@ export default function Navbar() {
             const active = isActive(link.href);
             return (
               <Link
-  key={link.name}
-  href={link.href}
-  className={`px-5 py-2 text-sm font-semibold transition-all duration-300 relative rounded-full ${
-    active
-      ? "text-primary bg-background shadow-sm"
-      : `${
-          scrolled
-            ? "text-foreground hover:text-primary"
-            : "text-gray-400 hover:text-secondary"
-        } hover:bg-background/50`
-  }`}
->
-  {link.name}
-  {active && (
-    <motion.div 
-      layoutId="activeNav"
-      className="absolute inset-0 border-2 border-primary/10 rounded-full -z-10"
-    />
-  )}
-</Link>
+                key={link.name}
+                href={link.href}
+                className={`px-5 py-2 text-sm font-semibold transition-all duration-300 relative rounded-full ${active
+                  ? "text-primary bg-background shadow-sm"
+                  : `${scrolled
+                    ? "text-foreground hover:text-primary"
+                    : "text-gray-400 hover:text-secondary"
+                  } hover:bg-background/50`
+                  }`}
+              >
+                {link.name}
+                {active && (
+                  <motion.div
+                    layoutId="activeNav"
+                    className="absolute inset-0 border-2 border-primary/10 rounded-full -z-10"
+                  />
+                )}
+              </Link>
             );
           })}
         </nav>
@@ -133,7 +174,7 @@ export default function Navbar() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   className="focus:bg-destructive/10 focus:text-destructive cursor-pointer text-primary rounded-lg"
                   onClick={() => { logout(); toast.success("Signed out successfully"); }}
                 >
@@ -156,71 +197,68 @@ export default function Navbar() {
 
         {/* Mobile Toggle */}
         <div className="lg:hidden flex items-center gap-3">
-            {user && (
-                <span className="text-xs font-bold text-slate-500">{user.name.split(' ')[0]}</span>
-            )}
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetTrigger asChild>
-                <Button variant="outline" size="icon" className="rounded-xl border-border/50">
-                    <Menu className="h-5 w-5 text-primary" />
-                </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-[300px] border-l-0 bg-background/95 backdrop-blur-2xl">
-                    {/* ACCESSIBILITY FIX START */}
-                    <div className="sr-only">
-                        <SheetTitle>Navigation Menu</SheetTitle>
-                        <SheetDescription>Access your account and site navigation</SheetDescription>
-                    </div>
-                    {/* ACCESSIBILITY FIX END */}
+          {user && (
+            <span className="text-xs font-bold text-slate-500">{user.name.split(' ')[0]}</span>
+          )}
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="rounded-xl border-border/50">
+                <Menu className="h-5 w-5 text-primary" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] border-l-0 bg-background/95 backdrop-blur-2xl">
+              <div className="sr-only">
+                <SheetTitle>Navigation Menu</SheetTitle>
+                <SheetDescription>Access your account and site navigation</SheetDescription>
+              </div>
 
-                    <div className="flex flex-col h-full py-6">
-                        <div className="flex items-center justify-between mb-8 px-2">
-                         <Link href='/' onClick={() => setIsOpen(false)}>
-                            <Logo variant="footer"/>
-                         </Link>
-                        </div>
-                        
-                        <nav className="flex flex-col gap-2">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.name}
-                                href={link.href}
-                                onClick={() => setIsOpen(false)}
-                                className={`flex items-center gap-4 px-4 py-3 rounded-2xl text-base font-bold transition-all ${
-                                    isActive(link.href)
-                                    ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                    : "text-slate-600 hover:bg-slate-100"
-                                }`}
-                            >
-                                {link.name}
-                            </Link>
-                        ))}
-                        </nav>
+              <div className="flex flex-col h-full py-6">
+                <div className="flex items-center justify-between mb-8 px-2">
+                  <Link href='/' onClick={() => setIsOpen(false)}>
+                    <Logo variant="footer" />
+                  </Link>
+                </div>
 
-                        <div className="mt-auto pt-6 border-t border-border/50 flex flex-col gap-4">
-                            <div className="px-2">
-                              <LanguageToggle/>
-                            </div>
-                            {!user ? (
-                                <div className="flex flex-col gap-3">
-                                    <LogInButton />
-                                    <Button asChild className="w-full rounded-2xl bg-[#FF6B6B] py-6 font-bold">
-                                        <Link href="/register">Create Account</Link>
-                                    </Button>
-                                </div>
-                            ) : (
-                                <Button 
-                                    variant="destructive" 
-                                    className="w-full rounded-2xl py-6 text-secondary font-bold"
-                                    onClick={() => { logout(); setIsOpen(false); }}
-                                >
-                                    <LogOut className="mr-2 h-4 w-4" /> Logout
-                                </Button>
-                            )}
-                        </div>
+                <nav className="flex flex-col gap-2">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.name}
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className={`flex items-center gap-4 px-4 py-3 rounded-2xl text-base font-bold transition-all ${isActive(link.href)
+                        ? "bg-primary text-white shadow-lg shadow-primary/20"
+                        : "text-slate-600 hover:bg-slate-100"
+                        }`}
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
+                </nav>
+
+                <div className="mt-auto pt-6 border-t border-border/50 flex flex-col gap-4">
+                  <div className="px-2">
+                    <LanguageToggle />
+                  </div>
+                  {!user ? (
+                    <div className="flex flex-col gap-3">
+                      <LogInButton />
+                      <Button asChild className="w-full rounded-2xl bg-[#FF6B6B] py-6 font-bold">
+                        <Link href="/register">Create Account</Link>
+                      </Button>
                     </div>
-                </SheetContent>
-            </Sheet>
+                  ) : (
+                    <Button
+                      variant="destructive"
+                      className="w-full rounded-2xl py-6 text-secondary font-bold"
+                      onClick={() => { logout(); setIsOpen(false); }}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" /> Logout
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>
