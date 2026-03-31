@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { 
   Bell, Search, CalendarDays, Heart, Settings, LogOut, X, 
-  Menu, Briefcase, Compass, User, BarChart3, Users, MapPin, Loader2, ChevronRight 
+  Menu, Briefcase, Compass, User, BarChart3, Users, MapPin, Loader2, ChevronRight, 
+  LayoutGrid
 } from "lucide-react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -60,6 +61,7 @@ export default function DashboardLayout({ children }) {
   // Sidebar Menu Configuration
   const menuConfig = useMemo(() => [
     { name: "Browse", href: "/dashboard/browse", icon: Compass, roles: ["user", "admin"], category: "main" },
+    { name: "Admin Browse", href: "/dashboard/admin-browse", icon: LayoutGrid, roles: ["admin"], category: "main" },
     { name: "My Tickets", href: "/dashboard/my-trips", icon: Briefcase, roles: ["user", "admin"], category: "main" },
     { name: "Saved Places", href: "/dashboard/wishlist", icon: Heart, roles: ["user", "admin"], category: "main" },
     { name: "Schedule", href: "/dashboard/schedule", icon: CalendarDays, roles: ["user", "admin"], category: "main" },
