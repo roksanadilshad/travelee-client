@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { 
   Bell, Search, CalendarDays, Heart, Settings, LogOut, X, 
-  Menu, PlaneTakeoff, Map, Briefcase, Utensils, Hotel, Compass, 
-  MoreHorizontal, User, BarChart3, Users, MapPin, CreditCard, Loader2, 
-  Home, ChevronRight
+  Menu, Briefcase, Compass, User, BarChart3, Users, MapPin, Loader2, ChevronRight, 
+  LayoutGrid
 } from "lucide-react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -53,36 +52,35 @@ export default function DashboardLayout({ children }) {
   }, [session?.user?.email, API_URL]);
 
   useEffect(() => {
-  if (status === "authenticated") {
-    fetchUserDetails();
-  } else if (status === "unauthenticated") {
-    setLoading(false);
-    // Optional: router.push('/login') 
-  }
-}, [status, fetchUserDetails]);
+    if (status === "authenticated") {
+      fetchUserDetails();
+    } else if (status === "unauthenticated") {
+      setLoading(false);
+      // Optional: router.push('/login') 
+    }
+  }, [status, fetchUserDetails]);
 
-  // Role normalization
-  const userRole = useMemo(() => {
-    if (session?.user?.email === "roky18bd@gmail.com") return "admin";
-    return userData?.role?.toLowerCase() || "user";
-  }, [userData, session]);
-
+  const userRole = userData?.role || "user";
   const isAdmin = userRole === "admin";
 
-  const filteredMenu = useMemo(() => {
-    const menuConfig = [
-      { name: "Home", href: "/", icon: Home, roles: ["user", "admin"] },
-      { name: "Browse", href: "/dashboard/browse", icon: Compass, roles: ["user"] },
-      { name: "Browse", href: "/dashboard/adminbrowse", icon: Compass, roles: ["admin"] },
-      { name: "All Users", href: "/dashboard/users", icon: Users, roles: ["admin"] },
-      { name: "Add Destinations", href: "/dashboard/destinations", icon: MapPin, roles: ["admin"] },
-      { name: "My Tickets", href: "/dashboard/my-trips", icon: Briefcase, roles: ["user"] },
-      { name: "Schedule", href: "/dashboard/schedule", icon: CalendarDays, roles: ["user", "admin"] },
-      { name: "Saved Places", href: "/dashboard/wishlist", icon: Heart, roles: ["user"] },
-      { name: "Profile", href: "/dashboard/my-profile", icon: User, roles: ["user", "admin"] },
-    ];
-    return menuConfig.filter(item => item.roles.includes(userRole));
-  }, [userRole]);
+  // Sidebar Menu Configuration
+  const menuConfig = useMemo(() => [
+    { name: "Browse", href: "/dashboard/browse", icon: Compass, roles: ["user", "admin"], category: "main" },
+    { name: "Admin Browse", href: "/dashboard/admin-browse", icon: LayoutGrid, roles: ["admin"], category: "main" },
+    { name: "My Tickets", href: "/dashboard/my-trips", icon: Briefcase, roles: ["user", "admin"], category: "main" },
+    { name: "Saved Places", href: "/dashboard/wishlist", icon: Heart, roles: ["user", "admin"], category: "main" },
+    { name: "Schedule", href: "/dashboard/schedule", icon: CalendarDays, roles: ["user", "admin"], category: "main" },
+    { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, roles: ["admin"], category: "admin" },
+    { name: "All Users", href: "/dashboard/users", icon: Users, roles: ["admin"], category: "admin" },
+    { name: "Add Destinations", href: "/dashboard/add-destination", icon: MapPin, roles: ["admin"], category: "admin" },
+     { name: "All Destinations", href: "/dashboard/all-destination", icon: MapPin, roles: ["admin"], category: "admin" },
+    { name: "Profile", href: "/dashboard/my-profile", icon: User, roles: ["user", "admin"], category: "settings" },
+  ], []);
+
+  // Filter logic
+  const filteredMenu = useMemo(() => 
+    menuConfig.filter(item => item.roles.includes(userRole)), 
+  [userRole, menuConfig]);
 
   const handleSearch = (e) => {
     const value = e.target.value;
