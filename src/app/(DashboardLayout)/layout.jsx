@@ -6,13 +6,15 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { 
   Bell, Search, CalendarDays, Heart, Settings, LogOut, X, 
   Menu, Briefcase, Compass, User, BarChart3, Users, MapPin, Loader2, ChevronRight, 
-  LayoutGrid
+  LayoutGrid,
+  CreditCard
 } from "lucide-react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TraveleeLogo from "@/components/Share/Logo";
 import { useSession, signOut } from "next-auth/react";
 import RightSidebar from "@/components/dashboard/RightSidebar";
+import Chatbot from "@/components/chatbot";
 
 export default function DashboardLayout({ children }) {
   const { data: session, status } = useSession();
@@ -73,7 +75,7 @@ export default function DashboardLayout({ children }) {
     { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, roles: ["admin"], category: "admin" },
     { name: "All Users", href: "/dashboard/users", icon: Users, roles: ["admin"], category: "admin" },
     { name: "Add Destinations", href: "/dashboard/add-destination", icon: MapPin, roles: ["admin"], category: "admin" },
-     { name: "All Destinations", href: "/dashboard/all-destination", icon: MapPin, roles: ["admin"], category: "admin" },
+    { name: "All Destinations", href: "/dashboard/all-destination", icon: MapPin, roles: ["admin"], category: "admin" },
     { name: "Profile", href: "/dashboard/my-profile", icon: User, roles: ["user", "admin"], category: "settings" },
   ], []);
 
@@ -179,17 +181,6 @@ export default function DashboardLayout({ children }) {
 
         <div className="flex-1 flex overflow-hidden">
           <main className="flex-1 overflow-y-auto px-6 lg:px-12 pb-10">
-            
-            {/* Admin Only Stats */}
-            {isAdmin && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 mt-4">
-                <StatCard icon={<Users size={24}/>} label="Total Users" count="1,284" color="bg-blue-500" />
-                <StatCard icon={<MapPin size={24}/>} label="Destinations" count="452" color="bg-emerald-500" />
-                <StatCard icon={<Briefcase size={24}/>} label="Active Trips" count="85" color="bg-orange-500" />
-                <StatCard icon={<CreditCard size={24}/>} label="Total Revenue" count="$12.5k" color="bg-purple-500" />
-              </div>
-            )}
-
             <div className="max-w-6xl">
               {children}
             </div>
@@ -203,6 +194,12 @@ export default function DashboardLayout({ children }) {
           )}
         </div>
       </div>
+
+      {/* Floating Chatbot */}
+      <div className="fixed bottom-6 right-6 z-[999]">
+        <Chatbot />
+      </div>
+
     </div>
   );
 }
