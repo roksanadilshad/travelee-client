@@ -14,6 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import TraveleeLogo from "@/components/Share/Logo";
 import { useSession, signOut } from "next-auth/react";
 import RightSidebar from "@/components/dashboard/RightSidebar";
+import Chatbot from "@/components/chatbot";
 
 export default function DashboardLayout({ children }) {
   const { data: session, status } = useSession();
@@ -74,7 +75,7 @@ export default function DashboardLayout({ children }) {
     { name: "Analytics", href: "/dashboard/analytics", icon: BarChart3, roles: ["admin"], category: "admin" },
     { name: "All Users", href: "/dashboard/users", icon: Users, roles: ["admin"], category: "admin" },
     { name: "Add Destinations", href: "/dashboard/add-destination", icon: MapPin, roles: ["admin"], category: "admin" },
-     { name: "All Destinations", href: "/dashboard/all-destination", icon: MapPin, roles: ["admin"], category: "admin" },
+    { name: "All Destinations", href: "/dashboard/all-destination", icon: MapPin, roles: ["admin"], category: "admin" },
     { name: "Profile", href: "/dashboard/my-profile", icon: User, roles: ["user", "admin"], category: "settings" },
   ], []);
 
@@ -180,9 +181,6 @@ export default function DashboardLayout({ children }) {
 
         <div className="flex-1 flex overflow-hidden">
           <main className="flex-1 overflow-y-auto px-6 lg:px-12 pb-10">
-            
-           
-
             <div className="max-w-6xl">
               {children}
             </div>
@@ -196,6 +194,12 @@ export default function DashboardLayout({ children }) {
           )}
         </div>
       </div>
+
+      {/* Floating Chatbot */}
+      <div className="fixed bottom-6 right-6 z-[999]">
+        <Chatbot />
+      </div>
+
     </div>
   );
 }
