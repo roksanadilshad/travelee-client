@@ -29,7 +29,7 @@ export function LoginForm({ className, ...props }) {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async (data) => {
+const onSubmit = async (data) => {
     setLoading(true);
     setError("");
 
@@ -44,9 +44,11 @@ export function LoginForm({ className, ...props }) {
       if (res?.ok) {
         toast.success("Login successful");
         window.location.href = res.url || "/";
-      } else if (res?.error) {
-        setError("Invalid email or password!");
-        toast.error("Invalid email or password!");
+      } else {
+        // Jodi backend theke "blocked" message ashe, tobe res.error sheta dhorbe
+        const errorMessage = res?.error || "Invalid email or password!";
+        setError(errorMessage);
+        toast.error(errorMessage); 
       }
     } catch (err) {
       console.error("Login Error:", err);
