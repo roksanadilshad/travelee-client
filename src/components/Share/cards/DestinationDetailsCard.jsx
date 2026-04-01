@@ -95,15 +95,32 @@ const DestinationDetailsCard = ({ destination }) => {
     }
   };
 
-  const handleBookNow = async (e) => {
+  const handleBookNow = async ( e, tripData) => {
     if (e) e.preventDefault();
-    if (!user?.email || !startDate || !endDate) {
+    if (!tripData || !user?.email || !startDate || !endDate) {
       return Swal.fire(
-        "Missing Info",
-        "Please log in and select dates",
-        "warning",
+        "Information Needed",
+      "Please select your dates and room preferences before booking.",
+      "warning"
       );
     }
+
+    let isDealValid = false;
+  const savedDeal = localStorage.getItem('travelee_active_deal');
+  
+  if (savedDeal) {
+    const dealData = JSON.parse(savedDeal);
+    const now = new Date().getTime();
+    const expiry = new Date(dealData.expiry).getTime();
+    
+    // Only apply if the timer hasn't run out
+    if (now < expiry) {
+      isDealValid = true;
+    } else {
+      // Clean up if it's expired
+      localStorage.removeItem('travelee_active_deal');
+    }
+  }
 
     try {
       const response = await fetch(
@@ -118,17 +135,23 @@ const DestinationDetailsCard = ({ destination }) => {
             startDate,
             endDate,
             duration,
-            totalCost: parseFloat(numericPriceForURL),
+            // totalCost: parseFloat(numericPriceForURL),
             userEmail: user.email,
             userName: user.name || "Traveler",
-            media: { cover_image: destination.media?.cover_image || "" },
+            media: { cover_image: destination.media?.cover_image || "" }, 
+         amount: tripData.totalPrice, 
+        totalCost: tripData.totalPrice,
+        guests: tripData.guests,
+        days: tripData.days,
+        rooms: tripData.rooms,
+        hasFlashDeal: isDealValid
           }),
         },
       );
       const data = await response.json();
       if (data.url) window.location.href = data.url;
     } catch (error) {
-      console.error("Booking Error:", error);
+    console.error("Stripe Checkout Error:", error);
     }
   };
 
