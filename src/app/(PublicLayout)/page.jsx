@@ -15,6 +15,7 @@ import LanguageToggle from "@/components/Home/LanguageToggle";
 import { Suspense } from "react";
 import TacticalLoader from "../loading";
 import DestinationMapWrapper from "@/components/destination-map/DestinationMapWrapper";
+import DynamicDealCard from "@/components/Home/DynamicDealCard";
 
 
 export default function Home() {
@@ -31,6 +32,7 @@ export default function Home() {
     <DestinationMapWrapper></DestinationMapWrapper>
     <BudgetEstimator/>
     <ReviewFeed/>
+    <DynamicDealCard/>
     <WeatherBlock/>
     <TripRoomPreview/>
     {/* <LanguageToggle/> */}

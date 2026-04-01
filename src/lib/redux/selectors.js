@@ -4,5 +4,5 @@ export const selectTotalCost = (state) => {
     return sum + day.activities.reduce((daySum, act) => daySum + Number(act.cost), 0);
   }, 0);
   
-  return base + activitiesTotal;
+  return activitiesTotal;
 };
