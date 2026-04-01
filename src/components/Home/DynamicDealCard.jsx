@@ -49,7 +49,12 @@ const handleClaimDeal = async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }
     });
-    const result = await response.json();
+   if (!response.ok) {
+  const errorText = await response.text();
+  console.error("Server Error:", errorText);
+  return;
+}
+const result = await response.json();
 
     if (result.success) {
       // Create a deal object to save
