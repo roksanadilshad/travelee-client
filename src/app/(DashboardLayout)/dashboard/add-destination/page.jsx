@@ -5,18 +5,16 @@ import Swal from 'sweetalert2';
 
 const AddDestination = () => {
     const [loading, setLoading] = useState(false);
-    // নতুন স্টেট: ইমেজ প্রিভিউ এবং ফাইল কাউন্ট রাখার জন্য
     const [coverPreview, setCoverPreview] = useState(null);
     const [fileCount, setFileCount] = useState(0);
 
     const IMGBB_API_KEY = process.env.NEXT_PUBLIC_API_IMAGEBB;
 
-    // ইমেজ সিলেক্ট করলে এই ফাংশনটি কল হবে
+
     const handleImageChange = (e) => {
         const files = e.target.files;
         if (files && files.length > 0) {
             setFileCount(files.length);
-            // প্রথম ছবিটিকে Cover Image প্রিভিউ হিসেবে সেট করা
             setCoverPreview(URL.createObjectURL(files[0]));
         } else {
             setCoverPreview(null);
@@ -70,9 +68,8 @@ const AddDestination = () => {
                     rainy_months: form.rainyMonths.value ? form.rainyMonths.value.split(',').map(m => m.trim()) : []
                 },
                 media: {
-                    // imageUrls কে রিভার্স করে প্রথম এলিমেন্টটি নেওয়া হচ্ছে
                     cover_image: [...imageUrls].reverse()[0] || "",
-                    gallery: [...imageUrls].reverse(), // গ্যালারিও রিভার্সড অর্ডারে থাকবে
+                    gallery: [...imageUrls].reverse(),
                 },
             };
 
@@ -91,7 +88,6 @@ const AddDestination = () => {
                     borderRadius: '1.25rem'
                 });
                 form.reset();
-                // ফর্ম রিসেট হওয়ার পর প্রিভিউ ক্লিয়ার করা
                 setCoverPreview(null);
                 setFileCount(0);
             }
@@ -126,15 +122,15 @@ const AddDestination = () => {
                         </h3>
                         <div>
                             <label className={labelStyle}>City Name</label>
-                            <input name="city" placeholder="e.g. Saint Martin" className={inputStyle} required />
+                            <input name="city" placeholder="Saint Martin" className={inputStyle} required />
                         </div>
                         <div>
                             <label className={labelStyle}>Country</label>
-                            <input name="country" placeholder="e.g. Bangladesh" className={inputStyle} required />
+                            <input name="country" placeholder="Bangladesh" className={inputStyle} required />
                         </div>
                         <div>
                             <label className={labelStyle}>Region</label>
-                            <input name="region" placeholder="e.g. Chittagong" className={inputStyle} required />
+                            <input name="region" placeholder="Chittagong" className={inputStyle} required />
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
@@ -229,7 +225,7 @@ const AddDestination = () => {
                                     className="hidden"
                                     accept="image/*"
                                     required
-                                    onChange={handleImageChange} // <-- ইভেন্ট যুক্ত করা হয়েছে
+                                    onChange={handleImageChange}
                                 />
                             </label>
 
