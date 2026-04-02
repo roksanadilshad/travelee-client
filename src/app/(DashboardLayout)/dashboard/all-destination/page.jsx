@@ -14,8 +14,8 @@ const AllDestinationsPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState("table"); // 'table' or 'grid'
-  const itemsPerPage = 12; // Adjusted for better grid symmetry (3x4 or 4x3)
+  const [viewMode, setViewMode] = useState("table");
+  const itemsPerPage = 12;
 
   const fetchDestinations = useCallback(async () => {
     try {
