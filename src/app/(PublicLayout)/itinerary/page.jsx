@@ -304,7 +304,7 @@ useEffect(() => {
           <div className="flex items-center gap-3">
             <PresenceBar activeUsers={activeUsers} />
             <InviteFriend tripId={tripId || trip?._id} tripTitle={trip?.destination} currentUser={session?.user} socket={socket} onAutoSave={handleSaveTrip} />
-            <button onClick={handleSaveTrip} className="bg-[#0EA5A4] text-white px-6 py-2 rounded-xl text-sm font-bold hover:shadow-lg transition-all">Save Trip</button>
+            {/* <button onClick={handleSaveTrip} className="bg-[#0EA5A4] text-white px-6 py-2 rounded-xl text-sm font-bold hover:shadow-lg transition-all">Save Trip</button> */}
           </div>
         </div>
       </div>
